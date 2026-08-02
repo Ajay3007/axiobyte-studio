@@ -1,0 +1,23 @@
+# 1:1 — Instagram feed. Proof that a new format costs a file, not an episode.
+id: 1x1
+title: Square feed
+canvas: { w: 1080, h: 1080, unit_px: 100 }
+
+axis:
+  chain: horizontal
+  pair: side_by_side
+  cluster: grid_square
+  ensemble: horizontal
+  stack: vertical
+
+safe: { top: 0.06, bottom: 0.06, left: 0.06, right: 0.06 }
+platform_safe: {}
+
+density_budget: 5
+text_max_width: 0.68
+gap: 0.035
+min_element: 0.07
+
+chrome:
+  keyword: top_pinned
+  caption: lower_third

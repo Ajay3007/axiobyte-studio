@@ -1,0 +1,30 @@
+# 9:16 — Reels / Shorts / TikTok. A PEER of 16x9, not derived from it.
+id: 9x16
+title: Vertical short-form
+canvas: { w: 1080, h: 1920, unit_px: 100 }
+
+axis:
+  chain: vertical        # the whole difference, in one word
+  pair: stacked
+  cluster: grid_narrow
+  ensemble: vertical
+  stack: vertical
+
+safe: { top: 0.05, bottom: 0.05, left: 0.05, right: 0.05 }
+
+# Where the PLATFORM's own UI sits. Content here is covered by captions, handles,
+# and action buttons — it is not a style preference, it is occlusion.
+platform_safe:
+  reels: { bottom: 0.18, right: 0.14 }
+  shorts: { bottom: 0.14, right: 0.12 }
+  tiktok: { bottom: 0.20, right: 0.16 }
+
+density_budget: 4        # a tall frame holds fewer things legibly
+
+text_max_width: 0.61     # ep02 portrait: MAXW 6.6 units of a 10.8-unit frame
+gap: 0.03
+min_element: 0.08        # a narrow frame needs a larger minimum to stay readable
+
+chrome:
+  keyword: top_pinned
+  caption: above_platform_safe

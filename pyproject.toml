@@ -9,7 +9,7 @@ description = "A systems visualization framework — turning computer-science id
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
-authors = [{ name = "Ajay Maddheshiya", email = "ajaymaddheshiya33@gmail.com" }]
+authors = [{ name = "Ajay Gupt", email = "ajaymaddheshiya33@gmail.com" }]
 
 dependencies = [
     "pyyaml>=6.0",
@@ -95,6 +95,7 @@ source_modules = [
     "axiobyte_studio.core",
     "axiobyte_studio.design",
     "axiobyte_studio.timeline",
+    "axiobyte_studio.layout",
 ]
 forbidden_modules = ["manim", "bpy"]
 
@@ -105,12 +106,14 @@ source_modules = ["axiobyte_studio.core"]
 forbidden_modules = [
     "axiobyte_studio.design",
     "axiobyte_studio.timeline",
+    "axiobyte_studio.layout",
 ]
 
 [[tool.importlinter.contracts]]
 name = "3. The layer stack is one-directional"
 type = "layers"
 layers = [
+    "axiobyte_studio.layout",
     "axiobyte_studio.design",
     "axiobyte_studio.timeline",
     "axiobyte_studio.core",

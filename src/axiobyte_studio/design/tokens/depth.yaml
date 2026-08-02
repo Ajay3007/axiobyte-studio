@@ -1,0 +1,21 @@
+# THE Z LADDER
+#
+# Taken verbatim from the reference episodes, where it is a row of bare integers.
+# Naming the bands is what stops the twentieth episode from inventing z=8.
+#
+# The ordering is the invariant: glow sits under everything it belongs to, chrome
+# sits above everything, and the packet sits above the machine that carries it.
+
+version: 1.0.0
+
+bands:
+  glow: 0      # the soft halo under a shape
+  zone: 1      # background regions, kernel/user bands
+  node: 2      # component bodies
+  line: 3      # buses, links, connections
+  label: 5     # text attached to a node
+  packet: 7    # the payload — above the machine it moves through
+  card: 9      # cards that overlay the diagram (the mbuf)
+  scrim: 20    # the dimming layer for a title card
+  title: 21    # act titles
+  keyword: 25  # the pinned chapter keyword — always on top

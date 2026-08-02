@@ -1,0 +1,40 @@
+# THE TYPE LADDER
+#
+# Sizes are in DESIGN PIXELS and are the same in every format. That is not an
+# oversight — it is what the reference episodes do, and checking both cuts confirms
+# it: ep02_video.py (1080x1920) and ep02_video_16x9.py (1920x1080) declare identical
+# constants. Because 1 layout unit = 100 px in both, a 38px keyword occupies a
+# LARGER share of a narrow frame automatically, which is exactly what a phone needs.
+# Scaling type per target on top of that would double-count.
+#
+# What does differ per target is how wide a line may run before it wraps — see
+# `text_max_width` in design/targets/*.yaml.
+
+version: 1.0.0
+reference_canvas: { w: 1920, h: 1080, unit_px: 100 }
+
+sizes:
+  display: 66    # act title card, one-time
+  keyword: 38    # the pinned chapter keyword
+  caption: 30    # the pinned bottom caption
+  node: 33       # component title
+  row: 24        # row label inside a component
+  tag: 22        # a small annotation pill
+  node_sub: 21   # component sub-label
+  mono_s: 18     # addresses, field names, code terms
+
+weights:
+  display: bold
+  keyword: bold
+  caption: regular
+  node: bold
+  row: regular
+  tag: regular
+  node_sub: regular
+  mono_s: regular
+
+faces:
+  # Resolved at render time against what is installed; the reference episodes
+  # render with DejaVu and fall back to the macOS pair named in the setup guide.
+  sans: ["DejaVu Sans", "Helvetica Neue", "Helvetica"]
+  mono: ["DejaVu Sans Mono", "Menlo", "Andale Mono"]

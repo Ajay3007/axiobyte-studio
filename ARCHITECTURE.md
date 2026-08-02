@@ -201,7 +201,7 @@ safe:          { top: 0.06, bottom: 0.06, left: 0.05, right: 0.05 }
 platform_safe:                       # where the platform's own UI sits
   reels:       { bottom: 0.18, right: 0.14 }
   shorts:      { bottom: 0.14, right: 0.12 }
-type_scale:    1.35                  # a narrow frame needs larger type to read
+text_max_width: 0.61                 # ep02 portrait: MAXW 6.6 of a 10.8-unit frame
 density_budget: 4                    # max simultaneous top-level elements
 chrome:        { keyword: top_pinned, caption: above_platform_safe }
 ```
@@ -211,7 +211,7 @@ chrome:        { keyword: top_pinned, caption: above_platform_safe }
 canvas:        { w: 1920, h: 1080 }
 axis:          { chain: horizontal, pair: side_by_side, cluster: grid_wide }
 safe:          { top: 0.05, bottom: 0.08, left: 0.05, right: 0.05 }
-type_scale:    1.0
+text_max_width: 0.73                 # ep02 landscape: MAXW 14.0 of a 19.2-unit frame
 density_budget: 7
 chrome:        { keyword: top_pinned, caption: lower_third }
 ```
@@ -242,8 +242,13 @@ than an accident discovered at render time.
 
 #### What follows target profiles automatically
 
-- **Type scale.** ep02's ladder is absolute (`KEY_SIZE = 38` at 1920×1080). Tokens become
-  frame-relative with a per-target multiplier, so text reads the same at any ratio.
+- **Type scale — corrected by the reference.** This document first assumed a narrow frame needs a
+  per-target type multiplier. Checking both cuts disproves it: `ep02_video.py` (1080×1920) and
+  `ep02_video_16x9.py` (1920×1080) declare *identical* constants (`KEY_SIZE = 38`, …). Because
+  1 unit = 100 px in both, a 38 px keyword already occupies a larger share of a narrow frame, and
+  scaling on top would double-count. **Type is absolute in design pixels and shared across
+  formats.** What genuinely differs is `text_max_width` — how far a line may run before wrapping —
+  0.73 of the frame in landscape, 0.61 in portrait.
 - **Chrome geometry.** The caption bar clears Reels/Shorts UI in vertical targets and sits as a
   lower-third in wide ones — one Chrome subsystem, per-target placement.
 - **Camera framing.** Rigs target a *subject bounding box with padding*, never absolute coordinates,

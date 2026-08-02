@@ -1,0 +1,28 @@
+# 16:9 — YouTube long-form. A PEER of 9x16, not a master.
+id: 16x9
+title: YouTube landscape
+canvas: { w: 1920, h: 1080, unit_px: 100 }
+
+# Which way each semantic relation runs in this frame. A `chain` has no inherent
+# axis; the frame decides. This one line is most of what separates the two cuts.
+axis:
+  chain: horizontal
+  pair: side_by_side
+  cluster: grid_wide
+  ensemble: horizontal
+  stack: vertical      # how top-level relations pack against each other
+
+safe: { top: 0.05, bottom: 0.08, left: 0.05, right: 0.05 }
+platform_safe: {}      # a 16:9 player puts no chrome over the picture
+
+# A wide frame holds more at once. This is a legibility ceiling, and it is taken
+# together with a concept's cognitive budget — the engine uses whichever is lower.
+density_budget: 7
+
+text_max_width: 0.73   # ep02 landscape: MAXW 14.0 units of a 19.2-unit frame
+gap: 0.04              # between siblings, as a fraction of the axis extent
+min_element: 0.06      # below this fraction of frame width, a slot is illegible
+
+chrome:
+  keyword: top_pinned
+  caption: lower_third

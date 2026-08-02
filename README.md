@@ -79,4 +79,4 @@ Tests marked `reference` run against the real episode files and skip when absent
 
 ---
 
-MIT · Ajay Maddheshiya
+MIT · Ajay Gupt
