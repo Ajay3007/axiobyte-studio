@@ -57,8 +57,11 @@ why the absence of red is the argument in the zero-copy episode.
 | Typography (the type ladder) | ✅ |
 | Chrome (keyword bar, caption bar, platform-safe) | ✅ |
 | SVG preview backend | ✅ |
-| Actor / Action / Motion systems | ⬜ |
+| Motion Language (signatures, inheritance) | ✅ |
+| Actor System (state machines, anchors, salience) | ✅ |
+| Action System (invariants, costs, negation) | ✅ |
 | Manim backend | ⬜ |
+| Concept SDK / Educational Grammar | ⬜ |
 
 Open `docs/previews/index.html` to see one shot solved for 16:9, 9:16 (Reels) and 1:1.
 

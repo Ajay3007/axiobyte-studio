@@ -1,0 +1,104 @@
+# THE MOTION LANGUAGE
+#
+# One motion signature per idea, and nothing borrows a motion it does not own —
+# the same rule as colour, applied to time.
+#
+# Colour identifies WHAT a thing is. Motion identifies WHAT IS HAPPENING to it. A
+# viewer five episodes in should read a beat from peripheral vision, before any
+# label resolves. That is the layer beneath narration, and it is why `copy` and
+# `pointer` below are between them the whole argument of the zero-copy episode.
+#
+# `reads_as` is not a comment. It is the acceptance criterion: if a rendered motion
+# does not read as its stated meaning, the implementation is wrong even when it
+# matches the curve.
+
+version: 1.0.0
+
+signatures:
+
+  packet.travel:
+    curve: ease_out
+    duration: 0.60
+    reads_as: "carried, with momentum — never teleported, never linear"
+
+  pointer.snap:
+    curve: elastic_out
+    duration: 0.25
+    secondary: [glow_pulse_on_arrival]
+    reads_as: "free, instant, weightless — an address, not a journey"
+
+  copy.duplicate_translate:
+    curve: linear
+    duration: 0.75
+    secondary: [motion_trail, source_fades_late]
+    reads_as: "expensive, physical, wasteful — bytes really moving"
+
+  dma.smooth_beam:
+    curve: ease_in_out
+    duration: 1.10
+    secondary: [continuous_beam, steady_pulse]
+    reads_as: "autonomous and unhurried — no CPU is involved"
+
+  interrupt.flash:
+    curve: ease_in_expo
+    duration: 0.12
+    secondary: [flash, camera_shake]
+    reads_as: "violent, unscheduled, disruptive"
+
+  poll.metronome:
+    curve: linear
+    duration: 0.30
+    secondary: [loop]
+    reads_as: "tireless and deliberate — CPU burned on purpose"
+
+  cache_miss.stall_ripple:
+    curve: ease_out
+    duration: 1.40
+    secondary: [stall_then_ripple, camera_pull_back]
+    reads_as: "the cost of going somewhere far away"
+
+  allocate.ripple:
+    curve: ease_out
+    duration: 0.35
+    secondary: [ripple_outward, glow_rises]
+    reads_as: "something came into existence"
+
+  release.collapse:
+    curve: ease_in
+    duration: 0.30
+    secondary: [collapse_inward, glow_drains]
+    reads_as: "something ceased to exist"
+
+  lock.stutter:
+    curve: stutter
+    duration: 0.90
+    secondary: [judder, repeated_blocked_attempts]
+    reads_as: "waiting, wasted, frustrating"
+
+  batch.rigid_body:
+    curve: ease_out
+    duration: 0.60
+    secondary: [single_accent_for_many]
+    reads_as: "amortisation, made visible — N moved for the price of one"
+
+  inspect.scan_in_place:
+    curve: ease_in_out
+    duration: 0.45
+    secondary: [sweep_across_subject, no_translation]
+    reads_as: "examined where it lies — the reader moves, the data does not"
+
+  drop.fall:
+    curve: ease_in
+    duration: 0.40
+    secondary: [desaturate, leave_the_plane]
+    reads_as: "finality — it does not come back"
+
+  # Inheritance keeps a new domain consistent for free, and makes the claim
+  # explicit: a Raft RPC IS a packet to the viewer's eye.
+  message.travel:
+    inherits: packet.travel
+    reads_as: "carried between peers — a packet, in a distributed frame"
+
+  replicate.travel:
+    inherits: batch.rigid_body
+    reads_as: "one decision, propagated to many"

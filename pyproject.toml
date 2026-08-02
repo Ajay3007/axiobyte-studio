@@ -98,6 +98,9 @@ source_modules = [
     "axiobyte_studio.layout",
     "axiobyte_studio.typography",
     "axiobyte_studio.chrome",
+    "axiobyte_studio.motion",
+    "axiobyte_studio.actors",
+    "axiobyte_studio.actions",
 ]
 forbidden_modules = ["manim", "bpy"]
 
@@ -111,6 +114,9 @@ forbidden_modules = [
     "axiobyte_studio.layout",
     "axiobyte_studio.typography",
     "axiobyte_studio.chrome",
+    "axiobyte_studio.motion",
+    "axiobyte_studio.actors",
+    "axiobyte_studio.actions",
 ]
 
 [[tool.importlinter.contracts]]
@@ -118,9 +124,12 @@ name = "3. The layer stack is one-directional"
 type = "layers"
 layers = [
     "axiobyte_studio.backends",
+    "axiobyte_studio.actions",
+    "axiobyte_studio.actors",
     "axiobyte_studio.chrome",
     "axiobyte_studio.typography",
     "axiobyte_studio.layout",
+    "axiobyte_studio.motion",
     "axiobyte_studio.design",
     "axiobyte_studio.timeline",
     "axiobyte_studio.core",
