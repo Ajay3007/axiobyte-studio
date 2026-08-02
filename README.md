@@ -61,15 +61,23 @@ why the absence of red is the argument in the zero-copy episode.
 | Actor System (state machines, anchors, salience) | ✅ |
 | Action System (invariants, costs, negation) | ✅ |
 | Manim backend (shapes, chrome, easing, cue-driven scene) | ✅ |
+| Components (glow, pill, tag, link, meters, title cards) | ✅ |
+| Cue-driven acts (`at`, `until`, `window`) | ✅ |
 | Concept SDK / Educational Grammar | ⬜ |
 | Storyboard Engine | ⬜ |
+| Full ep02 reproduction (Phase 0 gate) | ⬜ |
 
 Open `docs/previews/index.html` for one shot solved to 16:9, 9:16 (Reels) and 1:1, and
 `docs/previews/render/` for the same shot actually rendered through Manim in two formats.
 
 ```bash
+# a still, both formats from one shot
 .venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyWide
 .venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyTall
+
+# a real act, timed off Episode 02's own voiceover
+.venv/bin/manim -qh --fps 60 examples/ep02_act_zerocopy.py ActZeroCopyWide
+.venv/bin/manim -qh --fps 60 examples/ep02_act_zerocopy.py ActZeroCopyTall
 ```
 
 The reference episodes (`axiobyte-system/ep01`, `ep02`) are the specification, and Phase 0's gate is

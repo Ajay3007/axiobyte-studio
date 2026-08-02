@@ -148,6 +148,43 @@ class StudioScene(MovingCameraScene):
             self.wait(delta)
             self._clock = when
 
+    def window(self, cue: str) -> float:
+        """Seconds from the present moment until a cue.
+
+        Args:
+            cue: The cue to measure to.
+
+        Returns:
+            The gap, in seconds. Zero when the cue has already passed.
+
+        Raises:
+            StudioError: No cue table was supplied.
+        """
+        if self.cues is None:
+            raise StudioError(
+                "This scene has no cue table",
+                fix="Set `self.cues = CueTable.resolve(...)` before measuring a window.",
+            )
+        return max(0.0, self.cues[cue] - self._clock)
+
+    def until(self, cue: str, minimum: float = 0.08) -> float:
+        """A run time that lands exactly on a cue.
+
+        The third way to anchor time, alongside ``at()`` and a motion's own
+        duration: *fill the gap*. Two cues 0.32 s apart cannot hold a 0.45 s
+        animation, and guessing a number that happens to fit today is what makes a
+        film fragile the moment the voiceover is re-cut. ``until()`` asks the
+        narration how long there is.
+
+        Args:
+            cue: The cue the animation should land on.
+            minimum: Floor, so a very tight gap still produces visible motion.
+
+        Returns:
+            A run time in seconds.
+        """
+        return max(minimum, self.window(cue))
+
     def play(self, *args: Any, **kwargs: Any) -> None:
         """Play animations, advancing the scene clock.
 
