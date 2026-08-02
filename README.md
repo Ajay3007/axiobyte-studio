@@ -53,10 +53,14 @@ why the absence of red is the argument in the zero-copy episode.
 | Core errors | ✅ |
 | Timeline Engine (cue resolution, fail-fast) | ✅ |
 | Design System (theme, visual language registry) | ✅ |
-| Layout System | ⬜ |
-| Chrome (keyword bar, caption bar) | ⬜ |
+| Layout System (relations, targets, density budgets) | ✅ |
+| Typography (the type ladder) | ✅ |
+| Chrome (keyword bar, caption bar, platform-safe) | ✅ |
+| SVG preview backend | ✅ |
 | Actor / Action / Motion systems | ⬜ |
 | Manim backend | ⬜ |
+
+Open `docs/previews/index.html` to see one shot solved for 16:9, 9:16 (Reels) and 1:1.
 
 The reference episodes (`axiobyte-system/ep01`, `ep02`) are the specification, and Phase 0's gate is
 re-rendering `ep02` frame-identically from this engine.
