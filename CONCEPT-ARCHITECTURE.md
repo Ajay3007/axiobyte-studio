@@ -2,7 +2,7 @@
 
 **The semantic layer above the rendering engines.**
 
-**Status:** proposed, awaiting approval · **Version:** 0.2 (includes self-critique and refinement)
+**Status:** W11 decided and integrated · **Version:** 0.3 (three concept kinds; self-validated)
 **Companions:** [`ARCHITECTURE.md`](ARCHITECTURE.md) (layers L2–L1: Shot IR, backends, layout, assets) · [`CONVENTIONS.md`](CONVENTIONS.md) · [`ROADMAP.md`](ROADMAP.md)
 
 > This document describes layers **L7 → L3**. It never mentions Manim, Blender, geometry, or pixels.
@@ -138,97 +138,236 @@ error, and the build should refuse it.
 
 ## 5. Subsystem 1 — Concept SDK (L6)
 
-### 5.1 What a Concept is
+### 5.0 Three kinds of concept
 
-A Concept is a **versioned, reusable unit of teachable knowledge** with everything needed to stage
-it. It is data, not code.
+The Studio never thinks *"draw a packet."* It thinks *"teach Zero Copy,"* and the
+renderer derives the actors, actions, camera, motion and timing from that. For this
+to work, a Concept must be able to represent what computer science actually
+contains — and a great deal of computer science is **relationships rather than
+objects**.
 
-```yaml
-id: zero_copy
-version: 2.1.0
-title: "Zero-copy — a packet is just a pointer"
-domain: data_plane
-maturity: stable                    # draft | stable | deprecated
+So the SDK distinguishes three kinds, and the distinction is structural rather than
+a matter of size:
 
-pedagogy:
-  objectives:                       # testable, not aspirational
-    - id: ZC-1
-      statement: "Packet bytes are written once and never moved again."
-      evidence: "The payload actor's position is constant from DMA to transmit."
-    - id: ZC-2
-      statement: "What is passed between stages is a reference, not the data."
-      evidence: "Only the pointer actor changes owner."
-  misconceptions:                   # ★ what learners actually get wrong (max 3)
-    - id: ZC-M1
-      wrong: "Zero-copy means no memory is used."
-      refute_by: "Show the buffer allocated and occupied the whole time."
-      source: "recurring YouTube comment, ep02 launch"
-    - id: ZC-M2
-      wrong: "The packet teleports between stages."
-      refute_by: "Camera orbits the stationary payload while the pointer travels."
-    - id: ZC-M3
-      wrong: "The mbuf *is* the packet."
-      refute_by: "Zoom into mbuf: metadata + buf_addr; the bytes are elsewhere."
-  prerequisites:
-    requires: [pointer, memory_buffer, dma]
-    assumed:  [what_a_packet_is]     # not taught here; declared as audience baseline
-  cognitive_load:
-    novel_elements: 3                # mbuf, mempool, refcount
-    budget_per_beat: 2
-
-semantics:
-  actors:   [packet, memory_buffer, mempool, mbuf, pointer, nic, cpu]
-  actions:  [dma_write, allocate, reference, forward, release]
-  invariants:                        # ★ THE LESSON IS AN INVARIANT
-    - id: ZC-INV-1
-      statement: "payload.address is constant across all forwarding actions"
-      assert: "actor(payload).position unchanged over concept scope"
-    - id: ZC-INV-2
-      statement: "no copy action occurs after the zero-copy act begins"
-      assert: "no action of type Copy in scope"
-
-staging:
-  template: contrast_then_invariance   # see §8.4
-  counter_concept: copy_based          # the picture built first, to be destroyed
-  camera: orbit_stationary_subject
-  focus_actor: packet
-
-relations:
-  contrasts_with: [copy_based]
-  requires:       [pointer, memory_buffer, dma]
-  composes_into:  [ngfw_fast_path, dpdk_rx_path]
-  refined_by:     [mbuf_chaining, refcount_sharing]
+```
+ ┌──────────────────────────────────────────────────────────────────────────┐
+ │  ATOMIC CONCEPT            a thing that exists                           │
+ │  packet · cpu · memory · pointer · cache · thread · nic · mbuf · queue    │
+ │  Has a silhouette. Can be drawn. Owns a role in the visual language.      │
+ └───────────────────────────────┬──────────────────────────────────────────┘
+                                 │  participate in
+                                 ▼
+ ┌──────────────────────────────────────────────────────────────────────────┐
+ │  INTERACTION CONCEPT       a relationship that IS the lesson             │
+ │  zero_copy (pointer ↔ buffer) · false_sharing (thread ↔ cache_line)      │
+ │  numa (core ↔ locality) · dma (nic ↔ memory) · rss (nic ↔ worker_core)   │
+ │  Has NO silhouette. Cannot be drawn. Owns a staging template, a motion    │
+ │  grammar, a camera language, misconceptions and assessment.              │
+ └───────────────────────────────┬──────────────────────────────────────────┘
+                                 │  compose into
+                                 ▼
+ ┌──────────────────────────────────────────────────────────────────────────┐
+ │  COMPOSITE CONCEPT         a story built from the other two              │
+ │  dpdk_rx_pipeline · ngfw_fast_path · tls_connection · kafka_replication  │
+ │  Owns an order and a depth per member. Teaches by sequencing, not by      │
+ │  staging anything itself.                                                 │
+ └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 5.2 The three fields that make this more than documentation
+**The test that separates atomic from interaction** — and it is a removal test, not
+a judgement call:
 
-**`invariants`** — the strongest idea in this architecture. For most systems concepts, *the lesson
-is literally an invariant*: bytes don't move (zero-copy), at most one leader per term (Raft), one
-instruction per cycle per warp (GPU), a lock is held by at most one thread. Writing the objective
-as a machine-checkable assertion means the engine can verify **the episode teaches the truth**, not
-just that it renders.
+> Take away one participant. If the lesson survives, it was never an interaction.
 
-**`misconceptions`** — teaching is not only transmitting the right model; it is *destroying the
-wrong one*. Each misconception carries a `refute_by` staging instruction, so the grammar can
-guarantee the episode actively contradicts it rather than merely avoiding it.
+| Concept | Remove one side | What is left | Verdict |
+|---|---|---|---|
+| `zero_copy` | remove the pointer | "memory holds bytes" | not the lesson → **interaction** |
+| `zero_copy` | remove the buffer | "a pointer is an address" | not the lesson → **interaction** |
+| `false_sharing` | remove the thread | "memory is fetched in 64-byte lines" | not the lesson → **interaction** |
+| `false_sharing` | remove the cache line | "two cores run concurrently" | not the lesson → **interaction** |
+| `mempool` | remove… nothing to remove | it is one thing | **atomic** |
 
-**`cognitive_load`** — a hard budget on novel elements per beat. This is the same budget as the
-layout system's `density_budget` from `ARCHITECTURE.md` §2.5a, viewed from the other side: the
-layout budget asks *"will it fit and read?"*, the cognitive budget asks *"can a human absorb it?"*
-The engine takes the **minimum of the two**. That unification is deliberate — one number, two
-justifications, no contradiction possible.
+### 5.1 An Atomic Concept
 
-### 5.3 The promotion rule (prevents ontology paralysis)
+A thing that exists and can be drawn. It owns a role in the visual language, a
+silhouette, and — where legality is part of the lesson — a state machine.
 
-> **A concept enters the SDK on its *second* use, not its first.**
+```yaml
+id: packet
+kind: atomic
+version: 1.2.0
+domain: net
+visual: { role: packet, silhouette: byte_cells, motion: packet.travel }
+states: [on_wire, in_buffer, referenced, dropped, freed]
+anchors: [first_byte, last_byte, header]
+teaches:
+  - "A packet is a finite run of bytes with a header and a payload."
+```
 
-First time a topic appears, it is staged inline in the episode. When a second episode needs it, it
-is promoted to a Concept with a version. This is the "rule of three" applied to knowledge, and it
-is the guard against the single most likely failure of this design: spending six months building a
-beautiful taxonomy of computer science and shipping no videos.
+An Atomic Concept teaches *what a thing is*. That is usually a single beat, often
+`assumed` rather than taught at all.
 
-Corollary: **no speculative concepts.** The SDK grows from production, never from a planning
-exercise. A concept with zero episodes is deleted.
+### 5.2 An Interaction Concept ★
+
+The relationship **is** the concept. It has no silhouette because a relationship
+cannot be drawn — only its participants can, and the interaction is what happens
+*between* them.
+
+```yaml
+id: false_sharing
+kind: interaction
+version: 1.0.0
+domain: compute
+between: [thread, cache_line]          # ≥2 atomic participants
+
+# 1 — ITS OWN OBJECTIVE, unattainable by either participant alone.
+pedagogy:
+  objectives:
+    - id: FS-1
+      statement: >
+        Two threads writing different variables that share one 64-byte line
+        serialise on cache coherency, despite sharing no data.
+      evidence: "Correct results, and a 10x slowdown, in the same shot."
+  removal_test:                        # ★ REQUIRED — one entry per participant
+    thread: "Without threads: memory is fetched in 64-byte lines. True, not the lesson."
+    cache_line: "Without the line: two cores run concurrently. True, not the lesson."
+
+# 2 — ITS OWN MISCONCEPTIONS.
+  misconceptions:
+    - id: FS-M1
+      wrong: "It is a race condition."
+      refute_by: "Show the results are correct AND the program is 10x slower."
+      source: "recurring comment on kernel-performance threads"
+    - id: FS-M2
+      wrong: "Adding a lock would fix it."
+      refute_by: "Add a lock; the line still ping-pongs, and it is now slower."
+
+# 3 — ITS OWN VISUAL GRAMMAR.
+visual_grammar:
+  participants:
+    thread: { salience: primary, count: 2 }
+    cache_line: { salience: primary, count: 1 }
+  invariant_on_screen: "the two variables are never on separate lines"
+  never: ["drawing the threads as sharing a variable"]
+
+# 4 — ITS OWN MOTION GRAMMAR.
+motion_grammar:
+  primary: lock.stutter                # the line ping-pongs
+  participants: { thread: poll.metronome }
+  reads_as: "two independent things, made dependent by geometry"
+
+# 5 — ITS OWN CAMERA LANGUAGE.
+camera:
+  move: comparison                     # hold both cores in one frame
+  intent: "the collision is only visible when neither core is inspected alone"
+  never: [macro]                       # zooming into one core hides the point
+
+# 6 — ITS OWN STORYBOARD TEMPLATE.
+staging:
+  template: race                       # two instances, same task, different geometry
+  counter_concept: padded_variables    # the picture that makes it go away
+
+# 7 — ITS OWN ASSESSMENT.
+assessment:
+  after_this_the_viewer_can:
+    - "Predict which of two struct layouts will be slower, and say why."
+    - "Explain why the fix is padding, not locking."
+
+relations:
+  requires: [thread, cache_line, cache_coherency]
+  contrasts_with: [padded_variables]
+  composes_into: [numa, lock_free_ring]
+```
+
+All seven blocks are **mandatory**. A file missing any of them is not an
+Interaction Concept; it is two things on screen.
+
+### 5.3 A Composite Concept
+
+A story. It stages nothing itself — it sequences members, each at a declared depth.
+
+```yaml
+id: ngfw_fast_path
+kind: composite
+version: 1.0.0
+domain: data_plane
+composes:
+  - { concept: packet,          kind: atomic,      depth: assumed }
+  - { concept: rss,             kind: interaction, depth: brief }
+  - { concept: batching,        kind: interaction, depth: brief }
+  - { concept: zero_copy,       kind: interaction, depth: assumed }
+  - { concept: conntrack,       kind: interaction, depth: full }
+  - { concept: fast_slow_path,  kind: interaction, depth: full }
+focus_order: [fast_slow_path, conntrack]
+```
+
+Nothing in that file re-implements RSS or zero-copy. That is the whole point: an
+episode about NGFW fast path is **assembled**, not authored.
+
+### 5.4 Why this preserves the one-idea-per-beat rule rather than weakening it
+
+This is the part that makes Interaction Concepts a design principle rather than a
+loophole, and it is worth stating precisely.
+
+An Interaction Concept **requires** its participants. They are prerequisites, which
+means by the time it is taught they are already `assumed` knowledge. So the count of
+*novel* ideas in the beat is still exactly one — the relationship.
+
+```
+   beat teaching `false_sharing`
+   ├─ thread       already taught → assumed → not a new idea
+   ├─ cache_line   already taught → assumed → not a new idea
+   └─ the collision                          ← the ONE new idea
+```
+
+Two actors hold `primary` salience; one concept holds focus. Those are different
+counts, and conflating them is what made the original rule look broken.
+
+**Consequence for the engine:** the salience check becomes *"the number of primary
+actors equals the number of participants the focused concept declares"* — one for an
+Atomic Concept, `len(between)` for an Interaction Concept. The rule gets stricter,
+not looser: a beat can no longer have two primaries *by accident*, only by a
+concept that declared exactly that.
+
+### 5.5 The gates that keep it from becoming a loophole
+
+Six checks, five of them mechanical:
+
+| # | Gate | Enforced by |
+|---|---|---|
+| 1 | `between:` names ≥2 registered atomic concepts | schema |
+| 2 | Every participant appears in `requires:` | schema |
+| 3 | A `removal_test:` entry exists for **every** participant | schema |
+| 4 | All seven blocks are present and non-empty | schema |
+| 5 | Objectives cite no participant's objective verbatim | lint |
+| 6 | The removal test is *true* — the residue really isn't the lesson | **human review** |
+
+Gate 6 cannot be automated, and pretending otherwise would be the loophole. It is a
+review question with a fixed form, which is the most a document can do.
+
+Plus a health signal rather than a hard rule: **interaction concepts should stay a
+minority of the SDK.** `abs concept stats` reports the ratio; a catalogue that is
+mostly interactions has stopped distinguishing relationships from crowded frames.
+
+### 5.6 What a Concept is, in general
+
+Every kind shares a spine — id, kind, version, domain, pedagogy, relations — and
+differs in what it owns:
+
+| | Atomic | Interaction | Composite |
+|---|---|---|---|
+| Silhouette / role | ✓ | — | — |
+| State machine | optional | — | — |
+| Own objective | ✓ | ✓ **required** | ✓ |
+| Misconceptions | optional | ✓ **required** | optional |
+| Visual grammar | via role | ✓ **required** | — |
+| Motion grammar | via signature | ✓ **required** | — |
+| Camera language | — | ✓ **required** | — |
+| Staging template | — | ✓ **required** | — |
+| Assessment | — | ✓ **required** | ✓ |
+| Members / order | — | `between` | `composes` |
+| Can be drawn | ✓ | ✗ | ✗ |
+
 
 ---
 
@@ -622,84 +761,95 @@ override in the episode with a reason.
 
 ## 12. Subsystem 8 — Concept Composition (L6)
 
-### 12.1 Typed edges
+### 12.1 The knowledge graph
 
-The concept graph is a DAG with typed edges. Each edge type has different semantics for staging
-and for prerequisite checking:
-
-| Edge | Meaning | Staging consequence |
-|---|---|---|
-| `requires` | hard prerequisite | must be taught or declared assumed before use |
-| `refines` | a specialisation | inherits staging template and visual identity |
-| `composes_into` | is a part of | may appear backgrounded inside the composite |
-| `contrasts_with` | ★ defined *against* | the counter-picture in `contrast_then_invariance` |
-| `generalises` | the abstract form | may be substituted when depth is not needed |
-
-`contrasts_with` is pedagogically essential and usually missing from such models. `ZeroCopy` is not
-meaningful in isolation — it is meaningful *against* `CopyBased`. Episode 2 spends its first forty
-seconds building the copy picture precisely so it can be destroyed. That is not narrative
-decoration; it is how the concept is defined.
-
-### 12.2 A composite concept
-
-```yaml
-id: ngfw_fast_path
-version: 1.0.0
-composes:
-  - { concept: packet,      depth: assumed }
-  - { concept: rss,         depth: brief    }
-  - { concept: batching,    depth: brief    }
-  - { concept: zero_copy,   depth: assumed  }   # taught in s01e02; referenced here
-  - { concept: conntrack,   depth: full     }   # ★ the episode's actual subject
-  - { concept: fast_slow_path, depth: full  }
-focus_order: [fast_slow_path, conntrack]
-```
+Composition is what makes the SDK an asset rather than a filing cabinet. Every
+concept, of every kind, composes — and the three kinds compose in one direction:
 
 ```
-                    ngfw_fast_path
-                          │
-      ┌────────┬──────────┼──────────┬──────────────┐
-      ▼        ▼          ▼          ▼              ▼
-   packet    rss      batching   zero_copy      conntrack
-  (assumed) (brief)   (brief)   (assumed)        (full)
-      │        │          │          │              │
-      └────────┴──────────┴──────────┴──────────────┘
-                          │
-                  requires: pointer, memory_buffer, dma, hashing
-                          │
-                          ▼
-              prerequisite closure check at plan time
+        atomic ──participates in──►  interaction ──composes into──►  composite
+          ▲                               │                               │
+          └───────────── requires ────────┴──────── requires ─────────────┘
 ```
 
-### 12.3 Depth, and the rule that makes composition tractable
+An episode is a **traversal of that graph**, not a container of knowledge. Delete an
+episode and nothing reusable is lost.
 
-`depth` is the amount of teaching a composite owes a sub-concept:
+### 12.2 Typed edges
+
+| Edge | From → to | Meaning | Staging consequence |
+|---|---|---|---|
+| `requires` | any → any | hard prerequisite | must be taught, or declared assumed, before use |
+| `between` | interaction → atomic | its participants | they hold primary salience together |
+| `composes` | composite → any | its members | sequenced at a declared depth |
+| `refines` | any → same kind | a specialisation | inherits template and identity |
+| `contrasts_with` | any → same kind | defined *against* | the counter-picture (§8.4) |
+| `generalises` | any → any | the abstract form | may be substituted when depth is not needed |
+
+`contrasts_with` remains pedagogically load-bearing: `zero_copy` is meaningful only
+against `copy_based`, and `false_sharing` only against `padded_variables`.
+
+### 12.3 Reuse is the measure
+
+```
+        dpdk_rx_pipeline                    ngfw_fast_path
+         (composite)                         (composite)
+              │                                   │
+    ┌────┬────┼────┬─────┐              ┌────┬────┼────┬────────┐
+    ▼    ▼    ▼    ▼     ▼              ▼    ▼    ▼    ▼        ▼
+   dma  zero polling rss batching      rss  batching zero  conntrack
+        copy                                          copy
+    └────┴────┴────┴─────┴──────────────┴────┴────────┴────────┘
+                              │
+                    the SAME interaction concepts
+                    ── authored once, versioned, reused ──
+                              │
+              ┌───────┬───────┼───────┬───────┐
+              ▼       ▼       ▼       ▼       ▼
+           packet  memory  pointer  nic   worker_core
+                      (atomic)
+```
+
+`rss`, `batching` and `zero_copy` appear in both composites and are implemented in
+neither. That is the compounding the Studio exists to produce: by Episode 20, a new
+episode should be mostly a *selection* from this graph.
+
+### 12.4 Depth, and the rule that makes composition tractable
+
+`depth` is the amount of teaching a composite owes a member:
 
 | Depth | Meaning | Screen cost |
 |---|---|---|
-| `assumed` | viewer already knows it; may be referenced without explanation | seconds |
+| `assumed` | the viewer already knows it; reference without explanation | seconds |
 | `brief` | one beat, one image, no derivation | ~5 s |
 | `full` | complete staging with objectives and misconception refutation | ~30–60 s |
 
-**Exactly one concept is in focus per beat.** Every other concept present is backgrounded. This
-single rule resolves what would otherwise be an intractable ambiguity — when three concepts compose,
-whose grammar wins? — and it is simultaneously the correct pedagogical rule. Ambiguity resolution
-and cognitive load turn out to be the same constraint.
+**Exactly one concept is in focus per beat**, whatever its kind. Every other concept
+present is backgrounded. When three concepts compose, the focused one's grammar
+wins and there is no ambiguity to resolve — and because an Interaction Concept's
+participants are prerequisites, the count of *new* ideas in the beat is still one.
 
-### 12.4 Prerequisite closure is checked, not hoped
+### 12.5 Prerequisite closure is checked, not hoped
 
 ```
 $ abs plan episodes/s01e10-ngfw-fast-path
 
 concept closure:
-  conntrack        requires flow_table       ✓ declared assumed
-  conntrack        requires five_tuple       ✗ NOT taught, NOT declared assumed
-                   ↳ either add a `brief` beat, or declare it assumed in episode.yaml
-  fast_slow_path   requires zero_copy@>=2.0  ✓ taught in s01e02 (viewer path exists)
+  conntrack        [interaction] requires flow_table    ✓ declared assumed
+  conntrack        [interaction] requires five_tuple    ✗ NOT taught, NOT assumed
+                   ↳ add a `brief` beat, or declare it assumed in episode.yaml
+  fast_slow_path   [interaction] requires zero_copy@>=2.0
+                                                        ✓ taught in s01e02
+  false_sharing    [interaction] between: [thread, cache_line]
+                   thread                               ✗ never taught in this season
+                   ↳ an interaction cannot be taught before its participants
 ```
 
-An episode that silently depends on untaught knowledge is the most common way technical education
-fails. Here it does not compile.
+The last check is new and specific to the hierarchy: **an Interaction Concept may
+not be taught before its participants.** That is the mechanism behind §5.4 — if a
+participant is not already known, the beat carries two new ideas and the cognitive
+budget is genuinely violated.
+
 
 ---
 
@@ -994,18 +1144,29 @@ Every concept revision potentially invalidates the back catalogue.
 `ACTION NEEDED` only when a revised objective is directly taught, `review` for composed use, `no
 action` for assumed use. Most revisions will touch nothing.
 
-### W11 · The Beat may be too small a unit for concept focus — **severity: medium, unresolved**
+### W11 · Concept focus vs. relational lessons — **RESOLVED**
 
-"Exactly one concept in focus per beat" is clean, but beats are 1–8 seconds. Some ideas genuinely
-need two concepts held simultaneously — NUMA *is* the interaction of locality and topology; false
-sharing *is* the interaction of cache lines and threads.
+Raised as: "exactly one concept in focus per beat" is clean, but NUMA *is* the
+interaction of locality and topology, and false sharing *is* cache lines meeting
+threads. Forcing them apart distorts the teaching.
 
-**Proposed, not yet adopted:** allow a beat to declare `focus: [a, b]` **only** when an explicit
-`interaction` concept exists that names the pair — i.e. the interaction must itself be a concept
-with its own objective, not an excuse to show two things. This preserves the constraint's purpose
-(cognitive load) while admitting that some lessons are genuinely relational.
+**Resolved by architectural decision, 2 Aug 2026: Option C, and stronger than
+proposed.** Interaction Concepts are a first-class *concept kind*, not an exemption —
+see §5.0–5.5. The default rule is unchanged and, in fact, tightened:
 
-**I would like a decision on this one**, because it affects the concept schema.
+- One concept in focus per beat, always. An Interaction Concept **is** one concept.
+- An interaction requires its participants, so they are prerequisites and already
+  known. The count of *new* ideas per beat remains exactly one (§5.4).
+- The salience check gets **stricter**: primaries must equal the participant count
+  the focused concept declares, so a beat can no longer acquire two primaries by
+  accident — only by a concept that declared precisely that.
+- Seven mandatory blocks and a per-participant removal test (§5.2, §5.5) make the
+  loophole expensive to open and cheap to audit.
+
+Validating the decision against its own examples surfaced three real problems, all
+resolved in §17: `consensus` was placed in two tiers, `polling` is defined by
+contrast rather than by relation, and the engine's `language.yaml` conflates
+"drawable" with "teachable".
 
 ### W12 · The IR must now carry semantic metadata — **severity: low**
 
@@ -1017,7 +1178,168 @@ that do not use it. Backwards compatible; no backend changes required.
 
 ---
 
-## 17. What changed between v0.1 and v0.2 of this document
+---
+
+## 17. Validation of the concept hierarchy
+
+The decision was integrated, then tested against itself. Six checks; four pass, two
+found real problems that are resolved below.
+
+### 17.1 Every proposed Interaction Concept, put through the removal test
+
+| Concept | Participants | Remove one → what remains | Verdict |
+|---|---|---|---|
+| `zero_copy` | pointer ↔ buffer | "memory holds bytes" / "a pointer is an address" | ✅ interaction |
+| `false_sharing` | thread ↔ cache_line | "64-byte fetches" / "cores run concurrently" | ✅ interaction |
+| `numa` | core ↔ memory_locality | "cores exist" / "memory has addresses" | ✅ interaction |
+| `dma` | nic ↔ memory | "a NIC receives" / "memory is written" | ✅ interaction |
+| `rss` | nic ↔ worker_core | "a NIC has queues" / "cores exist" | ✅ interaction |
+| `conntrack` | packet ↔ flow_table | "a packet has a 5-tuple" / "a table holds rows" | ✅ interaction |
+| `context_switch` | thread ↔ core | "threads exist" / "a core runs code" | ✅ interaction |
+| `tcp_congestion` | sender ↔ receiver ↔ network | any one alone is not congestion | ✅ interaction, **3 participants** |
+| `tls_handshake` | client ↔ server | "a client connects" / "a server listens" | ✅ interaction |
+| `polling` | worker_core ↔ nic_queue | "a core spins" / "a queue fills" | ⚠️ **see 19.3** |
+
+Nine of ten pass cleanly. `tcp_congestion` confirms that `between:` must accept
+**more than two** participants — the schema says `≥2`, and that was not accidental.
+
+### 17.2 ⛔ Finding 1 — `consensus` was placed in two tiers at once
+
+The decision lists **Consensus** under *Interaction Concepts* ("Leader ↔ Followers")
+**and** under *Composite Concepts*. A concept cannot be both: an interaction owns a
+staging template and stages itself; a composite owns an order and stages nothing.
+
+**Resolution — they are two different concepts and both are needed:**
+
+```yaml
+id: leader_election          # INTERACTION
+kind: interaction
+between: [node, term]
+objectives:
+  - "At most one leader per term, decided by quorum rather than by merit."
+
+id: consensus                # COMPOSITE
+kind: composite
+composes:
+  - { concept: leader_election, kind: interaction, depth: full }
+  - { concept: log_replication, kind: interaction, depth: full }
+  - { concept: quorum,          kind: interaction, depth: brief }
+  - { concept: split_brain,     kind: interaction, depth: brief }
+```
+
+This is not a technicality. "Consensus" as a single teachable unit is exactly the
+kind of thing that produces a vague, forgettable video; as a composite of four
+sharply-defined interactions it becomes an episode with four landings. **The
+hierarchy caught a content problem, not just a schema problem** — which is the best
+evidence available that it is carrying weight.
+
+**General rule adopted:** when a name reads naturally as both, it is a composite,
+and the interaction inside it needs its own narrower name.
+
+### 17.3 ⚠️ Finding 2 — `polling` is a contrast, not an interaction
+
+`polling` passes the removal test only weakly. Its participants (a core, a queue)
+are real, but the *lesson* is not about their relationship — it is that polling
+replaces something else. "100% CPU is a feature" only means anything against
+interrupt-driven receive.
+
+That is `contrasts_with`, which the model already has, not `between`.
+
+**Resolution:** `polling` is an Interaction Concept `between: [worker_core, nic_queue]`
+whose **defining edge is `contrasts_with: [interrupt_driven]`**, and whose staging
+template is `contrast_then_invariance`. Both mechanisms apply; the contrast is what
+makes it teachable and the interaction is what makes it stageable.
+
+**Rule adopted:** if the removal test passes only weakly, check whether the concept
+is really defined by contrast. If so it is still an interaction, but its
+`contrasts_with` is mandatory rather than optional.
+
+### 17.4 ⛔ Finding 3 — the code conflates "drawable" with "teachable"
+
+The engine as built has `design/language.yaml` registering `dma` as a drawable
+concept with `role: nic` and `silhouette: beam`. Under this decision, **`dma` is an
+Interaction Concept** (nic ↔ memory) — and an Interaction Concept has no silhouette,
+because a relationship cannot be drawn.
+
+The registry is currently doing two incompatible jobs.
+
+**Resolution — two registries, one namespace:**
+
+```
+design/language.yaml     ← ATOMIC CONCEPTS ONLY.
+                           "what a thing looks like": role, silhouette, states.
+                           packet, memory_buffer, mempool, mbuf, pointer, nic, cpu
+
+concepts/*.yaml          ← ALL THREE KINDS.
+                           "what a thing teaches": objectives, misconceptions,
+                           grammar, assessment.
+```
+
+An Interaction Concept appears only in the second, and reaches the screen through
+its participants. `dma`'s beam is not DMA — it is how the *transfer between* a NIC
+and memory is drawn, which belongs in `dma`'s `motion_grammar`, not in a silhouette.
+
+Concrete migration, deferred until implementation resumes:
+
+| Currently in `language.yaml` | Correct home |
+|---|---|
+| packet, memory_buffer, mempool, mbuf, pointer, nic, cpu, idle | stays — atomic |
+| **dma** | moves to `concepts/dma.yaml` as an interaction |
+| **copy** | moves to `concepts/copy_based.yaml` as an interaction (packet ↔ buffer) |
+
+Note that `copy` has the same problem, and it matters more: red is a *reserved
+role*, and reserving a role for an interaction rather than a thing is what makes
+"the absence of red" the argument in Episode 02. The role stays in the theme; the
+concept moves.
+
+### 17.5 The one-idea-per-beat rule survives — checked, not assumed
+
+| Beat teaches | Participants | Already known? | New ideas |
+|---|---|---|---|
+| `packet` (atomic) | — | — | 1 |
+| `zero_copy` (interaction) | pointer, buffer | prerequisites → yes | **1** |
+| `false_sharing` (interaction) | thread, cache_line | prerequisites → yes | **1** |
+| `false_sharing` *taught before threads* | thread, cache_line | **no** | **2** ⛔ rejected by §12.5 |
+
+The rule holds because participants are prerequisites. The final row is the case the
+new closure check exists to catch, and it is the only way the budget can be
+genuinely violated.
+
+### 17.6 The hierarchy against the extensibility stress test
+
+Re-running §15 under the three kinds:
+
+| Domain | Atomic | Interaction | Composite |
+|---|---|---|---|
+| Data plane | packet, mbuf, mempool, nic, core | zero_copy, dma, rss, batching, false_sharing, numa | dpdk_rx_pipeline, ngfw_fast_path |
+| Distributed | node, log, term, quorum | leader_election, log_replication, split_brain | consensus, kafka_replication |
+| GPU | warp, lane, predicate_mask, sm | warp_divergence *(lane ↔ branch)* | gpu_kernel_launch |
+| Compilers | ir_node, register, basic_block | register_pressure *(live_range ↔ register_file)* | ssa_construction |
+
+Every domain populates all three tiers, and — worth noting — **the interaction tier
+is where the interesting content lives in every one of them.** `warp_divergence` and
+`register_pressure` are both relationships; neither is expressible as an object.
+That is the strongest evidence that the decision generalises rather than fitting
+Pillar 1.
+
+### 17.7 What the decision changes in the engine, when implementation resumes
+
+| Component | Change | Size |
+|---|---|---|
+| `design/language.yaml` | atomic concepts only; `dma` and `copy` move out | small |
+| `concepts/` | new directory, three schemas | new |
+| `Scene.check_salience()` | "exactly 1 primary" → "primaries == participants of the focused concept" | small |
+| `abs plan` closure check | add "an interaction may not precede its participants" | small |
+| `Concept` model | `kind` discriminator; seven required blocks for interactions | new |
+| Grammar | rule scoping by concept kind | new |
+
+Nothing already built is invalidated. The actors, actions, motion, layout, chrome
+and Manim backend all sit *below* the concept layer and are unaffected — which is
+itself a validation of the L7→L1 split.
+
+---
+
+## 18. What changed, and when
 
 | # | Change | Driven by |
 |---|---|---|
@@ -1034,9 +1356,21 @@ that do not use it. Backwards compatible; no backend changes required.
 | 11 | Strict layering: grammar references roles, never values | W8 |
 | 12 | Narration contracts downgraded to warnings | W9 |
 
+### v0.3 — the concept hierarchy (2 Aug 2026)
+
+| # | Change | Driven by |
+|---|---|---|
+| 13 | Three concept kinds: atomic, interaction, composite | architectural decision on W11 |
+| 14 | Interaction Concepts: seven mandatory blocks, removal test per participant | the same decision |
+| 15 | Salience check tightened to "primaries == declared participants" | §5.4 |
+| 16 | Closure check: an interaction may not be taught before its participants | §12.5 |
+| 17 | `consensus` split into an interaction and a composite | validation §17.2 |
+| 18 | `polling` reclassified as contrast-defined | validation §17.3 |
+| 19 | `language.yaml` restricted to atomic concepts | validation §17.4 |
+
 ---
 
-## 18. Decisions required
+## 19. Decisions required
 
 **Approve or amend:**
 
@@ -1051,12 +1385,20 @@ that do not use it. Backwards compatible; no backend changes required.
 5. **The MVP slice** (W3) — Actors, Actions, Motion as code; the other six as data and lint only.
 6. **Retention-to-beat analytics** (W6) as a Phase-2 deliverable — the only real learning signal.
 
-**Open question needing your judgement:**
+**Decided:**
 
-7. **W11 — may a beat hold two concepts in focus** when an explicit `interaction` concept names the
-   pair? I lean yes, because NUMA and false sharing are genuinely relational and forcing them apart
-   would distort the teaching. But it weakens the cleanest constraint in the design, so it is your
-   call.
+7. ~~W11 — may a beat hold two concepts in focus?~~ **Resolved 2 Aug 2026.** Interaction Concepts
+   are a first-class concept kind with seven mandatory blocks and a removal test; the one-concept-
+   per-beat rule is unchanged and the salience check is now stricter. See §5.0–5.5 and §17.
+
+**Newly needing approval, following that decision:**
+
+8. **The three-kind hierarchy** — atomic / interaction / composite, with `kind` as a discriminator
+   on every concept file — §5.0.
+9. **`consensus` splits** into `leader_election` (interaction) and `consensus` (composite), and the
+   general rule that a name reading naturally as both is a composite — §17.2.
+10. **`language.yaml` becomes atomic-only**, with `dma` and `copy` migrating to `concepts/` as
+    interactions — §17.4. This is the one change that touches code already written.
 
 No implementation begins until you approve. The next document after approval is the **Concept
 Authoring Guide** — how a contributor writes a new concept, with `zero_copy` as the worked

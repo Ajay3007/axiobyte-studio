@@ -94,6 +94,9 @@ slips, Tier 2 was underestimated and Tier 1 carries the 3D story forward.
 
 | # | Work | Notes |
 |---|---|---|
+| 2.0 | ★ **Concept SDK**: three kinds (atomic / interaction / composite), schemas, loader, closure checks | the decision on W11; see CONCEPT-ARCHITECTURE.md §5 |
+| 2.0a | ★ **Concept migration**: `language.yaml` restricted to atomic; `dma` and `copy` become interactions | §17.4 — the only change touching code already written |
+| 2.0b | ★ **Salience + closure updates**: primaries == declared participants; an interaction may not precede its participants | §5.4, §12.5 |
 | 2.1 | **Storyboard Engine**: `picture.md` → script → beats → shot list → contact-sheet PDF | enforces storyboard-before-animation |
 | 2.2 | Shot templates: reveal, compare, journey, cost-column, recap | ep01's "two lanes" and ep02's "copy chain" become reusable |
 | 2.3 | **Phrase library v1** — `dma_write_burst`, `context_switch`, `ring_produce_consume`, `cache_line_bounce`, `syscall_cross` | where compounding starts |
@@ -108,6 +111,12 @@ slips, Tier 2 was underestimated and Tier 1 carries the 3D story forward.
 **Gate:** Episodes 3 (Poll-mode), 4 (NUMA), 5 (False sharing) shipped, each in every declared
 target from a single authoring pass. Measured: authoring time per episode trending **down**, and
 per-episode layout overrides staying near zero.
+
+These three episodes are the right gate for the concept hierarchy specifically, because all three
+are **Interaction Concepts** — `polling` (contrast-defined), `numa` (core ↔ locality),
+`false_sharing` (thread ↔ cache_line). If the hierarchy is going to fail, it fails here rather
+than in a later pillar. Additional measure: episodes 4 and 5 should share the
+`race` staging template and re-use `cache_line` and `core` without re-authoring either.
 
 ---
 
@@ -170,15 +179,18 @@ These do not block approval of the architecture, but they shape Phase 1:
 
 1. ~~Primary format.~~ **Resolved: there is no primary format.** 16:9 and 9:16 are peer targets;
    1:1 and 4:5 ship as profiles from day one. Nothing derives from anything.
-2. **Which targets are declared by default** for a new episode. I have assumed `[16x9, 9x16]`, with
+2. **Concept SDK before or after the storyboard engine.** I have placed it first in Phase 2
+   (2.0–2.0b) because episodes 4 and 5 are both interactions and the storyboard engine will want
+   to read concepts. Say if you would rather ship the storyboard engine first.
+3. **Which targets are declared by default** for a new episode. I have assumed `[16x9, 9x16]`, with
    `1x1` opt-in per episode. Say if every episode should also produce square by default.
-3. **Which episode is the Phase-1 proof.** I have assumed **re-cutting `s01e02`**, because you can
+4. **Which episode is the Phase-1 proof.** I have assumed **re-cutting `s01e02`**, because you can
    diff it against a known-good result in both formats. The alternative is making Ep 3 the first
    Studio-native episode and leaving Ep 2 alone.
-4. **3D source.** Tier 2 needs `.blend` sources for the hardware kit. Do you want to model these,
+5. **3D source.** Tier 2 needs `.blend` sources for the hardware kit. Do you want to model these,
    commission/buy them, or should the kit start from parametric Blender scripts the Studio generates
    (lower fidelity, fully versionable, no external dependency)?
-5. **Repo topology.** I have assumed `axiobyte-studio/` is a **new git repository**, with the
+6. **Repo topology.** I have assumed `axiobyte-studio/` is a **new git repository**, with the
    `axiobyte-system/` episodes kept read-only as the specification until Phase 0's gate passes.
 
 ---

@@ -63,7 +63,8 @@ why the absence of red is the argument in the zero-copy episode.
 | Manim backend (shapes, chrome, easing, cue-driven scene) | ✅ |
 | Components (glow, pill, tag, link, meters, title cards) | ✅ |
 | Cue-driven acts (`at`, `until`, `window`) | ✅ |
-| Concept SDK / Educational Grammar | ⬜ |
+| Concept SDK (atomic / interaction / composite) | ⬜ designed, §5 |
+| Educational Grammar | ⬜ |
 | Storyboard Engine | ⬜ |
 | Full ep02 reproduction (Phase 0 gate) | ⬜ |
 

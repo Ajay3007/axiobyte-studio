@@ -160,7 +160,9 @@ backend as a prefix. This is what lets `Packet` mean the same thing in 2026 and 
 
 | Kind | Convention | Example |
 |---|---|---|
-| Concept id | `snake_case` singular, matches `language.yaml` key | `packet`, `flow_table`, `huge_page` |
+| Atomic concept id | `snake_case` singular noun — a *thing* | `packet`, `cache_line`, `huge_page` |
+| Interaction concept id | `snake_case`, names the *phenomenon*, never the pair | `false_sharing`, `zero_copy` — never `thread_cache_line` |
+| Composite concept id | `snake_case`, names the *story* | `ngfw_fast_path`, `dpdk_rx_pipeline` |
 | Design token | dotted, `category.role.variant` — **role, never appearance** | `color.packet`, `motion.packet.travel` |
 | Motion token | `motion.<concept>.<verb>` | `motion.pointer.snap` |
 | Depth band | `depth.<band>` — the ep02 Z-ladder, named | `depth.node`, `depth.pkt`, `depth.key` |
@@ -219,12 +221,26 @@ abs lint | abs test | abs docs serve
 Rules: every command is idempotent; every command that writes says where; every command that could
 take more than a few seconds shows progress; `--dry-run` is available on anything destructive.
 
-### 14. The four naming rules that matter most
+**An interaction is named for what it is, not for what it joins.** `false_sharing`,
+never `thread_cache_line_interaction`. A name built from its participants is a name
+that stops making sense the moment a third participant joins — and `tcp_congestion`
+already has three. It also reads as plumbing rather than as a concept a viewer could
+name, which is the actual test: **if a learner would not say the name out loud, it
+is the wrong name.**
+
+**When a name reads naturally as both an interaction and a composite, it is a
+composite** (§17.2 of `CONCEPT-ARCHITECTURE.md`). `consensus` is a composite;
+the interaction inside it is `leader_election`. A vague name at the interaction tier
+produces a vague, forgettable episode.
+
+### 14. The five naming rules that matter most
 
 1. **Name by role, not by appearance.** `color.packet`, not `color.blue`.
 2. **Name by concept, not by episode.** `nic_smartnic`, not `ep01_nic`.
 3. **Name by meaning, not by tool.** `Packet`, not `PacketVGroup`.
 4. **Name by relationship, not by orientation.** `chain`, not `row`.
+5. **Name a relationship for the phenomenon, not its participants.** `false_sharing`,
+   not `thread_cache_line`.
 
 Each of these is the thing that, done wrong, forces a rename across the whole repo two years later.
 Rule 4 is the newest and the one most easily lost: every `row`, `column`, `left`, `top`, `wide`, or

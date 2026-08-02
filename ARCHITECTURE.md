@@ -332,7 +332,7 @@ axiobyte-studio/
 │   │   └── errors.py              #    one exception family, actionable messages
 │   │
 │   ├── design/                    # 2. Design System — the single source of visual truth
-│   │   ├── language.yaml          #    ★ VISUAL LANGUAGE REGISTRY — concepts own roles (§5)
+│   │   ├── language.yaml          #    ★ VISUAL LANGUAGE — ATOMIC concepts own roles (§5)
 │   │   ├── themes/                #    ★ SWAPPABLE LOOK — roles → actual values
 │   │   │   ├── systems.yaml       #      the ep02 palette: the DEFAULT, not the hardcoded one
 │   │   │   └── _schema.yaml       #      every theme must supply exactly these roles
@@ -450,6 +450,13 @@ axiobyte-studio/
 │       ├── assets.lock            #    exact asset versions
 │       └── out/                   #    gitignored renders
 │
+├── concepts/                      # ══ THE CONCEPT SDK ══ (CONCEPT-ARCHITECTURE.md §5)
+│   ├── atomic/                    #    things that exist — packet, mbuf, cpu, cache
+│   ├── interaction/               #    ★ relationships that ARE the lesson —
+│   │                              #      zero_copy, false_sharing, numa, dma, rss
+│   └── composite/                 #    stories assembled from the other two —
+│                                  #      dpdk_rx_pipeline, ngfw_fast_path, consensus
+│
 ├── pillars/                       # content roadmap as data, not prose
 │   └── p01-high-performance-data-plane.yaml
 │
@@ -546,6 +553,24 @@ identity, same colour role, same verbs.
 The brief's strongest consistency requirement — *"when viewers see a glowing pointer they should
 immediately recognise it"* — is the one that documentation alone cannot deliver. So it is data,
 and it is enforced.
+
+### What belongs here, and what does not
+
+`language.yaml` answers **"what does this thing look like"** — and only **atomic
+concepts** have an answer. A packet has a silhouette; an mbuf has a silhouette;
+*zero-copy* does not, because a relationship cannot be drawn. Interaction and
+composite concepts live in `concepts/` and reach the screen through their
+participants ([`CONCEPT-ARCHITECTURE.md`](CONCEPT-ARCHITECTURE.md) §5.0, §17.4).
+
+The split matters more than it sounds. `dma` looks like a drawable thing — it has an
+obvious beam — but the beam is not DMA; it is how the *transfer between* a NIC and
+memory is drawn. Putting it here would let an interaction acquire a silhouette, and
+the next episode would treat DMA as an object rather than a relationship.
+
+| Registry | Holds | Answers |
+|---|---|---|
+| `design/language.yaml` | atomic concepts only | what a thing looks like |
+| `concepts/*.yaml` | atomic, interaction, composite | what a thing teaches |
 
 ### Two separable things: the *mechanism* and the *theme*
 
