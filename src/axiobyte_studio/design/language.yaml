@@ -1,0 +1,95 @@
+# THE VISUAL LANGUAGE REGISTRY
+#
+# Concepts own roles. This file is THEME-INDEPENDENT: it says a packet is drawn in
+# the `packet` role and moves with an ease-out; it never says what colour that is.
+# Values live in design/themes/*.yaml.
+#
+# This is ep02's docstring rule — "one hue per idea, and nothing borrows a hue it
+# does not own" — turned from prose into something CI can enforce.
+#
+# `never:` entries are lint-enforced negative space. They exist because the failure
+# mode of a visual language is not a bad decision; it is a hundred small drifts,
+# each individually defensible.
+
+version: 1.0.0
+
+concepts:
+
+  packet:
+    role: packet
+    silhouette: byte_cells        # individual cells, so a copy has something to move
+    motion: packet.travel         # ease-out; never linear, never instant
+    label: { style: mono_s, position: above }
+    states:
+      in_flight: glow.soft
+      at_rest: none
+      dropped: desaturate_and_fall
+      frozen: outline_dashed
+    never:
+      - any role but `packet`
+      - a single undivided block      # then a copy has nothing to move, and the point dies
+
+  memory_buffer:
+    role: memory
+    silhouette: framed_region        # a purple frame HOLDING blue payload
+    motion: none                     # memory does not travel. Ever.
+    label: { style: mono_s, position: above }
+    never:
+      - travelling
+      - containing anything but payload or emptiness
+
+  mempool:
+    role: memory
+    silhouette: slot_grid            # many identical preallocated buffers
+    motion: allocate.ripple
+    never:
+      - showing fewer than 4 slots    # "pool" must read as plural at a glance
+
+  mbuf:
+    role: mbuf
+    silhouette: metadata_card        # fields, with buf_addr as the load-bearing one
+    motion: pointer.snap             # the mbuf travels like what it is: a handle
+    never:
+      - containing the payload bytes  # the whole misconception ZC-M3
+
+  pointer:
+    role: pointer
+    silhouette: thin_arrow
+    motion: pointer.snap             # pointers snap; they do not glide
+    signature: glow.pulse.slow       # what viewers learn to recognise
+    never:
+      - carrying bytes with it        # a pointer that moves payload is a lie
+      - curved paths                  # a pointer is an address, not a journey
+
+  nic:
+    role: nic
+    silhouette: board                # flat, isometric or plate, by fidelity
+    motion: none
+    fidelity: [flat, iso, plate]     # see ARCHITECTURE.md §8.0 — the three 3D tiers
+
+  cpu:
+    role: cpu
+    silhouette: die_with_cores
+    motion: none
+    fidelity: [flat, iso, plate]
+
+  dma:
+    role: nic
+    silhouette: beam
+    motion: dma.smooth_beam          # continuous, unhurried, no CPU involved
+    never:
+      - stuttering                    # DMA that stutters teaches the opposite of DMA
+
+  copy:
+    role: copy
+    silhouette: duplicated_cells
+    motion: copy.duplicate_translate
+    never:
+      - decorative use                # red is bytes moving. Nothing else. Ever.
+      - error or alert states
+      - any use where no bytes move
+
+  idle:
+    role: idle
+    silhouette: inherit
+    motion: none

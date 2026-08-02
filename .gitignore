@@ -1,0 +1,24 @@
+# Renders and derived artifacts are never committed — they are reproducible by
+# definition (ARCHITECTURE.md §6).
+out/
+media/
+*.mp4
+*.mov
+*.png
+!docs/**/*.png
+!src/**/*.png
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+dist/
+build/
+
+# macOS
+.DS_Store

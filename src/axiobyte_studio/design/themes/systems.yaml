@@ -1,0 +1,76 @@
+# AxioByte Systems — the default theme.
+#
+# Extracted verbatim from the reference episodes (axiobyte-system/ep02). This file
+# is the ONLY place these values exist. Nothing else in the Studio may contain a hex
+# colour — see CONVENTIONS.md §5.
+#
+# THE RULE, inherited from ep02:
+#   "one hue per idea, and nothing borrows a hue it does not own"
+#
+# A theme supplies VALUES for roles. It may never add, remove, or reassign a role —
+# that is design/language.yaml, and it is theme-independent. Switching theme changes
+# what a packet looks like; it can never change what a packet means.
+
+id: systems
+version: 1.0.0
+title: AxioByte Systems — Ember Navy
+description: >
+  Deep navy canvas, one saturated hue per idea. Built for hardware and data-plane
+  material where the screen must stay readable while carrying six distinct meanings
+  at once.
+
+# ---------------------------------------------------------------------------
+# GROUND — the canvas everything sits on. Owns no meaning.
+# ---------------------------------------------------------------------------
+ground:
+  bg: "#090C13"        # the canvas, always behind everything
+  surface: "#141B27"   # card / panel fill
+  surface_alt: "#0F1420"  # inset panel, one step darker
+  border: "#26344A"    # panel edge
+
+# ---------------------------------------------------------------------------
+# INK — type. Owns no meaning; colour on type comes from the role it labels.
+# ---------------------------------------------------------------------------
+ink:
+  primary: "#EAF0F6"   # headline type, neutral labels
+  secondary: "#9AA6BC" # sub-labels, annotation
+
+# ---------------------------------------------------------------------------
+# ROLES — one hue per idea. These are the load-bearing values.
+# Each maps to exactly one concept family in design/language.yaml.
+# ---------------------------------------------------------------------------
+roles:
+  packet:
+    hue: "#4AA8FF"     # BLUE   — packet bytes, payload
+    surface: "#0E2338"
+  memory:
+    hue: "#B79CF0"     # PURPLE — a buffer, the mempool, memory at rest
+    surface: "#221B38"
+  pointer:
+    hue: "#F5D14F"     # YELLOW — a pointer, a handle, a reference
+    surface: "#332B10"
+  mbuf:
+    hue: "#34D8E8"     # CYAN   — the mbuf, and the AxioByte mark
+    surface: "#10303A"
+  nic:
+    hue: "#4DE6A0"     # GREEN  — the NIC, the wire, the outside world
+    surface: "#0F2A20"
+  cpu:
+    hue: "#F0A431"     # ORANGE — the CPU, the kernel, work being done
+    surface: "#33240F"
+  copy:
+    hue: "#FF5C55"     # RED    — bytes ACTUALLY MOVING. Reserved. See below.
+    surface: "#331617"
+  idle:
+    hue: "#65728A"     # GREY   — idle, empty, unused, inactive
+
+# ---------------------------------------------------------------------------
+# RESERVED ROLES — hues that may not be used decoratively, at any opacity.
+#
+# `copy` is the load-bearing one for Pillar 1. Red means "bytes moved" and nothing
+# else, which is why the ABSENCE of red is the argument in the zero-copy episode.
+# A reserved role used for an error state or an accent destroys that argument
+# across the whole catalogue, so it is lint-enforced rather than documented.
+# ---------------------------------------------------------------------------
+reserved:
+  - copy
