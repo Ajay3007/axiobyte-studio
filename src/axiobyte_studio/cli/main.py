@@ -20,6 +20,8 @@ from axiobyte_studio.render.jobs import QUALITY, render_episode
 from axiobyte_studio.storyboard import contact_sheet
 from axiobyte_studio.storyboard.episode import Episode
 from axiobyte_studio.storyboard.plan import plan, summarise_concepts
+from axiobyte_studio.timeline.drift import compare
+from axiobyte_studio.timeline.timeline import Timeline
 
 
 def _cmd_plan(args: argparse.Namespace) -> int:
@@ -63,6 +65,22 @@ def _cmd_sheet(args: argparse.Namespace) -> int:
     if not result.ok:
         print(f"  note: the plan has {len(result.errors)} error(s); run `abs plan` for detail")
     return 0
+
+
+def _cmd_drift(args: argparse.Namespace) -> int:
+    """Report what a re-cut voiceover did to an episode's beats."""
+    episode = Episode.load(args.episode)
+    if episode.beatmap is None or episode.timeline is None:
+        print("episode has no beat map or no voiceover", file=sys.stderr)
+        return 1
+    drift = compare(
+        episode.beatmap.cues,
+        Timeline.load(args.since),
+        episode.timeline,
+        tolerance=args.tolerance,
+    )
+    print(drift.report(verbose=args.verbose))
+    return 0 if drift.ok else 1
 
 
 def _cmd_concept_list(args: argparse.Namespace) -> int:
@@ -167,6 +185,17 @@ def build_parser() -> argparse.ArgumentParser:
     board_cmd = sheet_sub.add_parser("sheet", help="write the one-page contact sheet")
     board_cmd.add_argument("episode", type=Path)
     board_cmd.set_defaults(func=_cmd_sheet)
+
+    timeline_cmd = sub.add_parser("timeline", help="voiceover tools")
+    timeline_sub = timeline_cmd.add_subparsers(dest="subcommand", required=True)
+    drift_cmd = timeline_sub.add_parser(
+        "drift", help="what a re-cut voiceover did to this episode's beats"
+    )
+    drift_cmd.add_argument("episode", type=Path)
+    drift_cmd.add_argument("--since", type=Path, required=True, help="the previous words.json")
+    drift_cmd.add_argument("--tolerance", type=float, default=0.05)
+    drift_cmd.add_argument("--verbose", action="store_true", help="also show cues that held")
+    drift_cmd.set_defaults(func=_cmd_drift)
 
     concept_cmd = sub.add_parser("concept", help="inspect the concept SDK")
     concept_sub = concept_cmd.add_subparsers(dest="subcommand", required=True)

@@ -74,11 +74,17 @@ def build_scene(turn: float) -> Scene:
         )
     )
 
-    scene.apply(DMA_WRITE, "packet#1", at=20.0, into="kernel_buffer")
-    # Act one copies, on purpose. The invariant does not begin until the turn.
-    scene.apply(COPY, "packet#1", at=25.4, into="buffer_b", address="0x7f3a5400")
-    scene.apply(COPY, "packet#1", at=26.3, into="app", address="0x7f3a5800")
+    # Act one is a DIFFERENT WORLD, not an earlier chapter of this packet's life.
+    # `copy_based` and `zero_copy` are contrasting interactions, so the counter
+    # picture gets its own payload — which is why the zero-copy packet's address
+    # is still 0x7f3a4c00 when act two draws it, matching the mbuf's buf_addr.
+    # That identity is the entire lesson.
+    scene.cast(PACKET, "trad", address="0x7f3a4c00", bytes=1500)
+    scene.apply(DMA_WRITE, "packet#trad", at=20.0, into="kernel_buffer")
+    scene.apply(COPY, "packet#trad", at=25.4, into="buffer_b", address="0x7f3a5400")
+    scene.apply(COPY, "packet#trad", at=26.3, into="app", address="0x7f3a5800")
 
+    scene.apply(DMA_WRITE, "packet#1", at=68.4, into="mempool#1")
     scene.apply(REFERENCE, "packet#1", at=96.2, by="mbuf#1")
     scene.apply(FORWARD, "packet#1", at=104.0, to="parser")
     scene.verify()

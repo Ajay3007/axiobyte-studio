@@ -79,6 +79,9 @@ Open `docs/previews/index.html` for one shot solved to 16:9, 9:16 (Reels) and 1:
 .venv/bin/abs concept show zero_copy
 .venv/bin/abs concept stats
 
+# what a re-cut voiceover did to this episode's beats
+.venv/bin/abs timeline drift episodes/s01e02-zero-copy --since old-words.json
+
 # the board you approve before animating
 .venv/bin/abs storyboard sheet episodes/s01e02-zero-copy
 

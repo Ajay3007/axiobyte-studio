@@ -236,12 +236,20 @@ class Scene:
     def _check_forbidden(self, invariant: Invariant) -> list[Violation]:
         """Actions that may not occur — "and this does not happen".
 
-        Only from ``after``. Before it, the episode is usually *building* the very
-        picture this prohibition will destroy.
+        Scoped two ways, and both matter:
+
+        * By **actor**, when the invariant names one. "The payload is never copied"
+          is a claim about that payload — a different packet being copied elsewhere
+          in the frame is someone else's business, and often the whole point of a
+          comparison shot.
+        * By **time**, from ``after``. Before it the episode is usually *building*
+          the very picture this prohibition will destroy.
         """
         found: list[Violation] = []
         for name in invariant.forbids:
             for entry in self.log:
+                if invariant.actor and entry.actor != invariant.actor:
+                    continue
                 if entry.action == name and entry.at >= invariant.after:
                     scope = f", after {invariant.after:.2f}s" if invariant.after else ""
                     found.append(

@@ -379,3 +379,31 @@ class TestTimeScopedInvariants:
         scene.apply(FORWARD, "packet#1", at=104.0, address="0xbeef")
         detail = scene.check()[0].detail
         assert "in force from 46.27s" in detail
+
+    def test_forbids_is_scoped_to_the_named_actor(self):
+        # "The payload is never copied" is a claim about THAT payload. A different
+        # packet being copied elsewhere in the frame is often the whole point of a
+        # comparison shot — and before this test, it tripped the invariant.
+        scene = Scene(id="compare")
+        scene.cast(PACKET, "1", salience=Salience.PRIMARY, address="0xAAAA")
+        scene.cast(PACKET, "trad", address="0xBBBB")
+        scene.require(
+            Invariant(
+                id="I",
+                statement="packet#1 is never copied",
+                actor="packet#1",
+                forbids=("copy",),
+            )
+        )
+        scene.apply(DMA_WRITE, "packet#trad", at=1.0)
+        scene.apply(COPY, "packet#trad", at=2.0, address="0xCCCC")
+        assert scene.check() == []
+
+    def test_an_unscoped_forbid_still_covers_every_actor(self):
+        scene = Scene(id="all")
+        scene.cast(PACKET, "1", salience=Salience.PRIMARY)
+        scene.cast(PACKET, "other")
+        scene.require(Invariant(id="I", statement="nothing is copied", forbids=("copy",)))
+        scene.apply(DMA_WRITE, "packet#other", at=1.0)
+        scene.apply(COPY, "packet#other", at=2.0)
+        assert len(scene.check()) == 1
