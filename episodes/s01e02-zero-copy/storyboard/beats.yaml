@@ -1,0 +1,38 @@
+# Beats are the atom: one idea, landing on one word.
+# Cues are verbatim from the reference episode's own cue table.
+acts:
+  - id: traditional
+    keyword: "THE COPY TAX"
+    title: "The way it has always been done"
+    beats:
+      - id: traditional.networking
+        cue: "networking@4"
+        concept: copy_based
+        objective: CB-1
+        intent: "the three-tier column, before anything moves"
+      - id: traditional.copied
+        cue: "copied@4"
+        concept: copy_based
+        refutes: CB-M1
+        intent: "the word 'copied' lands on the first red translation"
+
+  - id: zerocopy
+    keyword: "ZERO COPY"
+    title: "A different way"
+    beats:
+      - id: zerocopy.instead
+        cue: "Instead@10"
+        concept: zero_copy
+        objective: ZC-1
+        intent: "the copies stop; one buffer, and stillness"
+      - id: zerocopy.reference
+        cue: "reference@10"
+        concept: zero_copy
+        objective: ZC-2
+        refutes: ZC-M2
+        intent: "the first pointer of the film reaches for the buffer"
+      - id: zerocopy.mbuf
+        cue: "mBuff@13"
+        concept: zero_copy
+        refutes: ZC-M3
+        intent: "zoom the mbuf: metadata, and buf_addr in the pointer's colour"

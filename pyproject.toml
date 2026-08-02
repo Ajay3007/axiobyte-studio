@@ -108,6 +108,7 @@ source_modules = [
     "axiobyte_studio.chrome",
     "axiobyte_studio.motion",
     "axiobyte_studio.concepts",
+    "axiobyte_studio.storyboard",
     "axiobyte_studio.actors",
     "axiobyte_studio.actions",
 ]
@@ -125,6 +126,7 @@ forbidden_modules = [
     "axiobyte_studio.chrome",
     "axiobyte_studio.motion",
     "axiobyte_studio.concepts",
+    "axiobyte_studio.storyboard",
     "axiobyte_studio.actors",
     "axiobyte_studio.actions",
 ]
@@ -136,6 +138,7 @@ layers = [
     "axiobyte_studio.backends",
     "axiobyte_studio.actions",
     "axiobyte_studio.actors",
+    "axiobyte_studio.storyboard",
     "axiobyte_studio.chrome",
     "axiobyte_studio.typography",
     "axiobyte_studio.layout",

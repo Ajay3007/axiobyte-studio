@@ -1,0 +1,15 @@
+id: s01e02-zero-copy
+title: "Zero-copy — a packet is just a pointer"
+pillar: p01-high-performance-data-plane
+
+# Formats are peers. Neither is derived from the other.
+targets: [16x9, 9x16]
+platforms: { 9x16: reels }
+theme: systems
+
+# What the audience is declared to already know. Everything else must be taught
+# before it is used — `abs plan` checks this, it is not a promise.
+assumed: [packet, memory_buffer, pointer, mbuf, mempool, nic, cpu]
+
+# The recording this episode is anchored to. Every beat is a word start in it.
+voiceover: "/Users/dukhi8ma/Documents/dev/projects/Ajay3007.github.io/_learning/manim-scripts/axiobyte-system/ep02/timeline.json"

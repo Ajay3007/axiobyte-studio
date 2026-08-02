@@ -64,14 +64,20 @@ why the absence of red is the argument in the zero-copy episode.
 | Components (glow, pill, tag, link, meters, title cards) | ✅ |
 | Cue-driven acts (`at`, `until`, `window`) | ✅ |
 | Concept SDK (atomic / interaction / composite) | ✅ |
+| Storyboard Engine (picture, beats, plan cascade) | ✅ |
+| `abs` CLI | ✅ |
 | Educational Grammar | ⬜ |
-| Storyboard Engine | ⬜ |
 | Full ep02 reproduction (Phase 0 gate) | ⬜ |
 
 Open `docs/previews/index.html` for one shot solved to 16:9, 9:16 (Reels) and 1:1, and
 `docs/previews/render/` for the same shot actually rendered through Manim in two formats.
 
 ```bash
+# validate an episode — renders nothing
+.venv/bin/abs plan episodes/s01e02-zero-copy --concepts
+.venv/bin/abs concept show zero_copy
+.venv/bin/abs concept stats
+
 # a still, both formats from one shot
 .venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyWide
 .venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyTall
