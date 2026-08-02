@@ -16,6 +16,8 @@ from axiobyte_studio.concepts.base import ConceptKind, InteractionConcept
 from axiobyte_studio.concepts.registry import registry
 from axiobyte_studio.core.errors import StudioError
 from axiobyte_studio.layout.frame import available_targets
+from axiobyte_studio.render.jobs import QUALITY, render_episode
+from axiobyte_studio.storyboard import contact_sheet
 from axiobyte_studio.storyboard.episode import Episode
 from axiobyte_studio.storyboard.plan import plan, summarise_concepts
 
@@ -29,6 +31,38 @@ def _cmd_plan(args: argparse.Namespace) -> int:
         print("\nconcepts taught, in order:")
         print(summarise_concepts(episode))
     return 0 if result.ok else 1
+
+
+def _cmd_render(args: argparse.Namespace) -> int:
+    """Validate, then render. The plan runs first and refuses on any error."""
+    episode = Episode.load(args.episode)
+    result = render_episode(
+        episode,
+        targets=args.target or None,
+        quality=args.quality,
+        fps=args.fps,
+        still=args.still,
+        dry_run=args.dry_run,
+    )
+    if args.dry_run:
+        print(f"{episode.id}: plan passed; {len(result.jobs)} job(s) would run")
+        for job in result.jobs:
+            print(f"  {job.target:<8} {job.scene}  {' '.join(job.command(Path('out'), args.fps))}")
+        return 0
+    print(result.report())
+    return 0 if result.ok else 1
+
+
+def _cmd_sheet(args: argparse.Namespace) -> int:
+    """Write the contact sheet — the board you approve before animating."""
+    episode = Episode.load(args.episode)
+    result = plan(episode)
+    path = contact_sheet.write(episode, result.cues)
+    beats = len(episode.beatmap.beats) if episode.beatmap else 0
+    print(f"wrote {path}  ({beats} beats)")
+    if not result.ok:
+        print(f"  note: the plan has {len(result.errors)} error(s); run `abs plan` for detail")
+    return 0
 
 
 def _cmd_concept_list(args: argparse.Namespace) -> int:
@@ -118,6 +152,21 @@ def build_parser() -> argparse.ArgumentParser:
         "--concepts", action="store_true", help="also list what the episode teaches"
     )
     plan_cmd.set_defaults(func=_cmd_plan)
+
+    render_cmd = sub.add_parser("render", help="validate, then render every target")
+    render_cmd.add_argument("episode", type=Path)
+    render_cmd.add_argument("--target", action="append", help="render only this target")
+    render_cmd.add_argument("--quality", default="draft", choices=sorted(QUALITY))
+    render_cmd.add_argument("--fps", type=int, default=30)
+    render_cmd.add_argument("--still", action="store_true", help="one frame per target")
+    render_cmd.add_argument("--dry-run", action="store_true", help="plan and show the jobs")
+    render_cmd.set_defaults(func=_cmd_render)
+
+    sheet_cmd = sub.add_parser("storyboard", help="storyboard tools")
+    sheet_sub = sheet_cmd.add_subparsers(dest="subcommand", required=True)
+    board_cmd = sheet_sub.add_parser("sheet", help="write the one-page contact sheet")
+    board_cmd.add_argument("episode", type=Path)
+    board_cmd.set_defaults(func=_cmd_sheet)
 
     concept_cmd = sub.add_parser("concept", help="inspect the concept SDK")
     concept_sub = concept_cmd.add_subparsers(dest="subcommand", required=True)

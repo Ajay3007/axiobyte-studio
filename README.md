@@ -66,6 +66,7 @@ why the absence of red is the argument in the zero-copy episode.
 | Concept SDK (atomic / interaction / composite) | ✅ |
 | Storyboard Engine (picture, beats, plan cascade) | ✅ |
 | `abs` CLI | ✅ |
+| Render pipeline (plan-gated) + contact sheet | ✅ |
 | Educational Grammar | ⬜ |
 | Full ep02 reproduction (Phase 0 gate) | ⬜ |
 
@@ -77,6 +78,12 @@ Open `docs/previews/index.html` for one shot solved to 16:9, 9:16 (Reels) and 1:
 .venv/bin/abs plan episodes/s01e02-zero-copy --concepts
 .venv/bin/abs concept show zero_copy
 .venv/bin/abs concept stats
+
+# the board you approve before animating
+.venv/bin/abs storyboard sheet episodes/s01e02-zero-copy
+
+# validate, then render every declared target — refuses if the plan fails
+.venv/bin/abs render episodes/s01e02-zero-copy --still
 
 # a still, both formats from one shot
 .venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyWide

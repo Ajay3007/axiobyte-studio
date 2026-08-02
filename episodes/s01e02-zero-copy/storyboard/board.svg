@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="770" viewBox="0 0 1400 770">
+<rect width="100%" height="100%" fill="#090C13"/>
+<text x="48" y="52" font-size="30" fill="#EAF0F6" font-family="system-ui, sans-serif" font-weight="600">s01e02-zero-copy</text>
+<text x="368" y="52" font-size="20" fill="#9AA6BC" font-family="system-ui, sans-serif">Zero-copy — a packet is just a pointer</text>
+<text x="48" y="88" font-size="22" fill="#F5D14F" font-family="system-ui, sans-serif">“The bytes never move. A yellow arrow does all the travelling.”</text>
+<text x="48" y="118" font-size="16" fill="#9AA6BC" font-family="ui-monospace, monospace">5 beats · 2 concepts · 217.8s · 16x9, 9x16</text>
+<line x1="48" y1="132" x2="1352" y2="132" stroke="#26344A" stroke-width="1"/>
+<text x="48" y="184" font-size="18" fill="#EAF0F6" font-family="system-ui, sans-serif" font-weight="600">THE COPY TAX</text>
+<text x="348" y="184" font-size="16" fill="#9AA6BC" font-family="system-ui, sans-serif">The way it has always been done</text>
+<rect x="48" y="196" width="1304" height="82" rx="8" fill="#141B27" stroke="#26344A" stroke-width="1"/>
+<text x="64" y="228" font-size="18" fill="#EAF0F6" font-family="ui-monospace, monospace">  18.37s</text>
+<text x="168" y="228" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace">traditional.networking</text>
+<text x="168" y="254" font-size="14" fill="#9AA6BC" font-family="ui-monospace, monospace">“networking@4”</text>
+<text x="518" y="228" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace" font-weight="600">copy_based</text>
+<text x="518" y="254" font-size="13" fill="#9AA6BC" font-family="ui-monospace, monospace">interaction</text>
+<circle cx="614" cy="249" r="6" fill="#4AA8FF"/>
+<circle cx="636" cy="249" r="6" fill="#B79CF0"/>
+<text x="808" y="228" font-size="14" fill="#9AA6BC" font-family="ui-monospace, monospace">↳ CB-1</text>
+<text x="808" y="254" font-size="14" fill="#9AA6BC" font-family="system-ui, sans-serif">the three-tier column, before anything moves</text>
+<rect x="48" y="292" width="1304" height="82" rx="8" fill="#141B27" stroke="#26344A" stroke-width="1"/>
+<text x="64" y="324" font-size="18" fill="#EAF0F6" font-family="ui-monospace, monospace">  25.36s</text>
+<text x="168" y="324" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace">traditional.copied</text>
+<text x="168" y="350" font-size="14" fill="#9AA6BC" font-family="ui-monospace, monospace">“copied@4”</text>
+<text x="518" y="324" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace" font-weight="600">copy_based</text>
+<text x="518" y="350" font-size="13" fill="#9AA6BC" font-family="ui-monospace, monospace">interaction</text>
+<circle cx="614" cy="345" r="6" fill="#4AA8FF"/>
+<circle cx="636" cy="345" r="6" fill="#B79CF0"/>
+<text x="808" y="324" font-size="14" fill="#4DE6A0" font-family="ui-monospace, monospace">✗ CB-M1</text>
+<text x="808" y="350" font-size="14" fill="#9AA6BC" font-family="system-ui, sans-serif">the word 'copied' lands on the first red translation</text>
+<text x="48" y="422" font-size="18" fill="#EAF0F6" font-family="system-ui, sans-serif" font-weight="600">ZERO COPY</text>
+<text x="348" y="422" font-size="16" fill="#9AA6BC" font-family="system-ui, sans-serif">A different way</text>
+<rect x="48" y="434" width="1304" height="82" rx="8" fill="#141B27" stroke="#26344A" stroke-width="1"/>
+<text x="64" y="466" font-size="18" fill="#EAF0F6" font-family="ui-monospace, monospace">  46.27s</text>
+<text x="168" y="466" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace">zerocopy.instead</text>
+<text x="168" y="492" font-size="14" fill="#9AA6BC" font-family="ui-monospace, monospace">“Instead@10”</text>
+<text x="518" y="466" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace" font-weight="600">zero_copy</text>
+<text x="518" y="492" font-size="13" fill="#9AA6BC" font-family="ui-monospace, monospace">interaction</text>
+<circle cx="614" cy="487" r="6" fill="#F5D14F"/>
+<circle cx="636" cy="487" r="6" fill="#B79CF0"/>
+<text x="808" y="466" font-size="14" fill="#9AA6BC" font-family="ui-monospace, monospace">↳ ZC-1</text>
+<text x="808" y="492" font-size="14" fill="#9AA6BC" font-family="system-ui, sans-serif">the copies stop; one buffer, and stillness</text>
+<rect x="48" y="530" width="1304" height="82" rx="8" fill="#141B27" stroke="#26344A" stroke-width="1"/>
+<text x="64" y="562" font-size="18" fill="#EAF0F6" font-family="ui-monospace, monospace">  48.71s</text>
+<text x="168" y="562" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace">zerocopy.reference</text>
+<text x="168" y="588" font-size="14" fill="#9AA6BC" font-family="ui-monospace, monospace">“reference@10”</text>
+<text x="518" y="562" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace" font-weight="600">zero_copy</text>
+<text x="518" y="588" font-size="13" fill="#9AA6BC" font-family="ui-monospace, monospace">interaction</text>
+<circle cx="614" cy="583" r="6" fill="#F5D14F"/>
+<circle cx="636" cy="583" r="6" fill="#B79CF0"/>
+<text x="808" y="562" font-size="14" fill="#4DE6A0" font-family="ui-monospace, monospace">↳ ZC-2   ✗ ZC-M2</text>
+<text x="808" y="588" font-size="14" fill="#9AA6BC" font-family="system-ui, sans-serif">the first pointer of the film reaches for the buffer</text>
+<rect x="48" y="626" width="1304" height="82" rx="8" fill="#141B27" stroke="#26344A" stroke-width="1"/>
+<text x="64" y="658" font-size="18" fill="#EAF0F6" font-family="ui-monospace, monospace">  55.18s</text>
+<text x="168" y="658" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace">zerocopy.mbuf</text>
+<text x="168" y="684" font-size="14" fill="#9AA6BC" font-family="ui-monospace, monospace">“mBuff@13”</text>
+<text x="518" y="658" font-size="17" fill="#EAF0F6" font-family="ui-monospace, monospace" font-weight="600">zero_copy</text>
+<text x="518" y="684" font-size="13" fill="#9AA6BC" font-family="ui-monospace, monospace">interaction</text>
+<circle cx="614" cy="679" r="6" fill="#F5D14F"/>
+<circle cx="636" cy="679" r="6" fill="#B79CF0"/>
+<text x="808" y="658" font-size="14" fill="#4DE6A0" font-family="ui-monospace, monospace">✗ ZC-M3</text>
+<text x="808" y="684" font-size="14" fill="#9AA6BC" font-family="system-ui, sans-serif">zoom the mbuf: metadata, and buf_addr in the pointer's colour</text>
+</svg>

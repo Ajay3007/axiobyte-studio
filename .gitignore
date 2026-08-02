@@ -1,6 +1,7 @@
 # Renders and derived artifacts are never committed — they are reproducible by
 # definition (ARCHITECTURE.md §6).
 out/
+!docs/previews/render/*.png
 media/
 *.mp4
 *.mov
