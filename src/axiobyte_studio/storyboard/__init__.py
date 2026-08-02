@@ -13,6 +13,7 @@ from axiobyte_studio.storyboard.plan import (
     require_ok,
     summarise_concepts,
 )
+from axiobyte_studio.storyboard.shotlist import Shot, ShotList
 
 __all__ = [
     "REQUIRED_SECTIONS",
@@ -25,6 +26,8 @@ __all__ = [
     "Picture",
     "Plan",
     "Severity",
+    "Shot",
+    "ShotList",
     "plan",
     "require_ok",
     "summarise_concepts",

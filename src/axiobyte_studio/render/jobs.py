@@ -152,6 +152,47 @@ def scene_name(target: str) -> str:
     return f"Episode{target.replace('x', 'x')}"
 
 
+def verify_staging(episode: Episode) -> list[str]:
+    """Check the shots module actually provides staging for every shot.
+
+    The plan's coverage step verifies the *storyboard* is complete — every teaching
+    beat belongs to a shot. It cannot verify the *code* is, because it must not
+    import a renderer. This can, and it is the check that bites: a derived shot list
+    covers every beat by construction, so a whole act can be planned, cued and
+    silently never drawn.
+
+    Args:
+        episode: The episode to check.
+
+    Returns:
+        The names of staging functions the shots module does not expose.
+
+    Raises:
+        StudioError: The module cannot be imported.
+    """
+    import importlib.util
+
+    if episode.shotlist is None:
+        return []
+    module_path = scene_module(episode)
+    spec = importlib.util.spec_from_file_location(f"_shots_{episode.id}", module_path)
+    if spec is None or spec.loader is None:
+        raise StudioError(f"Cannot import {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+    except Exception as exc:
+        raise StudioError(
+            f"{module_path.name} could not be imported",
+            context={"error": f"{type(exc).__name__}: {exc}"},
+        ) from exc
+    return [
+        shot.stage_function
+        for shot in episode.shotlist.shots
+        if not hasattr(module, shot.stage_function)
+    ]
+
+
 def render_episode(
     episode: Episode,
     *,
@@ -192,6 +233,18 @@ def render_episode(
     require_ok(checked)
 
     module = scene_module(episode)
+    missing = verify_staging(episode)
+    if missing:
+        raise StudioError(
+            f"{episode.id}: {len(missing)} shot(s) have no staging: {', '.join(missing)}",
+            context={"module": str(module)},
+            fix=(
+                "The storyboard declares these shots and the plan passed, but nothing "
+                "draws them. Define each function in the shots module, or remove the "
+                "act from beats.yaml. An act that is cued and never drawn is the "
+                "quietest way for an episode to be wrong."
+            ),
+        )
     out = media_dir or episode.root / "out"
     result = RenderResult(plan=checked)
 

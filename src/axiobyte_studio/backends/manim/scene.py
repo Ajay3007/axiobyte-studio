@@ -19,6 +19,7 @@ import numpy as np
 from manim import (
     DOWN,
     FadeIn,
+    FadeOut,
     FadeTransform,
     Mobject,
     MovingCameraScene,
@@ -304,6 +305,34 @@ class StudioScene(MovingCameraScene):
         if self._caption is None:
             self._caption = _Pinned(self, slot, self.target)
         self._caption.show(self._chrome_text(text, slot, self.theme.ink["primary"]), run_time)
+
+    def chrome_mobjects(self) -> list[Mobject]:
+        """The pinned furniture currently on screen.
+
+        Args:
+            None.
+
+        Returns:
+            The keyword and caption mobjects, if any.
+        """
+        return [p.mob for p in (self._keyword, self._caption) if p is not None and p.mob]
+
+    def clear_stage(self, run_time: float = 0.4) -> None:
+        """Fade out the scene, leaving the chrome where it is.
+
+        Never sweep ``scene.mobjects`` directly. Chrome rides ``camera.frame``
+        through an updater that closes over this scene, so anything Manim
+        serialises — its render cache, notably — follows that reference into the
+        file writer and its thread locks. Chrome belongs to the viewer, not to the
+        act; an act ends, the keyword does not.
+
+        Args:
+            run_time: How long the fade takes.
+        """
+        pinned = {id(m) for m in self.chrome_mobjects()}
+        staged = [m for m in self.mobjects if id(m) not in pinned]
+        if staged:
+            self.play(*[FadeOut(m) for m in staged], run_time=run_time)
 
     def _chrome_text(self, text: str, slot: ChromeSlot, colour: str) -> VGroup:
         """Build a chrome line, wrapped to the width the slot actually has."""

@@ -177,6 +177,22 @@ class Scene:
             violations.extend(self._check_forbidden(invariant))
         return violations
 
+    def _value_at(self, actor_id: str, prop: str, when: float) -> Any:
+        """A property's value at a moment, reconstructed from the action log.
+
+        An invariant scoped with ``after`` compares against the state at that
+        moment, not against the scene's opening state — otherwise the counter
+        picture's own changes would be counted against the invariant it exists to
+        set up.
+        """
+        value = self._initial[actor_id].props.get(prop)
+        for entry in self.log:
+            if entry.at > when:
+                break
+            if entry.actor == actor_id and prop in entry.params:
+                value = entry.params[prop]
+        return value
+
     def _check_unchanged(self, invariant: Invariant) -> list[Violation]:
         """Properties that must not move — the zero-copy case."""
         if not invariant.unchanged:
@@ -191,34 +207,48 @@ class Scene:
                 )
             ]
         found: list[Violation] = []
-        start, now = self._initial[actor_id], self.actors[actor_id]
+        now = self.actors[actor_id]
         for prop in invariant.unchanged:
-            was, is_now = start.props.get(prop), now.props.get(prop)
+            was = self._value_at(actor_id, prop, invariant.after)
+            is_now = now.props.get(prop)
             if was != is_now:
-                last = next(
-                    (entry for entry in reversed(self.log) if entry.actor == actor_id), None
+                culprit = next(
+                    (
+                        entry
+                        for entry in reversed(self.log)
+                        if entry.actor == actor_id
+                        and prop in entry.params
+                        and entry.at > invariant.after
+                    ),
+                    None,
                 )
+                scope = f" (in force from {invariant.after:.2f}s)" if invariant.after else ""
                 found.append(
                     Violation(
                         invariant.id,
                         invariant.statement,
-                        f"{actor_id}.{prop} changed from {was!r} to {is_now!r}",
-                        at=last.at if last else None,
+                        f"{actor_id}.{prop} changed from {was!r} to {is_now!r}{scope}",
+                        at=culprit.at if culprit else None,
                     )
                 )
         return found
 
     def _check_forbidden(self, invariant: Invariant) -> list[Violation]:
-        """Actions that may not occur — "and this does not happen"."""
+        """Actions that may not occur — "and this does not happen".
+
+        Only from ``after``. Before it, the episode is usually *building* the very
+        picture this prohibition will destroy.
+        """
         found: list[Violation] = []
         for name in invariant.forbids:
             for entry in self.log:
-                if entry.action == name:
+                if entry.action == name and entry.at >= invariant.after:
+                    scope = f", after {invariant.after:.2f}s" if invariant.after else ""
                     found.append(
                         Violation(
                             invariant.id,
                             invariant.statement,
-                            f"{name!r} was applied to {entry.actor}",
+                            f"{name!r} was applied to {entry.actor}{scope}",
                             at=entry.at,
                         )
                     )

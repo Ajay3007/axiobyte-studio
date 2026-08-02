@@ -106,6 +106,12 @@ class Invariant:
         actor: Which actor it constrains, by instance id.
         unchanged: Properties of that actor that must not change in scope.
         forbids: Action names that may not occur in scope.
+        after: When the prohibition begins, in seconds. **This is not a
+            convenience.** The ``contrast_then_invariance`` template — which is how
+            zero-copy, polling and false sharing are all taught — spends its first
+            act *doing the thing the episode later forbids*, on purpose, so that
+            stopping reads as the point. An invariant with no time scope makes the
+            counter-picture unstageable, and the counter-picture is half the lesson.
     """
 
     id: str
@@ -113,6 +119,7 @@ class Invariant:
     actor: str = ""
     unchanged: tuple[str, ...] = ()
     forbids: tuple[str, ...] = ()
+    after: float = 0.0
 
 
 @dataclass(frozen=True, slots=True)

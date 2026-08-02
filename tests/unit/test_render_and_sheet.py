@@ -155,3 +155,100 @@ class TestContactSheet:
         assert written.name == "board.svg"
         assert written.parent.name == "storyboard"
         assert written.read_text(encoding="utf-8").startswith("<svg")
+
+
+class TestStagingVerification:
+    """The check that actually bites.
+
+    Plan's coverage step verifies the *storyboard* is complete. It cannot verify the
+    *code* is, because it must not import a renderer. A derived shot list covers
+    every beat by construction, so without this a whole act can be planned, cued and
+    silently never drawn — which is exactly what s01e02 did.
+    """
+
+    def test_the_worked_episode_stages_every_shot(self, episode: Episode):
+        from axiobyte_studio.render import verify_staging
+
+        assert verify_staging(episode) == []
+
+    def test_a_missing_staging_function_is_reported(self, scratch: Path):
+        from axiobyte_studio.render import verify_staging
+
+        module = scratch / "shots" / "episode.py"
+        module.write_text(
+            module.read_text().replace("def stage_traditional(", "def _unused_traditional("),
+            encoding="utf-8",
+        )
+        assert verify_staging(Episode.load(scratch)) == ["stage_traditional"]
+
+    def test_a_missing_staging_function_blocks_the_render(self, scratch: Path):
+        module = scratch / "shots" / "episode.py"
+        module.write_text(
+            module.read_text().replace("def stage_traditional(", "def _unused_traditional("),
+            encoding="utf-8",
+        )
+        with pytest.raises(StudioError) as exc:
+            render_episode(Episode.load(scratch), dry_run=True)
+        assert "no staging" in str(exc.value)
+        assert "cued and never drawn" in str(exc.value)
+
+    def test_an_unimportable_module_names_the_error(self, scratch: Path):
+        module = scratch / "shots" / "episode.py"
+        module.write_text("import nonexistent_module_xyz\n", encoding="utf-8")
+        with pytest.raises(StudioError) as exc:
+            render_episode(Episode.load(scratch), dry_run=True)
+        assert "could not be imported" in str(exc.value)
+
+
+class TestShotList:
+    def test_one_shot_per_act_is_derived_by_default(self, episode: Episode):
+        assert episode.shotlist is not None
+        assert episode.shotlist.derived
+        assert [s.act for s in episode.shotlist.shots] == ["traditional", "zerocopy"]
+
+    def test_shot_ids_step_by_ten(self, episode: Episode):
+        assert episode.shotlist is not None
+        assert episode.shotlist.shots[0].id.startswith("shot_0010")
+        assert episode.shotlist.shots[1].id.startswith("shot_0020")
+
+    def test_a_derived_list_covers_every_beat(self, episode: Episode):
+        assert episode.shotlist is not None and episode.beatmap is not None
+        assert episode.shotlist.uncovered(episode.beatmap) == []
+
+    def test_a_declared_list_can_leave_a_beat_uncovered(self, scratch: Path):
+        (scratch / "storyboard" / "shots.yaml").write_text(
+            "shots:\n  - id: shot_0010_zerocopy\n    act: zerocopy\n"
+            "    covers: [zerocopy.instead]\n",
+            encoding="utf-8",
+        )
+        loaded = Episode.load(scratch)
+        assert loaded.shotlist is not None and loaded.beatmap is not None
+        assert not loaded.shotlist.derived
+        assert "traditional.networking" in loaded.shotlist.uncovered(loaded.beatmap)
+
+    def test_plan_rejects_an_uncovered_teaching_beat(self, scratch: Path):
+        (scratch / "storyboard" / "shots.yaml").write_text(
+            "shots:\n  - id: shot_0010_zerocopy\n    act: zerocopy\n"
+            "    covers: [zerocopy.instead]\n",
+            encoding="utf-8",
+        )
+        result = plan(Episode.load(scratch))
+        assert not result.ok
+        assert any("no shot stages it" in f.message for f in result.errors)
+
+    def test_plan_rejects_a_shot_covering_an_unknown_beat(self, scratch: Path):
+        (scratch / "storyboard" / "shots.yaml").write_text(
+            "shots:\n  - id: shot_0010_all\n    act: zerocopy\n"
+            "    covers: [traditional.networking, traditional.copied, zerocopy.instead,\n"
+            "             zerocopy.reference, zerocopy.mbuf, zerocopy.ghost]\n",
+            encoding="utf-8",
+        )
+        result = plan(Episode.load(scratch))
+        assert not result.ok
+        assert any("not a declared beat" in f.message for f in result.errors)
+
+    def test_shot_for_finds_the_staging(self, episode: Episode):
+        assert episode.shotlist is not None
+        shot = episode.shotlist.shot_for("zerocopy.mbuf")
+        assert shot is not None
+        assert shot.stage_function == "stage_zerocopy"

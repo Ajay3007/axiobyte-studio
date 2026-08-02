@@ -17,6 +17,7 @@ from axiobyte_studio.core.errors import StudioError
 from axiobyte_studio.design.theme import DEFAULT_THEME
 from axiobyte_studio.storyboard.beats import BeatMap
 from axiobyte_studio.storyboard.picture import Picture
+from axiobyte_studio.storyboard.shotlist import ShotList
 from axiobyte_studio.timeline.timeline import Timeline
 
 
@@ -35,6 +36,7 @@ class Episode:
         assumed: Concepts the audience is declared to already know.
         picture: Its thesis.
         beatmap: Its acts and beats.
+        shotlist: Which staging covers which beats.
         timeline: Its voiceover.
     """
 
@@ -48,6 +50,7 @@ class Episode:
     assumed: frozenset[str] = frozenset()
     picture: Picture | None = None
     beatmap: BeatMap | None = None
+    shotlist: ShotList | None = None
     timeline: Timeline | None = None
 
     @classmethod
@@ -79,6 +82,7 @@ class Episode:
         if not timeline_path.is_absolute():
             timeline_path = root / timeline_path
 
+        beatmap = BeatMap.load(root / "storyboard" / "beats.yaml")
         return cls(
             id=str(raw.get("id", root.name)),
             title=str(raw.get("title", "")),
@@ -89,7 +93,8 @@ class Episode:
             theme=str(raw.get("theme", DEFAULT_THEME)),
             assumed=frozenset(raw.get("assumed", [])),
             picture=Picture.load(root / "picture.md"),
-            beatmap=BeatMap.load(root / "storyboard" / "beats.yaml"),
+            beatmap=beatmap,
+            shotlist=ShotList.load(root / "storyboard" / "shots.yaml", beatmap),
             timeline=Timeline.load(timeline_path),
         )
 

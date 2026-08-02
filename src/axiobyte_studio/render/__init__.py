@@ -9,6 +9,7 @@ from axiobyte_studio.render.jobs import (
     render_episode,
     scene_module,
     scene_name,
+    verify_staging,
 )
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     "render_episode",
     "scene_module",
     "scene_name",
+    "verify_staging",
 ]

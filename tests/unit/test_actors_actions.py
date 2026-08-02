@@ -319,3 +319,63 @@ class TestInspectDoesNotMove:
         scene.apply(REFERENCE, "packet#1", at=96.2)
         scene.apply(INSPECT, "packet#1", at=120.0, by="firewall")
         scene.verify()
+
+
+class TestTimeScopedInvariants:
+    """The counter-picture must be stageable.
+
+    `contrast_then_invariance` — how zero-copy, polling and false sharing are all
+    taught — spends its first act doing the thing the episode later forbids, on
+    purpose, so that stopping reads as the point. An invariant with no time scope
+    makes that unstageable, and the counter-picture is half the lesson.
+    """
+
+    def _scene(self, turn: float) -> Scene:
+        scene = Scene(id="ep02")
+        scene.cast(PACKET, "1", salience=Salience.PRIMARY, address="0x7f3a4c00")
+        scene.require(
+            Invariant(
+                id="OP-1",
+                statement="bytes never move after the turn",
+                actor="packet#1",
+                unchanged=("address",),
+                forbids=("copy",),
+                after=turn,
+            )
+        )
+        scene.apply(DMA_WRITE, "packet#1", at=20.0)
+        return scene
+
+    def test_a_copy_before_the_turn_is_legal(self):
+        scene = self._scene(turn=46.27)
+        scene.apply(COPY, "packet#1", at=25.4, address="0xdead")
+        scene.apply(REFERENCE, "packet#1", at=96.2)
+        scene.verify()
+
+    def test_a_copy_after_the_turn_is_still_rejected(self):
+        scene = self._scene(turn=46.27)
+        scene.apply(REFERENCE, "packet#1", at=96.2)
+        scene.apply(COPY, "packet#1", at=104.0, address="0xdead")
+        with pytest.raises(ConceptError) as exc:
+            scene.verify()
+        assert "after 46.27s" in str(exc.value)
+
+    def test_the_address_is_compared_from_the_turn_not_the_start(self):
+        # Act one legitimately relocates the payload; the invariant must measure
+        # from where it stood when the prohibition began.
+        scene = self._scene(turn=46.27)
+        scene.apply(COPY, "packet#1", at=25.4, address="0xdead")
+        scene.apply(REFERENCE, "packet#1", at=96.2)
+        assert scene.check() == []
+
+    def test_an_unscoped_invariant_still_covers_the_whole_scene(self):
+        scene = self._scene(turn=0.0)
+        scene.apply(COPY, "packet#1", at=25.4, address="0xdead")
+        assert len(scene.check()) == 2
+
+    def test_the_violation_reports_the_scope(self):
+        scene = self._scene(turn=46.27)
+        scene.apply(REFERENCE, "packet#1", at=96.2)
+        scene.apply(FORWARD, "packet#1", at=104.0, address="0xbeef")
+        detail = scene.check()[0].detail
+        assert "in force from 46.27s" in detail

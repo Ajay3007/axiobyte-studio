@@ -112,6 +112,7 @@ def plan(episode: Episode, concepts: ConceptRegistry | None = None) -> Plan:
     _step_focus(result, sdk)
     _step_budget(result, sdk)
     _step_picture(result)
+    _step_coverage(result)
     _step_order(result)
     return result
 
@@ -318,7 +319,50 @@ def _step_picture(result: Plan) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 6. ORDER — the film runs forwards.
+# 6. COVERAGE — every beat that teaches has staging.
+# ---------------------------------------------------------------------------
+
+
+def _step_coverage(result: Plan) -> None:
+    """A beat that teaches something must have a shot that draws it.
+
+    Without this an episode plans cleanly, renders successfully, and silently omits
+    a whole act. That is precisely what s01e02 did: its `traditional` act was
+    declared, cued, planned — and never staged. A beat is a claim; a shot is what
+    makes good on it.
+    """
+    before = len(result.findings)
+    episode = result.episode
+    if not (episode.beatmap and episode.shotlist):
+        _record(result, "coverage    every teaching beat has staging", before)
+        return
+
+    for beat_id in episode.shotlist.uncovered(episode.beatmap):
+        result.findings.append(
+            Finding(
+                "coverage",
+                Severity.ERROR,
+                beat_id,
+                "teaches a concept but no shot stages it",
+                "Add it to a shot's `covers:` in storyboard/shots.yaml, or drop the "
+                "beat. A beat nothing draws is a claim the episode does not keep.",
+            )
+        )
+    for beat_id in episode.shotlist.orphans(episode.beatmap):
+        result.findings.append(
+            Finding(
+                "coverage",
+                Severity.ERROR,
+                beat_id,
+                "is covered by a shot but is not a declared beat",
+                "Correct the beat id in shots.yaml, or add the beat.",
+            )
+        )
+    _record(result, "coverage    every teaching beat has staging", before)
+
+
+# ---------------------------------------------------------------------------
+# 7. ORDER — the film runs forwards.
 # ---------------------------------------------------------------------------
 
 
