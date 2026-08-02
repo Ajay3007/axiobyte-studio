@@ -1,0 +1,12 @@
+id: pointer
+kind: atomic
+version: 1.0.0
+domain: memory
+title: "Pointer"
+pedagogy:
+  objectives:
+    - id: PTR-1
+      statement: "A pointer is an address. It is not the thing it addresses, and it is the same size whatever it points at."
+anchors: [tail, head]
+relations:
+  requires: []

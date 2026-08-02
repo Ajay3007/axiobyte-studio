@@ -118,14 +118,12 @@ CPU = ActorDefinition(
     default_props={"cores": 4},
 )
 
-DMA = ActorDefinition(
-    concept="dma",
-    anchors=("source", "destination"),
-    default_props={},
-)
+# NOTE: there is deliberately no DMA actor. DMA is an Interaction Concept
+# (nic <-> memory_buffer), and an interaction has no actor of its own — it is
+# staged through its participants. See concepts/library/interaction/dma.yaml.
 
 #: Every definition, by concept, for contract tests and scaffolding.
 LIBRARY: dict[str, ActorDefinition] = {
     definition.concept: definition
-    for definition in (PACKET, MEMORY_BUFFER, MEMPOOL, MBUF, POINTER, NIC, CPU, DMA)
+    for definition in (PACKET, MEMORY_BUFFER, MEMPOOL, MBUF, POINTER, NIC, CPU)
 }

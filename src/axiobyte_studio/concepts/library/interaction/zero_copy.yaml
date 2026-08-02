@@ -1,0 +1,60 @@
+id: zero_copy
+kind: interaction
+version: 1.0.0
+domain: data_plane
+title: "Zero-copy — a packet is just a pointer"
+between: [pointer, memory_buffer]
+
+pedagogy:
+  objectives:
+    - id: ZC-1
+      statement: "Packet bytes are written once and never moved again."
+      evidence: "The payload's address is constant from DMA to transmit."
+    - id: ZC-2
+      statement: "What passes between stages is a reference, not the data."
+      evidence: "Only the pointer changes owner; the bytes sit still."
+  removal_test:
+    pointer: "Without the pointer: memory holds bytes at an address. True, and not the lesson."
+    memory_buffer: "Without the buffer: a pointer is an address. True, and not the lesson."
+  misconceptions:
+    - id: ZC-M1
+      wrong: "Zero-copy means no memory is used."
+      refute_by: "Show the buffer allocated and occupied for the whole episode."
+      source: "recurring YouTube comment, ep02 launch"
+    - id: ZC-M2
+      wrong: "The packet teleports between stages."
+      refute_by: "Orbit the stationary payload while the pointer travels."
+    - id: ZC-M3
+      wrong: "The mbuf IS the packet."
+      refute_by: "Zoom into the mbuf: metadata plus buf_addr. The bytes are elsewhere."
+
+visual_grammar:
+  participants:
+    memory_buffer: { salience: primary, motion: none }
+    pointer: { salience: primary, motion: pointer.snap }
+  invariant_on_screen: "the payload's position is constant for the whole act"
+  never: ["moving the payload", "any use of the copy role after the turn"]
+
+motion_grammar:
+  primary: pointer.snap
+  participants: { memory_buffer: none }
+  reads_as: "ownership changes; location does not"
+
+camera:
+  move: orbit
+  intent: "moving the camera is what proves the bytes are not moving"
+  never: [follow]
+
+staging:
+  template: contrast_then_invariance
+  counter_concept: copy_based
+
+assessment:
+  after_this_the_viewer_can:
+    - "Explain why passing a packet between four stages costs the same as passing one pointer."
+    - "Say what an mbuf contains, and what it does not contain."
+
+relations:
+  requires: [pointer, memory_buffer, packet, mbuf]
+  contrasts_with: [copy_based]
+  composes_into: [dpdk_rx_pipeline]

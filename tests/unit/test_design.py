@@ -53,7 +53,8 @@ class TestTheme:
 
 class TestVisualLanguage:
     def test_loads(self):
-        assert len(visual_language().concepts) >= 9
+        # Atomic concepts only, since the migration.
+        assert len(visual_language().concepts) >= 7
 
     def test_concept_owns_a_role_not_a_colour(self):
         packet = visual_language().concept("packet")
@@ -69,7 +70,7 @@ class TestVisualLanguage:
 
     def test_never_rules_are_loaded(self):
         assert any("byte" in n for n in visual_language().concept("pointer").never)
-        assert visual_language().concept("copy").never
+        assert visual_language().concept("memory_buffer").never
 
     def test_memory_buffer_never_travels(self):
         assert visual_language().concept("memory_buffer").motion is None
@@ -83,9 +84,12 @@ class TestResolution:
         assert resolve("packet").hue == "#4AA8FF"
         assert resolve("mbuf").hue == "#34D8E8"
 
-    def test_dma_borrows_the_nic_role(self):
-        # DMA is the NIC acting autonomously; it does not get a hue of its own.
-        assert resolve("dma").hue == resolve("nic").hue
+    def test_interactions_are_not_registered_here(self):
+        # A relationship cannot be drawn, so it has no entry in the visual language.
+        # dma and copy_based are Interaction Concepts and live in concepts/library/.
+        for interaction in ("dma", "copy_based", "zero_copy", "false_sharing"):
+            with pytest.raises(RoleNotFoundError):
+                visual_language().concept(interaction)
 
     def test_every_registered_concept_resolves(self):
         # The contract test: the registry and the theme must agree completely.

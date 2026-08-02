@@ -1,0 +1,56 @@
+id: false_sharing
+kind: interaction
+version: 1.0.0
+domain: compute
+title: "False sharing — two threads, one cache line"
+between: [thread, cache_line]
+
+pedagogy:
+  objectives:
+    - id: FS-1
+      statement: >
+        Two threads writing different variables that share one 64-byte line
+        serialise on cache coherency, despite sharing no data.
+      evidence: "Correct results, and a 10x slowdown, in the same shot."
+  removal_test:
+    thread: "Without threads: memory is fetched in 64-byte lines. True, and not the lesson."
+    cache_line: "Without the line: two cores run concurrently. True, and not the lesson."
+  misconceptions:
+    - id: FS-M1
+      wrong: "It is a race condition."
+      refute_by: "Show the results are correct AND the program is 10x slower."
+      source: "the standard first guess when a parallel loop does not scale"
+    - id: FS-M2
+      wrong: "Adding a lock would fix it."
+      refute_by: "Add the lock; the line still ping-pongs, and it is now slower again."
+
+visual_grammar:
+  participants:
+    thread: { salience: primary, count: 2 }
+    cache_line: { salience: primary, count: 1 }
+  invariant_on_screen: "the two variables are never drawn on separate lines"
+  never: ["drawing the threads as sharing a variable"]
+
+motion_grammar:
+  primary: lock.stutter
+  participants: { thread: poll.metronome }
+  reads_as: "two independent things, made dependent by geometry"
+
+camera:
+  move: comparison
+  intent: "the collision is only visible when neither core is inspected alone"
+  never: [macro]
+
+staging:
+  template: race
+  counter_concept: padded_variables
+
+assessment:
+  after_this_the_viewer_can:
+    - "Predict which of two struct layouts will be slower, and say why."
+    - "Explain why the fix is padding, not locking."
+
+relations:
+  requires: [thread, cache_line, cpu]
+  contrasts_with: [padded_variables]
+  composes_into: []

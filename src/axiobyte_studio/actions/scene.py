@@ -19,6 +19,7 @@ from typing import Any
 
 from axiobyte_studio.actions.base import Action, AppliedAction, Invariant
 from axiobyte_studio.actors.base import Actor, ActorDefinition, Salience
+from axiobyte_studio.concepts.registry import registry
 from axiobyte_studio.core.errors import ConceptError
 
 
@@ -43,12 +44,16 @@ class Scene:
 
     Attributes:
         id: The shot or beat this scene belongs to.
+        focus: The concept being taught. One for an atomic concept, and one for an
+            interaction too — an interaction *is* one concept, it simply has more
+            than one participant holding attention.
         actors: Live actors, by instance id.
         log: Every action applied, in the order it occurred.
         invariants: What must hold across the whole scene.
     """
 
     id: str
+    focus: str | None = None
     actors: dict[str, Actor] = field(default_factory=dict)
     log: list[AppliedAction] = field(default_factory=list)
     invariants: list[Invariant] = field(default_factory=list)
@@ -219,27 +224,65 @@ class Scene:
                     )
         return found
 
-    def check_salience(self) -> list[Violation]:
-        """Verify that exactly one actor claims primary attention.
+    def expected_primaries(self) -> tuple[int, tuple[str, ...]]:
+        """How many actors may hold primary attention, and which concepts they are.
 
-        Args:
-            None.
+        One for an atomic concept — itself. For an Interaction Concept, one per
+        participant, because the relationship is only visible when every side of it
+        is on screen at once.
+
+        This makes the rule **stricter**, not looser: a beat can no longer acquire
+        two primaries by accident, only by a concept that declared exactly that.
 
         Returns:
-            A violation when zero or several actors are primary.
+            The permitted count, and the participant concepts it came from.
         """
-        counts = Counter(a.salience for a in self.actors.values())
-        primary = counts[Salience.PRIMARY]
-        if primary == 1:
-            return []
-        names = sorted(a.id for a in self.actors.values() if a.salience is Salience.PRIMARY)
-        return [
-            Violation(
-                "FOCUS",
-                "exactly one actor holds primary attention in a beat",
-                f"{primary} are primary: {', '.join(names) or 'none'}",
+        if self.focus is None:
+            return 1, ()
+        participants = registry().get(self.focus).participants
+        return len(participants), participants
+
+    def check_salience(self) -> list[Violation]:
+        """Verify that primary attention matches what the focused concept declares.
+
+        Returns:
+            A violation when the count is wrong, or when an interaction's
+            participants are not the actors holding attention.
+        """
+        expected, participants = self.expected_primaries()
+        primaries = [a for a in self.actors.values() if a.salience is Salience.PRIMARY]
+        names = sorted(a.id for a in primaries)
+
+        if len(primaries) != expected:
+            declared = (
+                f"{self.focus!r} declares {expected} participant(s)"
+                f"{': ' + ', '.join(participants) if participants else ''}"
+                if self.focus
+                else "no concept is in focus, so exactly one actor may be primary"
             )
-        ]
+            return [
+                Violation(
+                    "FOCUS",
+                    declared,
+                    f"{len(primaries)} actor(s) are primary: {', '.join(names) or 'none'}",
+                )
+            ]
+
+        # For an interaction, it is not enough to have the right number — they must
+        # be the right things. Two primaries that are not the declared participants
+        # is a crowded frame wearing an interaction's name.
+        if participants and len(participants) > 1:
+            held = Counter(a.concept for a in primaries)
+            missing = [p for p in participants if not held[p]]
+            if missing:
+                return [
+                    Violation(
+                        "FOCUS",
+                        f"{self.focus!r} is an interaction between {', '.join(participants)}",
+                        f"no primary actor represents {', '.join(missing)}",
+                    )
+                ]
+        return []
 
     def verify(self) -> None:
         """Check everything, and raise if the scene does not tell the truth.

@@ -1,0 +1,50 @@
+id: dma
+kind: interaction
+version: 1.0.0
+domain: io
+title: "DMA — the NIC writes memory itself"
+between: [nic, memory_buffer]
+
+pedagogy:
+  objectives:
+    - id: DMA-1
+      statement: "The NIC writes packet bytes into memory without the CPU touching them."
+      evidence: "The core is visibly idle while the payload appears in the buffer."
+  removal_test:
+    nic: "Without the NIC: memory gets written by something. Not the lesson."
+    memory_buffer: "Without the buffer: a NIC receives from the wire. Not the lesson."
+  misconceptions:
+    - id: DMA-M1
+      wrong: "The CPU copies the packet in from the card."
+      refute_by: "Keep the core dimmed and idle for the entire transfer."
+    - id: DMA-M2
+      wrong: "DMA is instant."
+      refute_by: "Give the beam real duration; it competes for memory bandwidth."
+
+visual_grammar:
+  participants:
+    nic: { salience: primary }
+    memory_buffer: { salience: primary }
+  invariant_on_screen: "the CPU shows no activity for the duration"
+  never: ["routing the transfer through the CPU"]
+
+motion_grammar:
+  primary: dma.smooth_beam
+  reads_as: "autonomous and unhurried — no CPU is involved"
+
+camera:
+  move: comparison
+  intent: "the card and the memory must be in frame together, with the idle core visible"
+  never: [macro]
+
+staging:
+  template: journey
+
+assessment:
+  after_this_the_viewer_can:
+    - "Say what the CPU is doing while a packet arrives, and it is 'nothing'."
+
+relations:
+  requires: [nic, memory_buffer, cpu]
+  contrasts_with: []
+  composes_into: [dpdk_rx_pipeline]

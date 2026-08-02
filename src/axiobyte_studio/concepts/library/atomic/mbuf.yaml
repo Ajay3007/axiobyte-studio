@@ -1,0 +1,13 @@
+id: mbuf
+kind: atomic
+version: 1.0.0
+domain: memory
+title: "mbuf"
+pedagogy:
+  objectives:
+    - id: MBUF-1
+      statement: "An mbuf is metadata plus buf_addr. Everything above buf_addr is bookkeeping; buf_addr is the address of the bytes."
+states: [pooled, attached, freed]
+anchors: [buf_addr, data_len, refcount, next]
+relations:
+  requires: [memory_buffer, pointer]

@@ -1,0 +1,56 @@
+id: polling
+kind: interaction
+version: 1.0.0
+domain: data_plane
+title: "Poll mode — why 100% CPU is a feature"
+between: [worker_core, nic_queue]
+
+# CONTRAST-DEFINED. Validation §17.3: polling passes the removal test only weakly,
+# because its lesson is not the relation between a core and a queue — it is that
+# polling REPLACES interrupts. Both mechanisms apply: the contrast makes it
+# teachable, the interaction makes it stageable. `contrasts_with` is mandatory here.
+staging:
+  template: contrast_then_invariance
+  counter_concept: interrupt_driven
+  contrast_defined: true
+
+pedagogy:
+  objectives:
+    - id: POLL-1
+      statement: "A core that never sleeps has no wake-up latency and no jitter."
+      evidence: "The metronome never breaks; the interrupt path stutters beside it."
+  removal_test:
+    worker_core: "Without the core: a queue fills and drains. Not the lesson."
+    nic_queue: "Without the queue: a core spins on nothing. Not the lesson."
+  misconceptions:
+    - id: POLL-M1
+      wrong: "100% CPU means the machine is overloaded."
+      refute_by: "Show throughput rising while utilisation sits pinned at 100%."
+      source: "the standard first reaction to a DPDK top output"
+    - id: POLL-M2
+      wrong: "Polling wastes cycles that other work could use."
+      refute_by: "There is no other work — the core is dedicated, and that is the trade."
+
+visual_grammar:
+  participants:
+    worker_core: { salience: primary }
+    nic_queue: { salience: primary }
+  never: ["showing the core idle at any point"]
+
+motion_grammar:
+  primary: poll.metronome
+  reads_as: "tireless and deliberate — CPU burned on purpose"
+
+camera:
+  move: comparison
+  intent: "poll and interrupt must be side by side, or the trade is invisible"
+
+assessment:
+  after_this_the_viewer_can:
+    - "Explain why a busy-polling core is a design choice rather than a bug."
+    - "Say what is traded away, and it is a whole core."
+
+relations:
+  requires: [worker_core, nic_queue, cpu]
+  contrasts_with: [interrupt_driven]
+  composes_into: [dpdk_rx_pipeline]

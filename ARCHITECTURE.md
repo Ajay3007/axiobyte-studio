@@ -331,6 +331,14 @@ axiobyte-studio/
 │   │   ├── plan.py                #    Shot IR → resolved RenderPlan
 │   │   └── errors.py              #    one exception family, actionable messages
 │   │
+│   ├── concepts/                  # 1b. ★ THE CONCEPT SDK (CONCEPT-ARCHITECTURE.md §5)
+│   │   ├── base.py                #    Atomic / Interaction / Composite schemas
+│   │   ├── registry.py            #    loader, the five gates, graph traversal
+│   │   └── library/               #    the SDK itself — ships with the package,
+│   │       ├── atomic/            #      like design tokens do
+│   │       ├── interaction/       #      ★ zero_copy, dma, polling, false_sharing…
+│   │       └── composite/         #      dpdk_rx_pipeline, ngfw_fast_path…
+│   │
 │   ├── design/                    # 2. Design System — the single source of visual truth
 │   │   ├── language.yaml          #    ★ VISUAL LANGUAGE — ATOMIC concepts own roles (§5)
 │   │   ├── themes/                #    ★ SWAPPABLE LOOK — roles → actual values
@@ -449,13 +457,6 @@ axiobyte-studio/
 │       ├── overrides/             #    ★ Tier C: rare per-target exceptions, each with a reason
 │       ├── assets.lock            #    exact asset versions
 │       └── out/                   #    gitignored renders
-│
-├── concepts/                      # ══ THE CONCEPT SDK ══ (CONCEPT-ARCHITECTURE.md §5)
-│   ├── atomic/                    #    things that exist — packet, mbuf, cpu, cache
-│   ├── interaction/               #    ★ relationships that ARE the lesson —
-│   │                              #      zero_copy, false_sharing, numa, dma, rss
-│   └── composite/                 #    stories assembled from the other two —
-│                                  #      dpdk_rx_pipeline, ngfw_fast_path, consensus
 │
 ├── pillars/                       # content roadmap as data, not prose
 │   └── p01-high-performance-data-plane.yaml

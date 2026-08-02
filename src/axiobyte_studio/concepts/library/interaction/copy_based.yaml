@@ -1,0 +1,45 @@
+id: copy_based
+kind: interaction
+version: 1.0.0
+domain: data_plane
+title: "The copy tax — bytes crossing every boundary"
+between: [packet, memory_buffer]
+
+pedagogy:
+  objectives:
+    - id: CB-1
+      statement: "Every boundary a packet crosses costs a full copy of its bytes."
+      evidence: "The same payload is drawn three times, in three places, in red."
+  removal_test:
+    packet: "Without the packet: a buffer exists and is empty. Not the lesson."
+    memory_buffer: "Without the buffer: bytes arrive with nowhere to be. Not the lesson."
+  misconceptions:
+    - id: CB-M1
+      wrong: "Copying is cheap because memory is fast."
+      refute_by: "Show the cost meter fill once per boundary while the packet count stays at one."
+
+visual_grammar:
+  participants:
+    packet: { salience: primary, motion: copy.duplicate_translate }
+    memory_buffer: { salience: primary, count: 3 }
+  never: ["a copy that leaves the source unchanged in colour"]
+
+motion_grammar:
+  primary: copy.duplicate_translate
+  reads_as: "expensive, physical, wasteful — bytes really moving"
+
+camera:
+  move: cost_column
+  intent: "the price accumulates, so the frame must hold the running total"
+
+staging:
+  template: cost_column
+
+assessment:
+  after_this_the_viewer_can:
+    - "Count the copies on a traditional receive path, and say where each one happens."
+
+relations:
+  requires: [packet, memory_buffer]
+  contrasts_with: [zero_copy]
+  composes_into: []

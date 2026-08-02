@@ -236,11 +236,6 @@ def draw_cpu(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
     return _board(box, target, theme, "cpu", f"CPU x{actor.props.get('cores', 4)}")
 
 
-def draw_dma(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
-    """A DMA engine, which borrows the NIC's role because that is what it is."""
-    return _board(box, target, theme, "nic", "DMA")
-
-
 #: Concept to renderer. A concept with no entry cannot be drawn, by design.
 RENDERERS: dict[str, Any] = {
     "packet": draw_packet,
@@ -250,7 +245,6 @@ RENDERERS: dict[str, Any] = {
     "pointer": draw_pointer,
     "nic": draw_nic,
     "cpu": draw_cpu,
-    "dma": draw_dma,
 }
 
 

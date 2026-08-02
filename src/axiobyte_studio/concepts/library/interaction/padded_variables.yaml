@@ -1,0 +1,46 @@
+id: padded_variables
+kind: interaction
+version: 1.0.0
+domain: compute
+title: "Padding — buying back a cache line"
+between: [thread, cache_line]
+
+pedagogy:
+  objectives:
+    - id: PAD-1
+      statement: "Spending 60 wasted bytes to put two variables on separate lines buys back the parallelism."
+      evidence: "The same two threads, the same work, no stutter."
+  removal_test:
+    thread: "Without threads: a struct has padding in it. Not the lesson."
+    cache_line: "Without the line: two threads run. Not the lesson."
+  misconceptions:
+    - id: PAD-M1
+      wrong: "Padding wastes memory, so it must be slower."
+      refute_by: "Show 60 bytes wasted and the run time halved."
+
+visual_grammar:
+  participants:
+    thread: { salience: primary, count: 2 }
+    cache_line: { salience: primary, count: 2 }
+  never: ["the two variables landing on one line"]
+
+motion_grammar:
+  primary: poll.metronome
+  reads_as: "two things, finally independent"
+
+camera:
+  move: comparison
+  intent: "before and after must share a frame, or the win is invisible"
+
+staging:
+  template: race
+  counter_concept: false_sharing
+
+assessment:
+  after_this_the_viewer_can:
+    - "Say how much memory the fix costs, and why it is worth it."
+
+relations:
+  requires: [thread, cache_line]
+  contrasts_with: [false_sharing]
+  composes_into: []

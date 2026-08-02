@@ -1,0 +1,12 @@
+id: nic_queue
+kind: atomic
+version: 1.0.0
+domain: io
+title: "NIC queue"
+pedagogy:
+  objectives:
+    - id: NICQ-1
+      statement: "A NIC queue is a ring of descriptors the card fills and software drains."
+anchors: [head, tail]
+relations:
+  requires: [nic]

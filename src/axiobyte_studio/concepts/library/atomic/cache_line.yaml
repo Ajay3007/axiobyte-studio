@@ -1,0 +1,13 @@
+id: cache_line
+kind: atomic
+version: 1.0.0
+domain: memory
+title: "Cache line"
+pedagogy:
+  objectives:
+    - id: LINE-1
+      statement: "Memory moves between cache and DRAM in fixed 64-byte lines, never in single bytes."
+states: [invalid, shared, modified]
+anchors: [start, end]
+relations:
+  requires: []

@@ -1,0 +1,12 @@
+id: nic
+kind: atomic
+version: 1.0.0
+domain: io
+title: "Network interface card"
+pedagogy:
+  objectives:
+    - id: NIC-1
+      statement: "A NIC is the boundary between the wire and memory. It has queues, and it can write to memory itself."
+anchors: [rx_queue, tx_queue, port, dma_engine]
+relations:
+  requires: []

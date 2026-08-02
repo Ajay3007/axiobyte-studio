@@ -1,0 +1,12 @@
+id: worker_core
+kind: atomic
+version: 1.0.0
+domain: compute
+title: "Worker core"
+pedagogy:
+  objectives:
+    - id: CORE-1
+      statement: "A worker core is one core dedicated to one job, so its cache stays warm and its work is predictable."
+anchors: [l1, pipeline]
+relations:
+  requires: [cpu]

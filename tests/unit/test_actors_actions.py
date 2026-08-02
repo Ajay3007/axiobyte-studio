@@ -291,18 +291,18 @@ class TestSalience:
     def test_exactly_one_primary_is_required(self):
         assert zero_copy_scene().check_salience() == []
 
-    def test_two_primaries_is_a_violation(self):
+    def test_two_primaries_is_a_violation_when_no_interaction_is_in_focus(self):
         scene = Scene(id="s")
         scene.cast(PACKET, "1", salience=Salience.PRIMARY)
         scene.cast(MBUF, "1", salience=Salience.PRIMARY)
         violations = scene.check_salience()
         assert violations
-        assert "2 are primary" in violations[0].detail
+        assert "2 actor(s) are primary" in violations[0].detail
 
     def test_no_primary_is_also_a_violation(self):
         scene = Scene(id="s")
         scene.cast(PACKET, "1")
-        assert "0 are primary" in scene.check_salience()[0].detail
+        assert "0 actor(s) are primary" in scene.check_salience()[0].detail
 
     def test_verify_covers_salience_too(self):
         scene = Scene(id="s")

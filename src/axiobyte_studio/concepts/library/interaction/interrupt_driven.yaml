@@ -1,0 +1,45 @@
+id: interrupt_driven
+kind: interaction
+version: 1.0.0
+domain: os
+title: "Interrupt-driven receive — the kernel wakes you up"
+between: [nic_queue, thread]
+
+pedagogy:
+  objectives:
+    - id: IRQ-1
+      statement: "An interrupt stops whatever the core was doing, and the wake-up is not free."
+      evidence: "The core's work is visibly torn in half, twice per packet."
+  removal_test:
+    nic_queue: "Without the queue: a thread runs and is occasionally interrupted. Not the lesson."
+    thread: "Without the thread: a card raises a line. Not the lesson."
+  misconceptions:
+    - id: IRQ-M1
+      wrong: "Interrupts are free because the hardware does them."
+      refute_by: "Show the context switch, the cache going cold, and the wake-up latency."
+
+visual_grammar:
+  participants:
+    nic_queue: { salience: primary }
+    thread: { salience: primary }
+  never: ["a wake-up that costs nothing on screen"]
+
+motion_grammar:
+  primary: interrupt.flash
+  reads_as: "violent, unscheduled, disruptive"
+
+camera:
+  move: rack_focus
+  intent: "attention is yanked from the thread to the card, which is what an interrupt does"
+
+staging:
+  template: journey
+
+assessment:
+  after_this_the_viewer_can:
+    - "Name the three costs of an interrupt: latency, the switch, and a cold cache."
+
+relations:
+  requires: [nic_queue, thread]
+  contrasts_with: [polling]
+  composes_into: []

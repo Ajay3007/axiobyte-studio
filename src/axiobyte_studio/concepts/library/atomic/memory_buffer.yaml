@@ -1,0 +1,13 @@
+id: memory_buffer
+kind: atomic
+version: 1.0.0
+domain: memory
+title: "Memory buffer"
+pedagogy:
+  objectives:
+    - id: BUF-1
+      statement: "A buffer is a fixed region of memory at a fixed address. Its address is its identity."
+states: [free, filled, in_use]
+anchors: [start, end, address]
+relations:
+  requires: []

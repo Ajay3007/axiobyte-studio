@@ -1,0 +1,31 @@
+id: dpdk_rx_pipeline
+kind: composite
+version: 1.0.0
+domain: data_plane
+title: "The DPDK receive path"
+
+# A composite stages NOTHING. It sequences members, each at a declared depth, and
+# every one of them is authored elsewhere and reused. That is the compounding the
+# Studio exists to produce.
+composes:
+  - { concept: packet,        depth: assumed }
+  - { concept: mempool,       depth: brief }
+  - { concept: dma,           depth: full }
+  - { concept: zero_copy,     depth: full }
+  - { concept: polling,       depth: full }
+focus_order: [dma, zero_copy, polling]
+
+pedagogy:
+  objectives:
+    - id: RX-1
+      statement: >
+        A packet reaches an application without the kernel, without an interrupt,
+        and without its bytes ever being copied.
+      evidence: "Three interactions, one packet, one address, from wire to app."
+
+assessment:
+  after_this_the_viewer_can:
+    - "Trace a packet from the wire to userspace and name what was avoided at each step."
+
+relations:
+  requires: [packet, mempool, dma, zero_copy, polling]

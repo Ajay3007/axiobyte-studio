@@ -11,7 +11,6 @@ from axiobyte_studio.actors.base import (
 )
 from axiobyte_studio.actors.library import (
     CPU,
-    DMA,
     LIBRARY,
     MBUF,
     MEMORY_BUFFER,
@@ -23,7 +22,6 @@ from axiobyte_studio.actors.library import (
 
 __all__ = [
     "CPU",
-    "DMA",
     "LIBRARY",
     "MBUF",
     "MEMORY_BUFFER",

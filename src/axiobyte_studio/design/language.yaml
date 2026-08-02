@@ -1,4 +1,14 @@
-# THE VISUAL LANGUAGE REGISTRY
+# THE VISUAL LANGUAGE REGISTRY  —  ATOMIC CONCEPTS ONLY
+#
+# This file answers "what does this thing LOOK LIKE", and only atomic concepts have
+# an answer. A packet has a silhouette; an mbuf has a silhouette; ZERO-COPY does not,
+# because a relationship cannot be drawn — it reaches the screen through its
+# participants. Interaction and composite concepts live in concepts/library/.
+#
+# `dma` used to be registered here with a beam silhouette. The beam is not DMA; it is
+# how the TRANSFER BETWEEN a NIC and memory is drawn, which belongs to the dma
+# interaction's motion_grammar. Leaving it here would let a relationship acquire a
+# silhouette, and the next episode would treat DMA as an object.
 #
 # Concepts own roles. This file is THEME-INDEPENDENT: it says a packet is drawn in
 # the `packet` role and moves with an ease-out; it never says what colour that is.
@@ -73,23 +83,7 @@ concepts:
     motion: none
     fidelity: [flat, iso, plate]
 
-  dma:
-    role: nic
-    silhouette: beam
-    motion: dma.smooth_beam          # continuous, unhurried, no CPU involved
-    never:
-      - stuttering                    # DMA that stutters teaches the opposite of DMA
-
-  copy:
-    role: copy
-    silhouette: duplicated_cells
-    motion: copy.duplicate_translate
-    never:
-      - decorative use                # red is bytes moving. Nothing else. Ever.
-      - error or alert states
-      - any use where no bytes move
-
-  idle:
-    role: idle
-    silhouette: inherit
-    motion: none
+  # dma      -> concepts/library/interaction/dma.yaml         (nic <-> memory_buffer)
+  # copy     -> concepts/library/interaction/copy_based.yaml  (packet <-> memory_buffer)
+  # Their ROLES remain in design/themes/, because a role is a value and an
+  # interaction still needs one to render its participants with.

@@ -1,0 +1,12 @@
+id: cpu
+kind: atomic
+version: 1.0.0
+domain: compute
+title: "CPU"
+pedagogy:
+  objectives:
+    - id: CPU-1
+      statement: "A CPU is a set of cores, each running one instruction stream, each with its own nearest cache."
+anchors: [core, l1, l2]
+relations:
+  requires: []

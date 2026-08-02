@@ -1,0 +1,12 @@
+id: mempool
+kind: atomic
+version: 1.0.0
+domain: memory
+title: "Mempool"
+pedagogy:
+  objectives:
+    - id: POOL-1
+      statement: "A mempool is a set of identical buffers allocated once, up front, so no allocation happens on the fast path."
+anchors: [first_slot, last_slot]
+relations:
+  requires: [memory_buffer]

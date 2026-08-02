@@ -1,0 +1,13 @@
+id: thread
+kind: atomic
+version: 1.0.0
+domain: compute
+title: "Thread"
+pedagogy:
+  objectives:
+    - id: THR-1
+      statement: "A thread is an independent instruction stream. Two threads on two cores genuinely run at the same time."
+states: [running, ready, blocked]
+anchors: [stack, pc]
+relations:
+  requires: [cpu]

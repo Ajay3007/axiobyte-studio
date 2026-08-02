@@ -1,0 +1,13 @@
+id: packet
+kind: atomic
+version: 1.0.0
+domain: net
+title: "Packet"
+pedagogy:
+  objectives:
+    - id: PKT-1
+      statement: "A packet is a finite run of bytes: a header that says where it goes, and a payload that is the point."
+states: [on_wire, in_buffer, referenced, dropped, freed]
+anchors: [first_byte, last_byte, header]
+relations:
+  requires: []
