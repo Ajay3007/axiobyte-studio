@@ -11,6 +11,7 @@ media/
 # Layout previews ARE committed — they are how a shot gets reviewed in every
 # format, and they cost nothing to store.
 !docs/previews/*.svg
+!docs/previews/render/*.png
 
 # Python
 __pycache__/

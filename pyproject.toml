@@ -66,6 +66,14 @@ warn_unreachable = true
 module = ["tests.*"]
 disallow_untyped_defs = false
 
+# Manim ships partial type information: `camera.frame` is typed as a union that
+# does not narrow for MovingCameraScene, and several constructors are untyped.
+# The relaxation is scoped to the backend that touches Manim and nowhere else —
+# which is the point of confining the tool to one package in the first place.
+[[tool.mypy.overrides]]
+module = ["axiobyte_studio.backends.manim.*"]
+disable_error_code = ["union-attr", "no-untyped-call"]
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------

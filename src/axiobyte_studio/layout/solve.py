@@ -168,6 +168,7 @@ def solve(
     *,
     platform: str | None = None,
     cognitive_budget: int | None = None,
+    content: Box | None = None,
 ) -> SolvedLayout:
     """Resolve a shot's relations into positions for one target.
 
@@ -177,6 +178,10 @@ def solve(
         platform: Platform whose UI must stay clear, e.g. ``"reels"``.
         cognitive_budget: A concept's limit on novel elements per beat. The engine
             uses whichever is lower — the frame's legibility ceiling or this.
+        content: The region to solve into. Defaults to the frame's safe area, but a
+            shot rendered with chrome must pass the *stage* box instead — the space
+            left once the keyword and caption bands have taken theirs. Solving into
+            the full safe area is how a diagram ends up under a caption.
 
     Returns:
         The solved layout.
@@ -186,7 +191,8 @@ def solve(
             the relation tree is malformed.
     """
     effective = target if cognitive_budget is None else target.with_density(cognitive_budget)
-    content = effective.content_box(platform)
+    if content is None:
+        content = effective.content_box(platform)
 
     notes: list[str] = []
     if cognitive_budget is not None and cognitive_budget < target.density_budget:
@@ -243,6 +249,7 @@ def solve_all(
     *,
     platforms: dict[str, str] | None = None,
     cognitive_budget: int | None = None,
+    content: Box | None = None,
 ) -> dict[str, SolvedLayout]:
     """Solve one shot for every declared target at once.
 
@@ -255,6 +262,8 @@ def solve_all(
         targets: Target profile ids.
         platforms: Optional platform per target, e.g. ``{"9x16": "reels"}``.
         cognitive_budget: The concept's limit on novel elements.
+        content: The region to solve into, shared by every target. Defaults to each
+            target's own safe area.
 
     Returns:
         One solved layout per target.
@@ -268,6 +277,7 @@ def solve_all(
             load_target(name),
             platform=platforms.get(name),
             cognitive_budget=cognitive_budget,
+            content=content,
         )
         for name in targets
     }

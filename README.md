@@ -60,10 +60,17 @@ why the absence of red is the argument in the zero-copy episode.
 | Motion Language (signatures, inheritance) | ✅ |
 | Actor System (state machines, anchors, salience) | ✅ |
 | Action System (invariants, costs, negation) | ✅ |
-| Manim backend | ⬜ |
+| Manim backend (shapes, chrome, easing, cue-driven scene) | ✅ |
 | Concept SDK / Educational Grammar | ⬜ |
+| Storyboard Engine | ⬜ |
 
-Open `docs/previews/index.html` to see one shot solved for 16:9, 9:16 (Reels) and 1:1.
+Open `docs/previews/index.html` for one shot solved to 16:9, 9:16 (Reels) and 1:1, and
+`docs/previews/render/` for the same shot actually rendered through Manim in two formats.
+
+```bash
+.venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyWide
+.venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyTall
+```
 
 The reference episodes (`axiobyte-system/ep01`, `ep02`) are the specification, and Phase 0's gate is
 re-rendering `ep02` frame-identically from this engine.
