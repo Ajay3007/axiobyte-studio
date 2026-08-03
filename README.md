@@ -67,6 +67,8 @@ why the absence of red is the argument in the zero-copy episode.
 | Storyboard Engine (picture, beats, plan cascade) | ✅ |
 | `abs` CLI | ✅ |
 | Render pipeline (plan-gated) + contact sheet | ✅ |
+| Generated scenes — a new format costs no episode change | ✅ |
+| Golden tests (semantic · layout · perceptual) | ✅ |
 | Educational Grammar | ⬜ |
 | Full ep02 reproduction (Phase 0 gate) | ⬜ |
 

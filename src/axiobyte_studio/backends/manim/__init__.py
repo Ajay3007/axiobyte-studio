@@ -8,6 +8,10 @@ keeps everything above this layer portable.
 from __future__ import annotations
 
 from axiobyte_studio.backends.manim.easing import curves, rate_func
+from axiobyte_studio.backends.manim.episode_scene import (
+    build_episode_scenes,
+    scene_class_name,
+)
 from axiobyte_studio.backends.manim.scene import StudioScene
 from axiobyte_studio.backends.manim.shapes import RENDERERS, draw
 from axiobyte_studio.backends.manim.space import configure, frame_size, point, units
@@ -15,11 +19,13 @@ from axiobyte_studio.backends.manim.space import configure, frame_size, point, u
 __all__ = [
     "RENDERERS",
     "StudioScene",
+    "build_episode_scenes",
     "configure",
     "curves",
     "draw",
     "frame_size",
     "point",
     "rate_func",
+    "scene_class_name",
     "units",
 ]

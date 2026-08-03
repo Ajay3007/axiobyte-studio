@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<rect width="100%" height="100%" fill="#090C13"/>
+<rect x="96.0" y="54.0" width="1728.0" height="939.6" fill="none" stroke="#26344A" stroke-width="2" stroke-dasharray="12 10"/>
+<rect x="96.0" y="257.3" width="1728.0" height="545.8" fill="none" stroke="#26344A" stroke-width="1" stroke-dasharray="4 8" opacity="0.6"/>
+<rect x="1294.1" y="54.0" width="529.9" height="541.2" rx="14" fill="#10303A" fill-opacity="0.55" stroke="#34D8E8" stroke-width="3"/>
+<text x="1559.0" y="333.0" font-size="24" fill="#34D8E8" font-family="DejaVu Sans" font-weight="bold" text-anchor="middle">mbuf</text>
+<rect x="695.0" y="54.0" width="529.9" height="541.2" rx="14" fill="#221B38" fill-opacity="0.55" stroke="#B79CF0" stroke-width="3"/>
+<text x="960.0" y="333.0" font-size="24" fill="#B79CF0" font-family="DejaVu Sans" font-weight="bold" text-anchor="middle">mempool</text>
+<rect x="96.0" y="54.0" width="529.9" height="541.2" rx="14" fill="#0F2A20" fill-opacity="0.55" stroke="#4DE6A0" stroke-width="3"/>
+<text x="361.0" y="333.0" font-size="24" fill="#4DE6A0" font-family="DejaVu Sans" font-weight="bold" text-anchor="middle">nic</text>
+<rect x="96.0" y="632.8" width="829.4" height="360.8" rx="14" fill="#0E2338" fill-opacity="0.55" stroke="#4AA8FF" stroke-width="3"/>
+<text x="510.7" y="821.6" font-size="24" fill="#4AA8FF" font-family="DejaVu Sans" font-weight="bold" text-anchor="middle">packet</text>
+<rect x="994.6" y="632.8" width="829.4" height="360.8" rx="14" fill="#332B10" fill-opacity="0.55" stroke="#F5D14F" stroke-width="3"/>
+<text x="1409.3" y="821.6" font-size="24" fill="#F5D14F" font-family="DejaVu Sans" font-weight="bold" text-anchor="middle">pointer</text>
+<rect x="96.0" y="149.0" width="1728.0" height="60.8" fill="#141B27" fill-opacity="0.35" rx="8"/>
+<text x="960.0" y="190.0" font-size="30" fill="#9AA6BC" font-family="DejaVu Sans" font-weight="normal" text-anchor="middle">KEYWORD</text>
+<rect x="96.0" y="850.6" width="1728.0" height="48.0" fill="#141B27" fill-opacity="0.35" rx="8"/>
+<text x="960.0" y="883.0" font-size="24" fill="#9AA6BC" font-family="DejaVu Sans" font-weight="normal" text-anchor="middle">CAPTION</text>
+<text x="24" y="1060" font-size="18" fill="#9AA6BC" font-family="DejaVu Sans Mono">gallery  ·  16x9  ·  1920x1080</text>
+</svg>

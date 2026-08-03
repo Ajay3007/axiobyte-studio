@@ -1,0 +1,122 @@
+{
+  "actors": {
+    "mbuf#1": {
+      "concept": "mbuf",
+      "props": {
+        "buf_addr": "0x7f3a4c00",
+        "refcount": 1
+      },
+      "salience": "supporting",
+      "state": "pooled"
+    },
+    "memory_buffer#1": {
+      "concept": "memory_buffer",
+      "props": {
+        "address": "0x7f3a4c00",
+        "bytes": 2048
+      },
+      "salience": "primary",
+      "state": "free"
+    },
+    "mempool#1": {
+      "concept": "mempool",
+      "props": {
+        "slots": 8
+      },
+      "salience": "supporting",
+      "state": ""
+    },
+    "nic#1": {
+      "concept": "nic",
+      "props": {
+        "label": "SmartNIC",
+        "rx_queues": 6
+      },
+      "salience": "supporting",
+      "state": ""
+    },
+    "packet#1": {
+      "concept": "packet",
+      "props": {
+        "address": "0x7f3a4c00",
+        "by": "mbuf#1",
+        "bytes": 1500,
+        "into": "mempool#1",
+        "proto": "tcp",
+        "to": "parser"
+      },
+      "salience": "supporting",
+      "state": "referenced"
+    },
+    "packet#trad": {
+      "concept": "packet",
+      "props": {
+        "address": "0x7f3a5800",
+        "bytes": 1500,
+        "into": "app",
+        "proto": "tcp"
+      },
+      "salience": "supporting",
+      "state": "in_buffer"
+    },
+    "pointer#1": {
+      "concept": "pointer",
+      "props": {},
+      "salience": "primary",
+      "state": ""
+    }
+  },
+  "focus": "zero_copy",
+  "id": "s01e02",
+  "invariants": [
+    {
+      "actor": "packet#1",
+      "after": 46.268,
+      "forbids": [
+        "copy"
+      ],
+      "id": "OP-1",
+      "unchanged": [
+        "address"
+      ]
+    }
+  ],
+  "log": [
+    {
+      "action": "dma_write",
+      "actor": "packet#trad",
+      "at": 20.0,
+      "state": "on_wire->in_buffer"
+    },
+    {
+      "action": "copy",
+      "actor": "packet#trad",
+      "at": 25.4,
+      "state": "in_buffer->in_buffer"
+    },
+    {
+      "action": "copy",
+      "actor": "packet#trad",
+      "at": 26.3,
+      "state": "in_buffer->in_buffer"
+    },
+    {
+      "action": "dma_write",
+      "actor": "packet#1",
+      "at": 68.4,
+      "state": "on_wire->in_buffer"
+    },
+    {
+      "action": "reference",
+      "actor": "packet#1",
+      "at": 96.2,
+      "state": "in_buffer->referenced"
+    },
+    {
+      "action": "forward",
+      "actor": "packet#1",
+      "at": 104.0,
+      "state": "referenced->referenced"
+    }
+  ]
+}

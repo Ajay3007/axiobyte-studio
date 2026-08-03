@@ -17,12 +17,15 @@ from manim import DOWN, LEFT, RIGHT, UP, FadeIn, FadeOut, GrowArrow, Indicate
 
 from axiobyte_studio.actions import COPY, DMA_WRITE, FORWARD, REFERENCE, Invariant, Scene
 from axiobyte_studio.actors import MBUF, MEMORY_BUFFER, MEMPOOL, NIC, PACKET, POINTER, Salience
-from axiobyte_studio.backends.manim import StudioScene, draw, rate_func
+from axiobyte_studio.backends.manim import (
+    StudioScene,
+    build_episode_scenes,
+    draw,
+    rate_func,
+)
 from axiobyte_studio.backends.manim.components import cross, link, pill, tag, title_card
 from axiobyte_studio.layout import Chain, Pair, Stack
 from axiobyte_studio.motion import motion
-from axiobyte_studio.storyboard import Episode
-from axiobyte_studio.timeline import CueTable
 
 EPISODE_ROOT = Path(__file__).resolve().parents[1]
 
@@ -207,27 +210,17 @@ def stage_zerocopy(scene: StudioScene, model: Scene) -> None:
     scene.wait(0.8)
 
 
-class _Ep02(StudioScene):
-    """Both acts, in order. Subclasses differ only by which target they name."""
+# ---------------------------------------------------------------------------
+# The scenes. One class per format, GENERATED for every format the Studio ships —
+# not only the two this episode declares. That is what makes "a new aspect ratio
+# costs no episode change" true rather than aspirational: `abs render --target 1x1`
+# works, and nothing in this file mentions 1:1.
+# ---------------------------------------------------------------------------
 
-    def construct(self) -> None:
-        episode = Episode.load(EPISODE_ROOT)
-        assert episode.beatmap is not None and episode.timeline is not None
-        self.cues = CueTable.resolve(episode.beatmap.cues, episode.timeline)
-
-        model = build_scene(turn=self.cues[TURN])
-        stage_traditional(self)
-        stage_zerocopy(self, model)
-
-
-class Episode16x9(_Ep02):
-    """The YouTube cut."""
-
-    target_id = "16x9"
-
-
-class Episode9x16(_Ep02):
-    """The Reels cut. Same acts, same cues, same invariant."""
-
-    target_id = "9x16"
-    platform = "reels"
+SCENES = build_episode_scenes(
+    globals(),
+    EPISODE_ROOT,
+    acts=(stage_traditional, stage_zerocopy),
+    build=build_scene,
+    turn_cue=TURN,
+)

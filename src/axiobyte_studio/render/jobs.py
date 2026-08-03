@@ -141,7 +141,7 @@ def scene_module(episode: Episode) -> Path:
 
 
 def scene_name(target: str) -> str:
-    """The conventional scene class name for a target.
+    """The scene class name generated for a target.
 
     Args:
         target: A target profile id, e.g. ``"9x16"``.
@@ -149,7 +149,9 @@ def scene_name(target: str) -> str:
     Returns:
         The class name, e.g. ``"Episode9x16"``.
     """
-    return f"Episode{target.replace('x', 'x')}"
+    from axiobyte_studio.backends.manim.episode_scene import scene_class_name
+
+    return scene_class_name(target)
 
 
 def verify_staging(episode: Episode) -> list[str]:
@@ -191,6 +193,24 @@ def verify_staging(episode: Episode) -> list[str]:
         for shot in episode.shotlist.shots
         if not hasattr(module, shot.stage_function)
     ]
+
+
+def available_scenes(episode: Episode) -> list[str]:
+    """Every format this episode can render, whether or not it declares them.
+
+    An episode's ``targets:`` decides what a plain ``abs render`` produces. This is
+    what is *possible* — and the two differing is the point: a format the episode
+    never mentioned still costs nothing.
+
+    Args:
+        episode: The episode.
+
+    Returns:
+        Target ids, sorted.
+    """
+    from axiobyte_studio.layout.frame import available_targets
+
+    return available_targets()
 
 
 def render_episode(
@@ -274,11 +294,22 @@ def render_episode(
             tail = (completed.stderr or completed.stdout).strip().splitlines()
             result.failures[job.target] = tail[-1] if tail else "manim exited non-zero"
             continue
+
         # Manim decorates filenames with its own version, so match on the prefix
         # and filter to real deliverables rather than its working files.
-        result.outputs[job.target] = sorted(
+        produced = sorted(
             path
             for path in out.rglob(f"{job.scene}*")
             if path.suffix in MEDIA_SUFFIXES and "partial_movie_files" not in path.parts
         )
+        # Manim exits 0 even when it rendered nothing — "There are no scenes inside
+        # that module" is an ERROR log and a clean exit. Trusting the exit code
+        # alone reports success for an empty render, which is the quietest possible
+        # failure. A render that produced no file did not succeed.
+        if not produced:
+            result.failures[job.target] = (
+                f"produced no output — manim found no scene named {job.scene!r}"
+            )
+            continue
+        result.outputs[job.target] = produced
     return result

@@ -171,26 +171,43 @@ class TestStagingVerification:
 
         assert verify_staging(episode) == []
 
+    def _drop_an_act(self, scratch: Path) -> None:
+        """Stage only the second act, while the storyboard still declares both.
+
+        This is the realistic shape of the bug: the beat map has two acts, the
+        module draws one, and everything else passes.
+        """
+        module = scratch / "shots" / "episode.py"
+        text = module.read_text()
+        text = text.replace("acts=(stage_traditional, stage_zerocopy),", "acts=(stage_zerocopy,),")
+        text = text.replace("def stage_traditional(", "def _retired_traditional(")
+        module.write_text(text, encoding="utf-8")
+
     def test_a_missing_staging_function_is_reported(self, scratch: Path):
         from axiobyte_studio.render import verify_staging
 
-        module = scratch / "shots" / "episode.py"
-        module.write_text(
-            module.read_text().replace("def stage_traditional(", "def _unused_traditional("),
-            encoding="utf-8",
-        )
+        self._drop_an_act(scratch)
         assert verify_staging(Episode.load(scratch)) == ["stage_traditional"]
 
     def test_a_missing_staging_function_blocks_the_render(self, scratch: Path):
-        module = scratch / "shots" / "episode.py"
-        module.write_text(
-            module.read_text().replace("def stage_traditional(", "def _unused_traditional("),
-            encoding="utf-8",
-        )
+        self._drop_an_act(scratch)
         with pytest.raises(StudioError) as exc:
             render_episode(Episode.load(scratch), dry_run=True)
         assert "no staging" in str(exc.value)
         assert "cued and never drawn" in str(exc.value)
+
+    def test_an_act_named_in_the_scene_list_but_undefined_fails_at_import(self, scratch: Path):
+        # Generating scenes from the act tuple made this stricter than it was: a
+        # renamed act no longer merely goes undrawn, it stops the module loading.
+        module = scratch / "shots" / "episode.py"
+        module.write_text(
+            module.read_text().replace("def stage_traditional(", "def _retired("),
+            encoding="utf-8",
+        )
+        with pytest.raises(StudioError) as exc:
+            render_episode(Episode.load(scratch), dry_run=True)
+        assert "could not be imported" in str(exc.value)
+        assert "stage_traditional" in str(exc.value)
 
     def test_an_unimportable_module_names_the_error(self, scratch: Path):
         module = scratch / "shots" / "episode.py"
