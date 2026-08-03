@@ -1,0 +1,55 @@
+id: context_switch
+kind: interaction
+version: 1.0.0
+domain: os
+title: "Context switch — the cost of changing whose code runs"
+between: [thread, cpu]
+
+pedagogy:
+  objectives:
+    - id: CS-1
+      statement: >
+        Changing which thread a core runs costs saved registers, a cold cache and
+        a scheduler decision — none of which is your program's work.
+      evidence: "The core's timeline is visibly torn, and the cache empties."
+  removal_test:
+    thread: "Without threads: a core executes instructions. True, and not the lesson."
+    cpu: "Without the core: threads exist and wait. True, and not the lesson."
+  misconceptions:
+    - id: CS-M1
+      wrong: "A context switch is just a jump."
+      refute_by: "Show the register file saved and restored, and the cache going cold."
+      source: "the standard mental model before anyone measures one"
+    - id: CS-M2
+      wrong: "The cost is the switch instruction."
+      refute_by: "The instruction is cheap; the cold cache afterwards is not."
+
+visual_grammar:
+  participants:
+    thread: { salience: primary, count: 2 }
+    cpu: { salience: primary, count: 1 }
+  invariant_on_screen: "the core runs exactly one thread at a time"
+  never: ["two threads executing on one core simultaneously"]
+
+motion_grammar:
+  primary: interrupt.flash
+  participants: { thread: lock.stutter }
+  reads_as: "work torn in half, and restarted cold"
+
+camera:
+  move: rack_focus
+  intent: "attention is yanked from one thread to another, which is what a switch is"
+  never: [orbit]
+
+staging:
+  template: cost_column
+
+assessment:
+  after_this_the_viewer_can:
+    - "Name the three costs of a switch: saved state, the scheduler, and a cold cache."
+    - "Explain why pinning a worker to a core avoids all three."
+
+relations:
+  requires: [thread, cpu]
+  contrasts_with: [polling]
+  composes_into: []

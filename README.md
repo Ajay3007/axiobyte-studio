@@ -78,6 +78,9 @@ why the absence of red is the argument in the zero-copy episode.
 Open `docs/previews/index.html` for one shot solved to 16:9, 9:16 (Reels) and 1:1, and
 `docs/previews/render/` for the same shot actually rendered through Manim in two formats.
 
+Two episodes are authored: `s01e01-kernel-slow` and `s01e02-zero-copy`, both
+anchored to the reference episodes' own voiceovers.
+
 ```bash
 # validate an episode — renders nothing
 .venv/bin/abs plan episodes/s01e02-zero-copy --concepts

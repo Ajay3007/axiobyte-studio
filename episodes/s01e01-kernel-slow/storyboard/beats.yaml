@@ -1,0 +1,44 @@
+# Cues are verbatim from the reference episode's own table.
+acts:
+  - id: kernel
+    keyword: "THE KERNEL PATH"
+    title: "What actually happens"
+    beats:
+      - id: kernel.arrives
+        cue: "arrives@4"
+        concept: interrupt_driven
+        objective: IRQ-1
+        intent: "the packet lands on the card; nothing has cost anything yet"
+      - id: kernel.interrupt
+        cue: "interrupt@5"
+        concept: interrupt_driven
+        refutes: IRQ-M1
+        intent: "the core's work is torn in half — the first tax"
+
+  - id: copies
+    keyword: "THE COPY TAX"
+    beats:
+      - id: copies.copies
+        cue: "copies@10"
+        concept: copy_based
+        objective: CB-1
+        intent: "the same bytes, written again, in red"
+      - id: copies.cycles
+        cue: "cycles@11"
+        concept: copy_based
+        refutes: CB-M1
+        intent: "the cost meter fills while the packet count stays at one"
+
+  - id: switch
+    keyword: "THE SWITCH"
+    beats:
+      - id: switch.wake
+        cue: "wake@12"
+        concept: context_switch
+        objective: CS-1
+        intent: "the application must be woken — the third tax"
+      - id: switch.caches
+        cue: "caches@14"
+        concept: context_switch
+        refutes: CS-M2
+        intent: "the cache empties; the instruction was never the expensive part"

@@ -1,0 +1,11 @@
+id: s01e01-kernel-slow
+title: "Why the kernel cannot keep up with a 100 Gb NIC"
+pillar: p01-high-performance-data-plane
+
+targets: [16x9, 9x16]
+platforms: { 9x16: reels }
+theme: systems
+
+assumed: [packet, memory_buffer, nic, nic_queue, cpu, thread]
+
+voiceover: "/Users/dukhi8ma/Documents/dev/projects/Ajay3007.github.io/_learning/manim-scripts/axiobyte-system/ep01/timeline.json"
