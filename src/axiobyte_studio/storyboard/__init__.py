@@ -13,6 +13,7 @@ from axiobyte_studio.storyboard.plan import (
     require_ok,
     summarise_concepts,
 )
+from axiobyte_studio.storyboard.scaffold import Scaffold, new_episode
 from axiobyte_studio.storyboard.shotlist import Shot, ShotList
 
 __all__ = [
@@ -25,9 +26,11 @@ __all__ = [
     "Finding",
     "Picture",
     "Plan",
+    "Scaffold",
     "Severity",
     "Shot",
     "ShotList",
+    "new_episode",
     "plan",
     "require_ok",
     "summarise_concepts",

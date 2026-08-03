@@ -64,6 +64,7 @@ why the absence of red is the argument in the zero-copy episode.
 | Components (glow, pill, tag, link, meters, title cards) | ✅ |
 | Cue-driven acts (`at`, `until`, `window`) | ✅ |
 | Concept SDK (atomic / interaction / composite) | ✅ |
+| Episode scaffolding, derived from concepts | ✅ |
 | Storyboard Engine (picture, beats, plan cascade) | ✅ |
 | `abs` CLI | ✅ |
 | Render pipeline (plan-gated) + contact sheet | ✅ |
@@ -82,6 +83,10 @@ Two episodes are authored: `s01e01-kernel-slow` and `s01e02-zero-copy`, both
 anchored to the reference episodes' own voiceovers.
 
 ```bash
+# scaffold the next episode from the concepts it will teach
+.venv/bin/abs new episode s01e05-false-sharing \
+    --concept false_sharing --concept padded_variables
+
 # validate an episode — renders nothing
 .venv/bin/abs plan episodes/s01e02-zero-copy --concepts
 .venv/bin/abs concept show zero_copy

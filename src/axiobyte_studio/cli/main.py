@@ -21,6 +21,7 @@ from axiobyte_studio.render.jobs import QUALITY, render_episode
 from axiobyte_studio.storyboard import contact_sheet
 from axiobyte_studio.storyboard.episode import Episode
 from axiobyte_studio.storyboard.plan import plan, summarise_concepts
+from axiobyte_studio.storyboard.scaffold import new_episode
 from axiobyte_studio.timeline.drift import compare
 from axiobyte_studio.timeline.timeline import Timeline
 
@@ -82,6 +83,19 @@ def _cmd_drift(args: argparse.Namespace) -> int:
     )
     print(drift.report(verbose=args.verbose))
     return 0 if drift.ok else 1
+
+
+def _cmd_new_episode(args: argparse.Namespace) -> int:
+    """Scaffold an episode from the concepts it will teach."""
+    scaffold = new_episode(
+        args.id,
+        args.concept,
+        into=args.into,
+        pillar=args.pillar,
+        targets=args.target or None,
+    )
+    print(scaffold.report())
+    return 0
 
 
 def _cmd_bake(args: argparse.Namespace) -> int:
@@ -203,6 +217,18 @@ def build_parser() -> argparse.ArgumentParser:
     board_cmd = sheet_sub.add_parser("sheet", help="write the one-page contact sheet")
     board_cmd.add_argument("episode", type=Path)
     board_cmd.set_defaults(func=_cmd_sheet)
+
+    new_cmd = sub.add_parser("new", help="scaffold new work")
+    new_sub = new_cmd.add_subparsers(dest="subcommand", required=True)
+    episode_cmd = new_sub.add_parser("episode", help="scaffold an episode from concepts")
+    episode_cmd.add_argument("id", help="sNNeNN-kebab-slug")
+    episode_cmd.add_argument(
+        "--concept", action="append", required=True, help="repeat, in teaching order"
+    )
+    episode_cmd.add_argument("--pillar", default="")
+    episode_cmd.add_argument("--target", action="append")
+    episode_cmd.add_argument("--into", type=Path, default=Path("episodes"))
+    episode_cmd.set_defaults(func=_cmd_new_episode)
 
     asset_cmd = sub.add_parser("asset", help="asset tools")
     asset_sub = asset_cmd.add_subparsers(dest="subcommand", required=True)
