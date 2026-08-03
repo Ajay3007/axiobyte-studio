@@ -47,6 +47,7 @@ def _cmd_render(args: argparse.Namespace) -> int:
         fps=args.fps,
         still=args.still,
         dry_run=args.dry_run,
+        use_cache=not args.no_cache,
     )
     if args.dry_run:
         print(f"{episode.id}: plan passed; {len(result.jobs)} job(s) would run")
@@ -210,6 +211,9 @@ def build_parser() -> argparse.ArgumentParser:
     render_cmd.add_argument("--fps", type=int, default=30)
     render_cmd.add_argument("--still", action="store_true", help="one frame per target")
     render_cmd.add_argument("--dry-run", action="store_true", help="plan and show the jobs")
+    render_cmd.add_argument(
+        "--no-cache", action="store_true", help="re-render even if nothing changed"
+    )
     render_cmd.set_defaults(func=_cmd_render)
 
     sheet_cmd = sub.add_parser("storyboard", help="storyboard tools")

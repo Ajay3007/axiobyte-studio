@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from axiobyte_studio.render import cache
 from axiobyte_studio.render.jobs import (
     QUALITY,
     RenderJob,
@@ -18,6 +19,7 @@ __all__ = [
     "RenderJob",
     "RenderResult",
     "available_scenes",
+    "cache",
     "render_episode",
     "scene_module",
     "scene_name",

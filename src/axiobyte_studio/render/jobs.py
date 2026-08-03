@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from axiobyte_studio.core.errors import StudioError
+from axiobyte_studio.render import cache
 from axiobyte_studio.storyboard.episode import Episode
 from axiobyte_studio.storyboard.plan import Plan, plan, require_ok
 
@@ -84,12 +85,14 @@ class RenderResult:
         jobs: The jobs that were run.
         outputs: Files produced, per target.
         failures: Targets that failed, with the tail of their output.
+        cached: Targets served from a previous identical render, by digest.
     """
 
     plan: Plan
     jobs: list[RenderJob] = field(default_factory=list)
     outputs: dict[str, list[Path]] = field(default_factory=dict)
     failures: dict[str, str] = field(default_factory=dict)
+    cached: dict[str, str] = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
@@ -107,14 +110,19 @@ class RenderResult:
             produced = self.outputs.get(job.target, [])
             if job.target in self.failures:
                 lines.append(f"  FAIL  {job.target:<8} {self.failures[job.target]}")
+            elif job.target in self.cached:
+                where = produced[0].parent if produced else "?"
+                lines.append(f"  cached {job.target:<7} {job.scene}  →  {where}")
             else:
                 where = produced[0].parent if produced else "?"
                 lines.append(f"  ok    {job.target:<8} {job.scene}  →  {where}")
         lines.append("")
-        lines.append(
-            f"render: {len(self.jobs) - len(self.failures)}/{len(self.jobs)} targets"
-            + ("" if self.ok else "  — see output above")
-        )
+        reused = len(self.cached)
+        rendered = len(self.jobs) - len(self.failures) - reused
+        summary = f"render: {rendered} rendered, {reused} cached"
+        if self.failures:
+            summary += f", {len(self.failures)} failed — see output above"
+        lines.append(summary)
         return "\n".join(lines)
 
 
@@ -222,6 +230,7 @@ def render_episode(
     still: bool = False,
     media_dir: Path | None = None,
     dry_run: bool = False,
+    use_cache: bool = True,
 ) -> RenderResult:
     """Validate an episode, then render every declared target.
 
@@ -233,6 +242,9 @@ def render_episode(
         still: Render one frame per target instead of video.
         media_dir: Where to write. Defaults to the episode's ``out/``.
         dry_run: Plan and build the jobs, but run nothing.
+        use_cache: Reuse a previous render when nothing that affects the output
+            has changed. Conservative — a needless render costs minutes, a wrongly
+            reused one costs trust.
 
     Returns:
         The result, whose ``ok`` says whether every target succeeded.
@@ -284,6 +296,19 @@ def render_episode(
 
     out.mkdir(parents=True, exist_ok=True)
     for job in result.jobs:
+        print_ = cache.fingerprint(episode, job.target, quality=quality, still=still)
+        previous = cache.lookup(out, job.target)
+        reusable = (
+            use_cache
+            and previous is not None
+            and previous.intact
+            and previous.digest == print_.digest
+        )
+        if reusable and previous is not None:
+            result.cached[job.target] = print_.digest
+            result.outputs[job.target] = list(previous.outputs)
+            continue
+
         completed = subprocess.run(
             job.command(out, fps),
             capture_output=True,
@@ -312,4 +337,12 @@ def render_episode(
             )
             continue
         result.outputs[job.target] = produced
+        cache.record(
+            out,
+            job.target,
+            print_,
+            produced,
+            episode_id=episode.id,
+            scene=job.scene,
+        )
     return result

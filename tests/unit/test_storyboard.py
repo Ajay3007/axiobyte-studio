@@ -58,7 +58,9 @@ def scratch(tmp_path: Path) -> Path:
     if not EPISODE.exists():
         pytest.skip("the worked episode is not present")
     target = tmp_path / EPISODE.name
-    shutil.copytree(EPISODE, target)
+    # Never copy `out/`: renders are derived artifacts, and a test that inherits
+    # them is a test whose starting state depends on what was rendered last.
+    shutil.copytree(EPISODE, target, ignore=shutil.ignore_patterns("out"))
     return target
 
 

@@ -68,6 +68,7 @@ why the absence of red is the argument in the zero-copy episode.
 | Storyboard Engine (picture, beats, plan cascade) | ✅ |
 | `abs` CLI | ✅ |
 | Render pipeline (plan-gated) + contact sheet | ✅ |
+| Content-hash render cache + reproducibility manifest | ✅ |
 | Generated scenes — a new format costs no episode change | ✅ |
 | Golden tests (semantic · layout · perceptual) | ✅ |
 | 3D Tier 1 — isometric solids (no renderer) | ✅ |
@@ -100,6 +101,7 @@ anchored to the reference episodes' own voiceovers.
 
 # validate, then render every declared target — refuses if the plan fails
 .venv/bin/abs render episodes/s01e02-zero-copy --still
+# a second identical render does not happen at all; --no-cache forces it
 
 # a still, both formats from one shot
 .venv/bin/manim -s -ql --format=png examples/zero_copy_shot.py ZeroCopyWide
