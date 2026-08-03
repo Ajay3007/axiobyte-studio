@@ -65,6 +65,19 @@ roles:
     hue: "#65728A"     # GREY   — idle, empty, unused, inactive
 
 # ---------------------------------------------------------------------------
+# LIGHTING — the Tier-2 rig, so a baked plate is lit by the same system that
+# draws everything around it. A plate lit to its own taste reads as pasted on.
+#
+# Key is neutral: it establishes form. Fill and rim carry palette, which is what
+# ties a rendered board to the diagram beside it.
+# ---------------------------------------------------------------------------
+lighting:
+  key: "#FFFFFF"       # neutral — form, not colour
+  fill: "#4AA8FF"      # the packet blue, bounced
+  rim: "#34D8E8"       # the mbuf cyan, separating the subject from the canvas
+  ambient: "#141B27"   # what metals reflect; the surface colour, dimmed
+
+# ---------------------------------------------------------------------------
 # RESERVED ROLES — hues that may not be used decoratively, at any opacity.
 #
 # `copy` is the load-bearing one for Pillar 1. Red means "bytes moved" and nothing

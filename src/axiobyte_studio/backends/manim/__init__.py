@@ -13,6 +13,8 @@ from axiobyte_studio.backends.manim.episode_scene import (
     build_episode_scenes,
     scene_class_name,
 )
+from axiobyte_studio.backends.manim.plates import PlateSequence
+from axiobyte_studio.backends.manim.plates import frame as plate_frame
 from axiobyte_studio.backends.manim.scene import StudioScene
 from axiobyte_studio.backends.manim.shapes import ISO_RENDERERS, RENDERERS, draw
 from axiobyte_studio.backends.manim.space import configure, frame_size, point, units
@@ -20,6 +22,7 @@ from axiobyte_studio.backends.manim.space import configure, frame_size, point, u
 __all__ = [
     "ISO_RENDERERS",
     "RENDERERS",
+    "PlateSequence",
     "StudioScene",
     "build_episode_scenes",
     "configure",
@@ -27,6 +30,7 @@ __all__ = [
     "draw",
     "frame_size",
     "iso",
+    "plate_frame",
     "point",
     "rate_func",
     "scene_class_name",

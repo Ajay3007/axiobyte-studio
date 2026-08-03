@@ -2,6 +2,7 @@
 # definition (ARCHITECTURE.md §6).
 out/
 !docs/previews/render/*.png
+!assets/plates/**/*.png
 media/
 *.mp4
 *.mov

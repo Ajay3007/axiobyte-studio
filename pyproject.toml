@@ -60,6 +60,7 @@ convention = "google"
 python_version = "3.12"
 strict = true
 files = ["src/axiobyte_studio"]
+exclude = ["backends/blender/scripts/"]
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
@@ -70,6 +71,12 @@ disallow_untyped_defs = false
 # does not narrow for MovingCameraScene, and several constructors are untyped.
 # The relaxation is scoped to the backend that touches Manim and nowhere else —
 # which is the point of confining the tool to one package in the first place.
+# Runs inside Blender, where `bpy` exists. It is a script executed by
+# `blender --python`, never imported by the Studio.
+[[tool.mypy.overrides]]
+module = ["axiobyte_studio.backends.blender.scripts.*"]
+ignore_errors = true
+
 [[tool.mypy.overrides]]
 module = ["axiobyte_studio.backends.manim.*"]
 disable_error_code = ["union-attr", "no-untyped-call"]
@@ -82,6 +89,7 @@ testpaths = ["tests"]
 addopts = "-q --strict-markers"
 markers = [
     "reference: runs against the reference episodes; skipped when they are absent",
+    "blender: needs Blender installed; skipped when it is not",
 ]
 
 # ---------------------------------------------------------------------------

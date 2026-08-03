@@ -69,6 +69,9 @@ why the absence of red is the argument in the zero-copy episode.
 | Render pipeline (plan-gated) + contact sheet | ✅ |
 | Generated scenes — a new format costs no episode change | ✅ |
 | Golden tests (semantic · layout · perceptual) | ✅ |
+| 3D Tier 1 — isometric solids (no renderer) | ✅ |
+| 3D Tier 2 — baked Blender plates | ✅ |
+| 3D Tier 3 — live Blender + camera bridge | ⬜ |
 | Educational Grammar | ⬜ |
 | Full ep02 reproduction (Phase 0 gate) | ⬜ |
 

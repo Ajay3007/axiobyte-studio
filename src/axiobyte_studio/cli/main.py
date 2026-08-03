@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 from axiobyte_studio import __version__
+from axiobyte_studio.backends.blender.bake import MOVES, PlateSpec, bake
 from axiobyte_studio.concepts.base import ConceptKind, InteractionConcept
 from axiobyte_studio.concepts.registry import registry
 from axiobyte_studio.core.errors import StudioError
@@ -81,6 +82,23 @@ def _cmd_drift(args: argparse.Namespace) -> int:
     )
     print(drift.report(verbose=args.verbose))
     return 0 if drift.ok else 1
+
+
+def _cmd_bake(args: argparse.Namespace) -> int:
+    """Bake a hero asset to an RGBA plate, once, for every episode to reuse."""
+    spec = PlateSpec(
+        asset=args.asset,
+        move=args.move,
+        frames=args.frames,
+        width=args.width,
+        height=args.height,
+    )
+    plate = bake(spec, args.into, version=args.version, force=args.force)
+    size = plate.meta.get("bytes", 0) / 1_048_576
+    print(f"{plate.id}@{plate.version}  {len(plate.frames)} frames  {size:.1f} MB")
+    print(f"  {plate.root}")
+    print(f"  digest {plate.digest} — an unchanged spec re-bakes to the same plate")
+    return 0
 
 
 def _cmd_concept_list(args: argparse.Namespace) -> int:
@@ -185,6 +203,19 @@ def build_parser() -> argparse.ArgumentParser:
     board_cmd = sheet_sub.add_parser("sheet", help="write the one-page contact sheet")
     board_cmd.add_argument("episode", type=Path)
     board_cmd.set_defaults(func=_cmd_sheet)
+
+    asset_cmd = sub.add_parser("asset", help="asset tools")
+    asset_sub = asset_cmd.add_subparsers(dest="subcommand", required=True)
+    bake_cmd = asset_sub.add_parser("bake", help="bake a hero asset to an RGBA plate")
+    bake_cmd.add_argument("asset")
+    bake_cmd.add_argument("--move", default="turntable", choices=sorted(MOVES))
+    bake_cmd.add_argument("--frames", type=int, default=24)
+    bake_cmd.add_argument("--width", type=int, default=960)
+    bake_cmd.add_argument("--height", type=int, default=540)
+    bake_cmd.add_argument("--version", default="1.0.0")
+    bake_cmd.add_argument("--into", type=Path, default=Path("assets/plates"))
+    bake_cmd.add_argument("--force", action="store_true", help="re-bake even if unchanged")
+    bake_cmd.set_defaults(func=_cmd_bake)
 
     timeline_cmd = sub.add_parser("timeline", help="voiceover tools")
     timeline_sub = timeline_cmd.add_subparsers(dest="subcommand", required=True)

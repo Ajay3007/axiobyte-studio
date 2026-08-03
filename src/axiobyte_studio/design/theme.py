@@ -73,6 +73,8 @@ class Theme:
             major bump and requires golden-frame re-approval.
         ground: Canvas colours, which own no meaning.
         ink: Type colours, which own no meaning.
+        lighting: The Tier-2 light rig, so baked plates are lit by the same
+            system that draws everything around them.
     """
 
     def __init__(self, raw: dict[str, Any], source: Path) -> None:
@@ -81,6 +83,7 @@ class Theme:
         self.source = source
         self.ground: dict[str, str] = dict(raw.get("ground", {}))
         self.ink: dict[str, str] = dict(raw.get("ink", {}))
+        self.lighting: dict[str, str] = dict(raw.get("lighting", {}))
         reserved = set(raw.get("reserved", []))
         self._roles: dict[str, Role] = {
             name: Role(
