@@ -83,6 +83,36 @@ concepts:
     motion: none
     fidelity: [flat, iso, plate]
 
+  cache_line:
+    role: memory
+    silhouette: line_cells          # 64 bytes, drawn as cells, so two variables
+    motion: none                    #   can visibly land on the SAME line
+    fidelity: [flat, iso]
+    never:
+      - being drawn as a single undivided block
+
+  thread:
+    role: cpu
+    silhouette: lane
+    motion: poll.metronome
+    states:
+      running: glow.soft
+      blocked: outline_dashed
+      ready: none
+    never:
+      - sharing a lane with another thread
+
+  worker_core:
+    role: cpu
+    silhouette: die_with_cores
+    motion: none
+    fidelity: [flat, iso]
+
+  nic_queue:
+    role: nic
+    silhouette: slot_grid
+    motion: none
+
   # dma      -> concepts/library/interaction/dma.yaml         (nic <-> memory_buffer)
   # copy     -> concepts/library/interaction/copy_based.yaml  (packet <-> memory_buffer)
   # Their ROLES remain in design/themes/, because a role is a value and an

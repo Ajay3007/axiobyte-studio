@@ -194,7 +194,7 @@ def image_hash(path: str | Path, size: int = 16) -> str:
 
     with Image.open(path) as image:
         grid = image.convert("L").resize((size, size), Image.Resampling.LANCZOS)
-        pixels = list(grid.getdata())
+        pixels = list(grid.tobytes())
     mean = sum(pixels) / len(pixels)
     bits = "".join("1" if pixel > mean else "0" for pixel in pixels)
     return f"{int(bits, 2):0{size * size // 4}x}"

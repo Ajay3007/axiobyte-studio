@@ -102,9 +102,68 @@ POINTER = ActorDefinition(
     default_props={},
 )
 
+#: A cache line's life is the coherency protocol, which IS the lesson of false
+#: sharing: two cores writing different variables on one line ping-pong it.
+_LINE_MACHINE = StateMachine(
+    initial="invalid",
+    states=frozenset({"invalid", "shared", "modified"}),
+    transitions=(
+        Transition("inspect", "invalid", "shared"),
+        Transition("inspect", "shared", "shared"),
+        Transition("inspect", "modified", "shared"),
+        Transition("copy", "shared", "modified"),
+        Transition("copy", "modified", "modified"),
+        Transition("evict", "shared", "invalid"),
+        Transition("evict", "modified", "invalid"),
+    ),
+)
+
+CACHE_LINE = ActorDefinition(
+    concept="cache_line",
+    machine=_LINE_MACHINE,
+    anchors=("start", "end"),
+    default_props={"bytes": 64},
+)
+
+# ---------------------------------------------------------------------------
+# compute
+# ---------------------------------------------------------------------------
+
+_THREAD_MACHINE = StateMachine(
+    initial="ready",
+    states=frozenset({"ready", "running", "blocked"}),
+    transitions=(
+        Transition("schedule", "ready", "running"),
+        Transition("inspect", "running", "running"),
+        Transition("copy", "running", "running"),
+        Transition("sleep", "running", "blocked"),
+        Transition("wake", "blocked", "ready"),
+        Transition("yield_", "running", "ready"),
+    ),
+)
+
+THREAD = ActorDefinition(
+    concept="thread",
+    machine=_THREAD_MACHINE,
+    anchors=("stack", "pc"),
+    default_props={"label": "thread"},
+)
+
+WORKER_CORE = ActorDefinition(
+    concept="worker_core",
+    anchors=("l1", "pipeline"),
+    default_props={"label": "core", "cores": 1},
+)
+
 # ---------------------------------------------------------------------------
 # io — hardware has no lifecycle a viewer needs to learn, so no machine.
 # ---------------------------------------------------------------------------
+
+NIC_QUEUE = ActorDefinition(
+    concept="nic_queue",
+    anchors=("head", "tail"),
+    default_props={"slots": 8},
+)
 
 NIC = ActorDefinition(
     concept="nic",
@@ -125,5 +184,17 @@ CPU = ActorDefinition(
 #: Every definition, by concept, for contract tests and scaffolding.
 LIBRARY: dict[str, ActorDefinition] = {
     definition.concept: definition
-    for definition in (PACKET, MEMORY_BUFFER, MEMPOOL, MBUF, POINTER, NIC, CPU)
+    for definition in (
+        PACKET,
+        MEMORY_BUFFER,
+        MEMPOOL,
+        MBUF,
+        POINTER,
+        CACHE_LINE,
+        THREAD,
+        WORKER_CORE,
+        NIC,
+        NIC_QUEUE,
+        CPU,
+    )
 }

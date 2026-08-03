@@ -140,3 +140,97 @@ class TestVisualLanguageIsHonoured:
         active = theme()
         group = draw(ACTORS["mbuf"].spawn("1"), Box(0.1, 0.1, 0.5, 0.5), fmt, active)
         assert active.role("pointer").hue.upper() in _colours(group)
+
+
+class TestAtomicMeansDrawable:
+    """ "Atomic" is a promise that the thing can be drawn. Holding it to that.
+
+    Four atomic concepts once had no visual identity and no actor, so nothing
+    could ever draw them — cache_line, thread, worker_core and nic_queue, which
+    are precisely what episodes 3 to 5 need.
+    """
+
+    def test_every_atomic_concept_has_a_visual_identity(self):
+        from axiobyte_studio.concepts import ConceptKind, registry
+        from axiobyte_studio.design import visual_language
+
+        atomic = {c.id for c in registry().of_kind(ConceptKind.ATOMIC)}
+        missing = sorted(atomic - set(visual_language().concepts))
+        assert not missing, f"atomic but undrawable: {missing}"
+
+    def test_every_atomic_concept_has_an_actor(self):
+        from axiobyte_studio.concepts import ConceptKind, registry
+
+        atomic = {c.id for c in registry().of_kind(ConceptKind.ATOMIC)}
+        assert not sorted(atomic - set(ACTORS))
+
+    def test_every_actor_has_a_flat_renderer(self):
+        assert not sorted(set(ACTORS) - set(RENDERERS))
+
+
+class TestIsoFidelity:
+    """Tier-1 3D: solid without a renderer, and contained like everything else."""
+
+    TOLERANCE = 0.12
+
+    def test_iso_concepts_are_all_drawable_actors(self):
+        from axiobyte_studio.backends.manim import ISO_RENDERERS
+
+        assert not sorted(set(ISO_RENDERERS) - set(ACTORS))
+
+    @pytest.mark.parametrize("target_id", TARGETS)
+    @pytest.mark.parametrize("concept", ["nic", "cpu", "worker_core", "cache_line"])
+    def test_an_isometric_solid_stays_in_its_box(self, concept, target_id):
+        # The first version sized against width alone and overflowed downward by
+        # exactly the depth's contribution — into the neighbour's box.
+        fmt = target(target_id)
+        configure(fmt)
+        box = Box(0.1, 0.15, 0.8, 0.35)
+        group = draw(ACTORS[concept].spawn("1"), box, fmt, theme(), fidelity="iso")
+
+        centre, (width, height) = center_of(box, fmt), size_of(box, fmt)
+        assert group.get_left()[0] >= centre[0] - width / 2 - self.TOLERANCE
+        assert group.get_right()[0] <= centre[0] + width / 2 + self.TOLERANCE
+        assert group.get_top()[1] <= centre[1] + height / 2 + self.TOLERANCE
+        assert group.get_bottom()[1] >= centre[1] - height / 2 - self.TOLERANCE
+
+    def test_the_three_faces_are_shaded_differently(self):
+        # What reads as solid is the ratio between the faces, not the projection.
+        from axiobyte_studio.backends.manim import iso
+
+        faces = iso.solid(iso.Solid(2.0, 1.0, 0.5), "#4DE6A0", "#090C13")
+        fills = [f.get_fill_color().to_hex() for f in faces]
+        assert len(set(fills)) == 3
+
+    def test_faces_are_muted_rather_than_saturated(self):
+        # A face blended fully to its hue is a slab of colour that shouts louder
+        # than anything the shot is saying.
+        from axiobyte_studio.backends.manim import iso
+
+        assert iso.TOP < 0.5
+        assert iso.TOP > iso.LEFT > iso.RIGHT
+
+    def test_the_projection_is_isometric(self):
+        from axiobyte_studio.backends.manim import iso
+
+        origin = iso.project(0, 0, 0)
+        assert origin == pytest.approx([0, 0, 0])
+        # Equal x and y recede symmetrically and cancel horizontally.
+        assert iso.project(1, 1, 0)[0] == pytest.approx(0.0)
+        # z is straight up the screen.
+        assert iso.project(0, 0, 1)[1] == pytest.approx(1.0)
+
+    def test_a_concept_with_no_isometric_form_says_so(self):
+        fmt = target("16x9")
+        configure(fmt)
+        with pytest.raises(ConceptError) as exc:
+            draw(ACTORS["packet"].spawn("1"), Box(0.1, 0.1, 0.5, 0.3), fmt, theme(), "iso")
+        assert "no isometric form" in str(exc.value)
+        assert "a packet is a run of bytes, not a solid" in str(exc.value)
+
+    def test_a_stack_needs_layers(self):
+        from axiobyte_studio.backends.manim import iso
+        from axiobyte_studio.core import DesignError
+
+        with pytest.raises(DesignError, match="at least one layer"):
+            iso.stack(Box(0.1, 0.1, 0.5, 0.5), target("16x9"), [], "#090C13")

@@ -27,6 +27,7 @@ from manim import (
 )
 
 from axiobyte_studio.actors.base import Actor
+from axiobyte_studio.backends.manim import iso
 from axiobyte_studio.backends.manim.space import center_of, size_of, units
 from axiobyte_studio.core.errors import ConceptError
 from axiobyte_studio.design.theme import Theme, visual_language
@@ -202,12 +203,85 @@ def draw_pointer(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup
     return VGroup(arrow)
 
 
+def draw_cache_line(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """A cache line: 64 bytes, drawn as cells.
+
+    Never one undivided block. False sharing is only visible if two variables can
+    be seen landing on the SAME line, which needs the line to have parts.
+    """
+    role = theme.role("memory")
+    panel = _panel(box, target, role.hue, role.surface)
+    cells = byte_cells(box, target, role.hue, count=8)
+    title = _title_inside("64B line", panel, target, role.hue)
+    return VGroup(panel, cells, title)
+
+
+def draw_thread(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """A thread: one lane, never shared with another thread."""
+    role = theme.role("cpu")
+    panel = _panel(box, target, role.hue, role.surface)
+    label = _label(str(actor.props.get("label", "thread")), target, "row", role.hue)
+    label.move_to(center_of(box, target))
+    return VGroup(panel, label)
+
+
+def draw_worker_core(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """A core dedicated to one job, so its cache stays warm."""
+    return _board(box, target, theme, "cpu", str(actor.props.get("label", "core")))
+
+
+def draw_nic_queue(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """A ring of descriptors the card fills and software drains."""
+    role = theme.role("nic")
+    panel = _panel(box, target, role.hue, role.surface)
+    cells = byte_cells(box, target, role.hue, count=min(int(actor.props.get("slots", 8)), 10))
+    return VGroup(panel, cells, _title_inside("rx queue", panel, target, role.hue))
+
+
 def _board(box: Box, target: Target, theme: Theme, role_name: str, title: str) -> VGroup:
     """A hardware component: a board with a label. Tier-1 flat fidelity."""
     role = theme.role(role_name)
     panel = _panel(box, target, role.hue, role.surface)
     label = _label(title, target, "node", role.hue).move_to(center_of(box, target))
     return VGroup(panel, label)
+
+
+def draw_nic_iso(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """A NIC as an isometric board with a controller die on it.
+
+    Tier-1 3D: three shaded faces, no renderer, no per-frame cost. Same role
+    colour, same box, same verbs as the flat fidelity — a shot asks for a NIC and
+    the fidelity decides how solid it looks.
+    """
+    role = theme.role("nic")
+    ground = theme.ground["bg"]
+    inner = Box(box.x, box.y, box.w, box.h * 0.78)
+    board = iso.slab(inner, target, role.hue, ground, thickness=0.10, depth=0.55)
+    die = iso.chip(board, theme.role("cpu").hue, ground, size=0.26, at=(0.62, 0.38))
+    label = _label(str(actor.props.get("label", "NIC")), target, "node", role.hue)
+    bottom = center_of(box, target) + DOWN * (size_of(box, target)[1] / 2)
+    label.move_to(bottom + UP * (label.height / 2 + units(6)))
+    return VGroup(board, die, label)
+
+
+def draw_cpu_iso(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """A CPU as an isometric package with a die on top."""
+    role = theme.role("cpu")
+    ground = theme.ground["bg"]
+    inner = Box(box.x, box.y, box.w, box.h * 0.78)
+    package = iso.slab(inner, target, role.hue, ground, thickness=0.13, depth=0.62)
+    die = iso.chip(package, theme.role("mbuf").hue, ground, size=0.40, at=(0.5, 0.5))
+    label = _label(f"CPU x{actor.props.get('cores', 4)}", target, "node", role.hue)
+    bottom = center_of(box, target) + DOWN * (size_of(box, target)[1] / 2)
+    label.move_to(bottom + UP * (label.height / 2 + units(6)))
+    return VGroup(package, die, label)
+
+
+def draw_cache_line_iso(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """A cache hierarchy as stacked slabs — the shape a hierarchy actually is."""
+    ground = theme.ground["bg"]
+    hues = [theme.role(r).hue for r in ("memory", "memory", "mbuf")]
+    return iso.stack(box, target, hues, ground)
 
 
 def draw_nic(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
@@ -236,9 +310,22 @@ def draw_cpu(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
     return _board(box, target, theme, "cpu", f"CPU x{actor.props.get('cores', 4)}")
 
 
+#: Concept to isometric renderer. A concept absent here has no Tier-1 3D form,
+#: which is the common case: a packet is a run of bytes, not a solid.
+ISO_RENDERERS: dict[str, Any] = {
+    "nic": draw_nic_iso,
+    "cpu": draw_cpu_iso,
+    "worker_core": draw_cpu_iso,
+    "cache_line": draw_cache_line_iso,
+}
+
 #: Concept to renderer. A concept with no entry cannot be drawn, by design.
 RENDERERS: dict[str, Any] = {
+    "cache_line": draw_cache_line,
+    "nic_queue": draw_nic_queue,
     "packet": draw_packet,
+    "thread": draw_thread,
+    "worker_core": draw_worker_core,
     "memory_buffer": draw_memory_buffer,
     "mempool": draw_mempool,
     "mbuf": draw_mbuf,
@@ -248,22 +335,52 @@ RENDERERS: dict[str, Any] = {
 }
 
 
-def draw(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
-    """Draw one actor into a box.
+def draw(
+    actor: Actor,
+    box: Box,
+    target: Target,
+    theme: Theme,
+    fidelity: str = "flat",
+) -> VGroup:
+    """Draw one actor into a box, at a chosen fidelity.
+
+    Fidelity is a rendering decision, not a semantic one. The same actor, the same
+    role, the same verbs — only how solid it looks changes. A shot asks for a NIC;
+    whether it is a flat panel or an isometric board is the shot's framing choice,
+    and switching costs nothing because the box and the role are unchanged.
 
     Args:
         actor: The actor to draw.
         box: Where the layout solver placed it.
         target: The format being rendered.
         theme: The theme supplying values for its role.
+        fidelity: ``"flat"`` or ``"iso"``. See ``ARCHITECTURE.md`` §8.0.
 
     Returns:
         The drawn group, positioned and z-ordered.
 
     Raises:
-        ConceptError: This backend has no renderer for that concept. Reported at
-            plan time rather than mid-render.
+        ConceptError: This backend has no renderer for that concept at that
+            fidelity. Reported by name rather than silently falling back — a
+            silent downgrade is how a hero shot ships flat.
     """
+    if fidelity == "iso":
+        try:
+            renderer = ISO_RENDERERS[actor.concept]
+        except KeyError:
+            raise ConceptError(
+                f"{actor.concept!r} has no isometric form",
+                context={"iso concepts": ", ".join(sorted(ISO_RENDERERS))},
+                fix=(
+                    f"Draw it flat, or add a draw_{actor.concept}_iso() to "
+                    "backends/manim/shapes.py. Most concepts should stay flat — a "
+                    "packet is a run of bytes, not a solid."
+                ),
+            ) from None
+        group_iso: VGroup = renderer(actor, box, target, theme)
+        group_iso.set_z_index(_Z_BANDS.get(visual_language().concept(actor.concept).silhouette, 2))
+        return group_iso
+
     try:
         renderer = RENDERERS[actor.concept]
     except KeyError:
@@ -285,6 +402,8 @@ def draw(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
 #: the machine that carries it.
 _Z_BANDS = {
     "byte_cells": 7,
+    "line_cells": 7,
+    "lane": 2,
     "framed_region": 2,
     "slot_grid": 2,
     "metadata_card": 9,
