@@ -149,9 +149,31 @@ committed.
 
 ### 4.5 Linux only — system packages
 
+`manimpango` builds from source on Linux and needs pango's headers, so install
+these *before* `pip install`:
+
 ```bash
 sudo apt install libcairo2-dev libpango1.0-dev ffmpeg   # Debian/Ubuntu
 ```
+
+macOS and Windows get wheels and need nothing.
+
+### 4.6 The reference episodes are optional
+
+`ep01`/`ep02` — the hand-authored originals that are the Studio's specification —
+live in a **different repo** (`Ajay3007.github.io/_learning/manim-scripts/axiobyte-system`).
+You do **not** need them on the second laptop. The ~10 tests marked `reference`
+skip when they are absent, and everything else passes.
+
+If you do clone them somewhere, point the tests at them:
+
+```powershell
+$env:AXIOBYTE_REFERENCE_ROOT = "C:\path\to\axiobyte-system"
+pytest -m reference
+```
+
+The episodes under `episodes/` are self-contained: each carries its own
+`timeline/words.json`, so its cue table resolves anywhere.
 
 ---
 

@@ -74,23 +74,21 @@ class TestFingerprint:
         beats.write_text(beats.read_text().replace('intent: "', 'intent: "x '), encoding="utf-8")
         assert _print(Episode.load(scratch)).digest != before
 
-    def test_a_recut_voiceover_changes_it_even_with_no_authored_edit(self, scratch: Path, tmp_path):
+    def test_a_recut_voiceover_changes_it_even_with_no_authored_edit(self, scratch: Path):
         # The voiceover decides every beat's time, so a re-cut must re-render even
         # when not one authored line moved.
-        original = Episode.load(scratch)
-        before = _print(original).digest
+        #
+        # Re-cut in place rather than repointing the manifest at a file elsewhere:
+        # that is what a re-cut actually is, and it keeps the test independent of
+        # how the manifest spells the path.
+        before = _print(Episode.load(scratch)).digest
 
-        recut = json.loads(Path(original.timeline.source).read_text(encoding="utf-8"))
+        words = scratch / "timeline" / "words.json"
+        recut = json.loads(words.read_text(encoding="utf-8"))
         for word in recut["words"]:
             word["start"] = round(word["start"] + 0.4, 3)
-        moved = tmp_path / "recut.json"
-        moved.write_text(json.dumps(recut), encoding="utf-8")
+        words.write_text(json.dumps(recut), encoding="utf-8")
 
-        manifest = scratch / "episode.yaml"
-        manifest.write_text(
-            manifest.read_text().replace(str(original.timeline.source), str(moved)),
-            encoding="utf-8",
-        )
         assert _print(Episode.load(scratch)).digest != before
 
     def test_the_tool_versions_are_part_of_the_identity(self, episode: Episode):

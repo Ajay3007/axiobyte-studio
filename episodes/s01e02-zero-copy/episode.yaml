@@ -12,4 +12,7 @@ theme: systems
 assumed: [packet, memory_buffer, pointer, mbuf, mempool, nic, cpu]
 
 # The recording this episode is anchored to. Every beat is a word start in it.
-voiceover: "/Users/dukhi8ma/Documents/dev/projects/Ajay3007.github.io/_learning/manim-scripts/axiobyte-system/ep02/timeline.json"
+# Transcribed from the reference episode's own voiceover and kept *inside* the
+# episode: an episode whose cue table only resolves on one machine is not an
+# episode, and THE ONE RULE has nothing to anchor to without it.
+voiceover: "timeline/words.json"

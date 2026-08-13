@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -9,9 +10,15 @@ from axiobyte_studio.timeline import Timeline
 
 # The reference episodes are the Studio's specification. They live outside this repo,
 # so tests that use them are marked and skipped when absent.
+#
+# Configurable, because a path that is correct on exactly one machine silently
+# disables these tests everywhere else — which looks identical to them passing.
 REFERENCE_ROOT = Path(
-    "/Users/dukhi8ma/Documents/dev/projects/Ajay3007.github.io/_learning/manim-scripts/axiobyte-system"
-)
+    os.environ.get(
+        "AXIOBYTE_REFERENCE_ROOT",
+        "~/Documents/dev/projects/Ajay3007.github.io/_learning/manim-scripts/axiobyte-system",
+    )
+).expanduser()
 
 
 @pytest.fixture

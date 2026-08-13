@@ -36,12 +36,12 @@ def _shifted(raw: dict, seconds: float) -> dict:
 
 @pytest.fixture
 def raw() -> dict:
-    path = (
-        Path("/Users/dukhi8ma/Documents/dev/projects/Ajay3007.github.io")
-        / "_learning/manim-scripts/axiobyte-system/ep02/timeline.json"
-    )
+    # The episode's own committed voiceover, not a copy outside the repo. Pointing
+    # at one machine's filesystem made these skip silently everywhere else, which
+    # is indistinguishable from passing.
+    path = EPISODE / "timeline" / "words.json"
     if not path.exists():
-        pytest.skip("the reference voiceover is not present")
+        pytest.skip(f"the episode voiceover is not present at {path}")
     return json.loads(path.read_text(encoding="utf-8"))
 
 

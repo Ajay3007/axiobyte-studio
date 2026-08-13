@@ -8,4 +8,4 @@ theme: systems
 
 assumed: [packet, memory_buffer, nic, nic_queue, cpu, thread]
 
-voiceover: "/Users/dukhi8ma/Documents/dev/projects/Ajay3007.github.io/_learning/manim-scripts/axiobyte-system/ep01/timeline.json"
+voiceover: "timeline/words.json"

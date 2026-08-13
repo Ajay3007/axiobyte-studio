@@ -16,6 +16,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # manimpango builds from source on Linux and needs pango's headers. macOS
+      # and Windows get wheels. Same packages SETUP.md §4.5 asks Linux users for.
+      - name: System dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libpango1.0-dev
       # `[manim]` too: mypy type-checks the Manim backend, and without Manim
       # installed CI sees a different codebase than the developer does.
       - run: pip install -e ".[dev,manim]"
