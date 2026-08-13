@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from importlib import import_module
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,11 @@ from axiobyte_studio.layout import Box, target
 
 REPO = Path(__file__).resolve().parents[2]
 BAKED = REPO / "assets" / "plates" / "nic_board__turntable@1.0.0"
+
+# The package re-exports `bake` as a *function*, which shadows the submodule of the
+# same name. Attribute traversal — including monkeypatch's dotted string form —
+# therefore lands on the function; only an explicit import reaches the module.
+bake_module = import_module("axiobyte_studio.backends.blender.bake")
 
 
 def _has_blender() -> bool:
@@ -157,3 +163,24 @@ class TestBake:
         if not _has_blender():
             pytest.skip("Blender is not installed")
         assert blender_binary().exists()
+
+    def test_the_windows_install_is_found_without_being_on_path(self, tmp_path, monkeypatch):
+        # The Windows installer adds nothing to PATH and puts the version in the
+        # directory name, so PATH lookup alone leaves Blender undiscoverable on
+        # the one platform where it is least likely to be on PATH.
+        root = tmp_path / "Blender Foundation"
+        for version in ("Blender 3.6", "Blender 4.2"):
+            (root / version).mkdir(parents=True)
+            (root / version / "blender.exe").write_text("")
+
+        monkeypatch.setattr(bake_module, "_WINDOWS_BLENDER_ROOTS", (root,))
+        found = bake_module._windows_blenders()
+        assert [exe.parent.name for exe in found] == ["Blender 4.2", "Blender 3.6"]
+
+    def test_an_absent_blender_names_everywhere_it_looked(self, monkeypatch):
+        monkeypatch.setattr(shutil, "which", lambda _: None)
+        monkeypatch.setattr(bake_module, "_MAC_BLENDER", Path("/nowhere/Blender"))
+        monkeypatch.setattr(bake_module, "_WINDOWS_BLENDER_ROOTS", ())
+        with pytest.raises(StudioError) as caught:
+            blender_binary()
+        assert "PATH" in str(caught.value)

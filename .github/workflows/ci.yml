@@ -3,15 +3,26 @@ on: [push, pull_request]
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    strategy:
+      # Windows is a peer, not an afterthought: the Studio is developed on more
+      # than one machine, and a portability break is cheapest to find on the
+      # commit that caused it.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
-      - name: Format and lint
-        run: ruff check src tests && ruff format --check src tests
+      # `[manim]` too: mypy type-checks the Manim backend, and without Manim
+      # installed CI sees a different codebase than the developer does.
+      - run: pip install -e ".[dev,manim]"
+      - name: Lint
+        run: ruff check src tests
+      - name: Format
+        run: ruff format --check src tests
       - name: Types
         run: mypy
       - name: Import contracts

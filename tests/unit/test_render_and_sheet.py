@@ -7,7 +7,9 @@ there is no path to a frame that skipped validation.
 from __future__ import annotations
 
 import shutil
+import sys
 from pathlib import Path
+from unittest import mock
 from xml.etree import ElementTree
 
 import pytest
@@ -110,6 +112,20 @@ class TestJobs:
         assert (
             ".venv" in job.command(Path("out"), 30)[0] or "manim" in job.command(Path("out"), 30)[0]
         )
+
+    def test_it_finds_the_local_manim_whatever_the_platform_calls_it(self, tmp_path):
+        # The venv puts it at bin/manim on POSIX and Scripts/manim.exe on Windows.
+        # An extensionless existence check finds nothing on Windows and quietly
+        # defers to PATH, which is how a render escapes this environment.
+        scripts = tmp_path / "Scripts"
+        scripts.mkdir()
+        exe = scripts / ("manim.exe" if sys.platform == "win32" else "manim")
+        exe.write_text("")
+        exe.chmod(0o755)
+
+        job = RenderJob(target="16x9", scene="S", module=Path("x.py"))
+        with mock.patch.object(sys, "executable", str(scripts / "python")):
+            assert job.command(Path("out"), 30)[0] == str(exe)
 
     def test_quality_maps_to_a_manim_flag(self):
         for quality, flag in (("draft", "-ql"), ("high", "-qh")):

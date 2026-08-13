@@ -65,8 +65,14 @@ class RenderJob:
         # The interpreter running us is the one with the Studio installed, so its
         # own manim is the right one. Falling back to PATH first would pick up a
         # system install that may not share this environment at all.
-        local = Path(sys.executable).parent / "manim"
-        manim = str(local) if local.exists() else (shutil.which("manim") or "manim")
+        #
+        # `which` rather than a bare `.exists()`, because the executable is
+        # `bin/manim` on POSIX and `Scripts/manim.exe` on Windows. Testing the
+        # extensionless path finds nothing on Windows and silently hands the
+        # render to whatever PATH offers — the exact failure this prefers to avoid.
+        scripts = Path(sys.executable).parent
+        local = shutil.which("manim", path=str(scripts))
+        manim = local or shutil.which("manim") or "manim"
         argv = [manim, QUALITY[self.quality]]
         if self.still:
             argv += ["-s", "--format=png"]

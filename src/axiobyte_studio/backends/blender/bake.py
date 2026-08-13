@@ -36,6 +36,29 @@ _SCRIPT = Path(__file__).parent / "scripts" / "bake_plate.py"
 #: Where Blender lives on macOS when installed as an app bundle.
 _MAC_BLENDER = Path("/Applications/Blender.app/Contents/MacOS/Blender")
 
+#: Where the Windows installer puts Blender. It adds nothing to PATH and the
+#: directory carries the version, so the only way to find it is to look.
+_WINDOWS_BLENDER_ROOTS = (
+    Path("C:/Program Files/Blender Foundation"),
+    Path("C:/Program Files (x86)/Blender Foundation"),
+)
+
+
+def _windows_blenders() -> list[Path]:
+    """Every Blender the Windows installer left under Program Files.
+
+    Returns:
+        Executables, highest version directory first. Empty off Windows.
+    """
+    found = [
+        exe
+        for root in _WINDOWS_BLENDER_ROOTS
+        if root.is_dir()
+        for exe in root.glob("Blender*/blender.exe")
+    ]
+    return sorted(found, key=lambda exe: exe.parent.name, reverse=True)
+
+
 #: Camera moves the catalogue shares. Hardware behaves the same wherever it
 #: appears, which is half of what makes a catalogue look like one catalogue.
 MOVES = ("still", "turntable", "push_in")
@@ -56,9 +79,13 @@ def blender_binary() -> Path:
         return Path(found)
     if _MAC_BLENDER.exists():
         return _MAC_BLENDER
+    installed = _windows_blenders()
+    if installed:
+        return installed[0]
+    roots = ", ".join(str(root) for root in _WINDOWS_BLENDER_ROOTS)
     raise StudioError(
         "Blender is not installed",
-        context={"looked in": f"PATH, {_MAC_BLENDER}"},
+        context={"looked in": f"PATH, {_MAC_BLENDER}, {roots}"},
         fix=(
             "Install Blender to bake plates. Episodes that only *use* already-baked "
             "plates do not need it — that is the point of baking."
