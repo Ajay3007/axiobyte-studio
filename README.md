@@ -25,6 +25,7 @@ Every subsystem exists to make the right-hand column mechanically checkable.
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | **The rendering layer** (L2–L1): Shot IR, format-agnostic layout, themes, assets, the 3-tier 3D strategy, backends. |
 | [`CONVENTIONS.md`](CONVENTIONS.md) | Coding standards, naming, and the rules CI enforces. |
 | [`ROADMAP.md`](ROADMAP.md) | Phased plan and the acceptance gate for each phase. |
+| [`SETUP.md`](SETUP.md) | Getting the Studio running on a new machine — Windows, macOS, Linux. |
 
 ---
 
@@ -119,8 +120,10 @@ re-rendering `ep02` frame-identically from this engine.
 
 ## Development
 
+On a new machine — including Windows — follow [`SETUP.md`](SETUP.md) instead.
+
 ```bash
-python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev,manim]"
 
 .venv/bin/pytest                    # unit tests
 .venv/bin/pytest -m reference       # tests against the reference episodes
