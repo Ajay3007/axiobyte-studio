@@ -132,7 +132,11 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev,manim]"
 .venv/bin/lint-imports              # the architecture's load-bearing contracts
 ```
 
-Tests marked `reference` run against the real episode files and skip when absent.
+Tests marked `reference` run against the real episode files and skip when absent. Point
+`AXIOBYTE_REFERENCE_ROOT` at them to run those; everything else passes without them, and
+running with it unset is how a portability regression gets caught before CI does.
+
+CI runs the whole gate on Ubuntu **and** Windows.
 
 ---
 
