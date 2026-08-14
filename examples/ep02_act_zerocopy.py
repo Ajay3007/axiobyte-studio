@@ -31,13 +31,14 @@ from axiobyte_studio.motion import motion
 from axiobyte_studio.timeline import CueTable, Timeline
 
 # ---------------------------------------------------------------------------
-# THE VOICEOVER — the reference episode's own transcript.
+# THE VOICEOVER — the reference episode's own transcript, as the episode carries
+# it. Resolved from the repo rather than one machine's filesystem: this file is
+# in the README as something to run, and a README command that only works on the
+# author's laptop is not an example of anything.
 # ---------------------------------------------------------------------------
 
-VOICEOVER = Path(
-    "/Users/dukhi8ma/Documents/dev/projects/Ajay3007.github.io"
-    "/_learning/manim-scripts/axiobyte-system/ep02/timeline.json"
-)
+REPO = Path(__file__).resolve().parent.parent
+VOICEOVER = REPO / "episodes" / "s01e02-zero-copy" / "timeline" / "words.json"
 
 # ---------------------------------------------------------------------------
 # THE CUE TABLE — read it top to bottom and you have read the act.
