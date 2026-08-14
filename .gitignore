@@ -1,19 +1,28 @@
 # Renders and derived artifacts are never committed — they are reproducible by
 # definition (ARCHITECTURE.md §6).
+#
+# ORDER MATTERS: git applies the *last* matching pattern, so every `!` exception
+# has to come after the `*.png` that would otherwise swallow it. A negation
+# written above it is silently inert — which is how the baked plates ended up
+# with a committed manifest and no frames.
 out/
-!docs/previews/render/*.png
-!assets/plates/**/*.png
 media/
 *.mp4
 *.mov
 *.png
-!docs/**/*.png
-!src/**/*.png
 
 # Layout previews ARE committed — they are how a shot gets reviewed in every
 # format, and they cost nothing to store.
+!docs/**/*.png
 !docs/previews/*.svg
 !docs/previews/render/*.png
+!src/**/*.png
+
+# Baked Tier-2 plates ARE committed, and this is load-bearing: a plate is the
+# output of a Blender bake that may have happened years ago, so shipping the
+# frames is what keeps Blender a build-time dependency instead of a runtime one.
+# Without them an episode that uses a plate cannot render at all.
+!assets/plates/**/*.png
 
 # Python
 __pycache__/

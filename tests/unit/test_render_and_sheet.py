@@ -125,7 +125,10 @@ class TestJobs:
 
         job = RenderJob(target="16x9", scene="S", module=Path("x.py"))
         with mock.patch.object(sys, "executable", str(scripts / "python")):
-            assert job.command(Path("out"), 30)[0] == str(exe)
+            resolved = job.command(Path("out"), 30)[0]
+        # Compared case-insensitively: on Windows `which` reports the extension
+        # as it appears in PATHEXT, so a `manim.exe` on disk comes back `manim.EXE`.
+        assert resolved.lower() == str(exe).lower()
 
     def test_quality_maps_to_a_manim_flag(self):
         for quality, flag in (("draft", "-ql"), ("high", "-qh")):
