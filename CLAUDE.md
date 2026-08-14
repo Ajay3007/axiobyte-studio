@@ -121,6 +121,36 @@ you add a skip, make sure its condition is one the other machine actually meets.
 
 ---
 
+## What to work on next, and where
+
+[`ROADMAP.md`](ROADMAP.md) has the full plan but predates the two-machine split, so it
+does not say which work can happen where. Roughly half the remaining work needs
+capabilities Windows does not have.
+
+| Open work | Machine | Why |
+|---|---|---|
+| **Educational Grammar** (`CONCEPT-ARCHITECTURE.md` §11) | **Windows** | Pure semantic layer, no renderer. Fully specified, and `storyboard/scaffold.py` already implements §11.4's scaffold-then-refine half. |
+| Phrase library v1 (ROADMAP 2.3) | **Windows** | Composition over existing actors and actions |
+| Actors +12 (ROADMAP 2.4) | **Windows** | Pure code and unit tests |
+| Docs site, mkdocs (ROADMAP 2.10) | **Windows** | |
+| **Phase 0 gate — `ep02` frame-identical** | **macOS only** | Needs the reference episodes |
+| 3D asset kit v2 (ROADMAP 2.5) | **macOS only** | Needs Blender |
+| Tier 3 — live Blender (ROADMAP 3.x) | **macOS only** | Needs Blender |
+| Publishing (ROADMAP 2.9) | **macOS** | Needs real renders to encode |
+
+**Educational Grammar is the recommended next Windows task.** It is described as *"the
+centre of the architecture — the compiler pass that turns what you want to teach into
+what appears on screen"*, its five clauses (`WHEN` / `GIVEN` / `THEN` / `ASSERT` /
+`NARRATION_CONTRACT`) are specified precisely enough to implement directly, and the
+`ASSERT` layer is exactly the kind of thing unit tests can verify without ever rendering
+a frame. What is missing is the rule engine: rule definitions, priority ordering,
+conflict detection as a plan-time error (§11.5), and `abs stage <shot>`.
+
+**Phase 0's gate remains the project's oldest open commitment** and cannot be done on
+Windows. Plan a Mac session for it rather than discovering that mid-task.
+
+---
+
 ## Before you push, from either machine
 
 ```bash
