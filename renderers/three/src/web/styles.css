@@ -83,6 +83,19 @@ body {
   letter-spacing: 0.02em;
 }
 
+.brand-kicker a {
+  color: inherit;
+  text-decoration: none;
+  /* The brand panel ignores the pointer so the model behind it stays draggable;
+     the way back to the AxioByte hub is the one thing in it that must not. */
+  pointer-events: auto;
+}
+
+.brand-kicker a:hover,
+.brand-kicker a:focus-visible {
+  text-decoration: underline;
+}
+
 .brand-title {
   margin: 0;
   font-size: clamp(30px, 4vw, 42px);

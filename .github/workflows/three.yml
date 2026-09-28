@@ -1,0 +1,119 @@
+name: Three.js backend + experiences
+
+# The JavaScript half of the Studio: the Three.js backend (renderers/three) and
+# the interactive experiences built on it (experiences/). The Python gate is
+# ci.yml; this never touches it.
+#
+# On a tag `experiences-vX.Y.Z` it also publishes the experiences build as a
+# release asset. The website (Ajay3007.github.io) pins that asset by tag and
+# sha256 and mounts it at /axiobyte/ — see docs/deployment.md. Nothing is pushed
+# to the website from here, so this workflow needs no token beyond its own.
+on:
+  push:
+    branches: [main]
+    tags: ["experiences-v*"]
+    paths:
+      - "renderers/three/**"
+      - "experiences/**"
+      - "episodes/*/three/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/three.yml"
+  pull_request:
+    paths:
+      - "renderers/three/**"
+      - "experiences/**"
+      - "episodes/*/three/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/three.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: three-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Unit tests (@axiobyte/three)
+        run: npm test -w @axiobyte/three
+
+      - name: Build every experience
+        run: npm run build
+
+      # Serves dist/ under /axiobyte/, exactly as the website does, and fails on
+      # any page error, 404 or root-relative request. Chrome is preinstalled on
+      # the runner; WebGL runs on SwiftShader.
+      - name: Smoke test under /axiobyte/
+        run: npm test -w @axiobyte/experiences
+
+      # Two independent sessions must produce byte-identical frames. Only the
+      # cross-session half runs here: the committed baseline hashes belong to
+      # the Mac (another GPU stack hashes differently), like the Manim goldens.
+      - name: Video target is deterministic
+        run: >
+          node renderers/three/tools/check-determinism.mjs
+          --episode episodes/s01e03-what-is-a-nic --frames 90,11670
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: axiobyte-experiences
+          path: experiences/dist
+          retention-days: 14
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/experiences-v')
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The tag matches experiences/package.json
+        id: version
+        run: |
+          tag="${GITHUB_REF_NAME#experiences-v}"
+          declared="$(node -p "require('./experiences/package.json').version")"
+          if [ "$tag" != "$declared" ]; then
+            echo "::error::tag says $tag but experiences/package.json says $declared"
+            exit 1
+          fi
+          echo "version=$tag" >> "$GITHUB_OUTPUT"
+
+      # Publish exactly what the check job tested, not a rebuild of it.
+      - uses: actions/download-artifact@v4
+        with:
+          name: axiobyte-experiences
+          path: dist
+
+      - name: Package
+        run: |
+          asset="axiobyte-experiences-${{ steps.version.outputs.version }}.tar.gz"
+          tar -C dist -czf "$asset" .
+          sha256sum "$asset" | cut -d' ' -f1 > "$asset.sha256"
+          echo "asset=$asset" >> "$GITHUB_ENV"
+          echo "sha256 $(cat "$asset.sha256")"
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "$asset" "$asset.sha256" \
+            --title "AxioByte experiences ${{ steps.version.outputs.version }}" \
+            --notes "Interactive AxioByte experiences, built from ${GITHUB_SHA::7}.
+
+          To serve it on the website, set in Ajay3007.github.io/axiobyte.json:
+            \"tag\": \"$GITHUB_REF_NAME\", \"asset\": \"$asset\", \"sha256\": \"$(cat "$asset.sha256")\""

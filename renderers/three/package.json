@@ -2,7 +2,7 @@
   "name": "@axiobyte/three",
   "version": "0.1.0",
   "private": true,
-  "description": "AxioByte Studio's Three.js backend: one scene, two targets \u2014 deterministic video frames and interactive web pages.",
+  "description": "AxioByte Studio's Three.js backend: one scene, two targets — deterministic video frames and interactive web pages.",
   "type": "module",
   "exports": {
     "./*": "./src/*",
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "puppeteer-core": "^25.12.0",
-    "vite": "^8.3.1"
+    "vite": "^8.3.1",
+    "vitest": "^3.2.7"
   }
 }
