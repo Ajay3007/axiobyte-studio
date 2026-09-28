@@ -1,0 +1,12 @@
+id: pcie
+kind: atomic
+version: 1.0.0
+domain: io
+title: "PCIe — the card's only road to the host"
+pedagogy:
+  objectives:
+    - id: PCIE-1
+      statement: "PCIe is the card's only connection to the rest of the computer; every byte the NIC moves to or from memory crosses it as memory transactions."
+anchors: [lanes, root_complex]
+relations:
+  requires: [nic]

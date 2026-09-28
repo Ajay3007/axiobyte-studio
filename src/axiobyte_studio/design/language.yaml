@@ -113,6 +113,39 @@ concepts:
     silhouette: slot_grid
     motion: none
 
+  # The NIC's own parts (s01e03). They are hardware on the card, so they draw in
+  # the card's role; what distinguishes them is silhouette and label, never hue.
+  phy:
+    role: nic
+    silhouette: board
+    motion: none
+    fidelity: [flat, plate]
+
+  magnetics:
+    role: nic
+    silhouette: board
+    motion: none
+    fidelity: [flat, plate]
+    never:
+      - amplifying the signal       # they isolate; MAG-1 exists to refute exactly this
+
+  pcie:
+    role: nic
+    silhouette: board
+    motion: none
+    fidelity: [flat, plate]
+    never:
+      - a second path to memory      # it is the card's ONLY road to the host
+
+  # Host memory, prepared by software — memory's role, not the card's, even though
+  # the NIC reads and writes it.
+  descriptor_ring:
+    role: memory
+    silhouette: slot_grid
+    motion: none
+    never:
+      - holding the packet bytes     # a descriptor points at a buffer; it is not one
+
   # dma      -> concepts/library/interaction/dma.yaml         (nic <-> memory_buffer)
   # copy     -> concepts/library/interaction/copy_based.yaml  (packet <-> memory_buffer)
   # Their ROLES remain in design/themes/, because a role is a value and an

@@ -177,6 +177,32 @@ CPU = ActorDefinition(
     default_props={"cores": 4},
 )
 
+# The NIC's parts, as s01e03 walks them. Hardware again, so no machine.
+PHY = ActorDefinition(
+    concept="phy",
+    anchors=("line_side", "mac_side"),
+    default_props={"label": "PHY"},
+)
+
+MAGNETICS = ActorDefinition(
+    concept="magnetics",
+    anchors=("cable_side", "phy_side"),
+    default_props={"label": "magnetics"},
+)
+
+PCIE = ActorDefinition(
+    concept="pcie",
+    anchors=("lanes", "root_complex"),
+    default_props={"label": "PCIe", "lanes": 8},
+)
+
+# memory — software prepares it; the NIC only fills and marks it.
+DESCRIPTOR_RING = ActorDefinition(
+    concept="descriptor_ring",
+    anchors=("head", "tail", "slot"),
+    default_props={"slots": 8},
+)
+
 # NOTE: there is deliberately no DMA actor. DMA is an Interaction Concept
 # (nic <-> memory_buffer), and an interaction has no actor of its own — it is
 # staged through its participants. See concepts/library/interaction/dma.yaml.
@@ -196,5 +222,9 @@ LIBRARY: dict[str, ActorDefinition] = {
         NIC,
         NIC_QUEUE,
         CPU,
+        PHY,
+        MAGNETICS,
+        PCIE,
+        DESCRIPTOR_RING,
     )
 }

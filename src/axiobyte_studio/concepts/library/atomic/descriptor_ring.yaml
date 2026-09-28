@@ -1,0 +1,12 @@
+id: descriptor_ring
+kind: atomic
+version: 1.0.0
+domain: memory
+title: "Descriptor ring"
+pedagogy:
+  objectives:
+    - id: RING-1
+      statement: "A descriptor ring is a circular array, prepared by software in host memory, where each slot points at a free buffer for the NIC to fill."
+anchors: [head, tail, slot]
+relations:
+  requires: [nic_queue, memory_buffer]

@@ -1,0 +1,50 @@
+id: rss
+kind: interaction
+version: 1.0.0
+domain: io
+title: "RSS — a hash decides the queue"
+between: [packet, nic_queue]
+
+pedagogy:
+  objectives:
+    - id: RSS-1
+      statement: "The NIC hashes a packet's flow fields and the hash picks the receive queue, so one flow always lands on the same queue."
+      evidence: "Packets of one colour always drop into the same queue; the hash is shown, not implied."
+  removal_test:
+    packet: "Without the packet: queues exist and sit idle. Not the lesson."
+    nic_queue: "Without queues: a packet arrives with nowhere to be spread to. Not the lesson."
+  misconceptions:
+    - id: RSS-M1
+      wrong: "Packets are spread across queues round-robin."
+      refute_by: "Send the same flow twice; it lands on the same queue both times."
+      source: "the usual guess before learning that ordering within a flow must be preserved"
+    - id: RSS-M2
+      wrong: "Cores have to coordinate to share incoming traffic."
+      refute_by: "Give each queue its own core and show no line between the cores."
+
+visual_grammar:
+  participants:
+    packet: { salience: primary }
+    nic_queue: { salience: primary }
+  invariant_on_screen: "one flow, one queue — a flow never changes queue"
+  never: ["a single flow split across two queues"]
+
+motion_grammar:
+  primary: packet.travel
+  reads_as: "deterministic sorting — the same input always goes to the same place"
+
+camera:
+  move: comparison
+  intent: "the hash and every queue must be in frame, so the choice is visible"
+
+staging:
+  template: journey
+
+assessment:
+  after_this_the_viewer_can:
+    - "Say why two packets of the same TCP connection end up on the same core."
+
+relations:
+  requires: [packet, nic_queue, worker_core]
+  contrasts_with: []
+  composes_into: []

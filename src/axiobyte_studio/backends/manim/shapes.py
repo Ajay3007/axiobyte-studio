@@ -310,6 +310,30 @@ def draw_cpu(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
     return _board(box, target, theme, "cpu", f"CPU x{actor.props.get('cores', 4)}")
 
 
+def draw_phy(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """The physical-layer chip: where the analog line meets digital bits."""
+    return _board(box, target, theme, "nic", str(actor.props.get("label", "PHY")))
+
+
+def draw_magnetics(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """The isolation transformers behind a port."""
+    return _board(box, target, theme, "nic", str(actor.props.get("label", "magnetics")))
+
+
+def draw_pcie(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """The card's only road to the host, labelled with its width."""
+    label = str(actor.props.get("label", "PCIe"))
+    return _board(box, target, theme, "nic", f"{label} x{actor.props.get('lanes', 8)}")
+
+
+def draw_descriptor_ring(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """Slots in host memory, each pointing at a free buffer for the NIC to fill."""
+    role = theme.role("memory")
+    panel = _panel(box, target, role.hue, role.surface)
+    cells = byte_cells(box, target, role.hue, count=min(int(actor.props.get("slots", 8)), 10))
+    return VGroup(panel, cells, _title_inside("descriptor ring", panel, target, role.hue))
+
+
 #: Concept to isometric renderer. A concept absent here has no Tier-1 3D form,
 #: which is the common case: a packet is a run of bytes, not a solid.
 ISO_RENDERERS: dict[str, Any] = {
@@ -332,6 +356,10 @@ RENDERERS: dict[str, Any] = {
     "pointer": draw_pointer,
     "nic": draw_nic,
     "cpu": draw_cpu,
+    "phy": draw_phy,
+    "magnetics": draw_magnetics,
+    "pcie": draw_pcie,
+    "descriptor_ring": draw_descriptor_ring,
 }
 
 

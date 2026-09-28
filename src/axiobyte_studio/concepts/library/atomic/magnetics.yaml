@@ -1,0 +1,12 @@
+id: magnetics
+kind: atomic
+version: 1.0.0
+domain: io
+title: "Magnetics — the isolation transformers behind a port"
+pedagogy:
+  objectives:
+    - id: MAG-1
+      statement: "The magnetics isolate the card from the cable; they do not boost the signal."
+anchors: [cable_side, phy_side]
+relations:
+  requires: [nic]

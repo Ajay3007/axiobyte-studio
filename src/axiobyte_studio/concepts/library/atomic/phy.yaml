@@ -1,0 +1,12 @@
+id: phy
+kind: atomic
+version: 1.0.0
+domain: io
+title: "PHY — the physical-layer chip"
+pedagogy:
+  objectives:
+    - id: PHY-1
+      statement: "The PHY is where the analog line meets digital bits: it turns a waveform on the cable into clean bits, and back."
+anchors: [line_side, mac_side]
+relations:
+  requires: [nic]
