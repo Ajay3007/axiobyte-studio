@@ -1,0 +1,216 @@
+/* Preview shell for video mode. None of this is captured: the renderer only
+   reads the composite canvas, and `is-render` strips the chrome anyway. */
+
+.video-body {
+  margin: 0;
+  min-height: 100%;
+  background: #07090c;
+  color: var(--ink);
+  font-family: var(--font);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#viewport-wrap {
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: 14px 0 0;
+}
+
+#stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  flex: none;
+  transform: scale(var(--fit, 0.5));
+  transform-origin: center center;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+}
+
+/* The WebGL canvas lives here at full (possibly supersampled) size and is
+   composited into #out. Kept in the layout so the GPU keeps drawing it. */
+#render-host {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#render-host canvas {
+  width: 1920px;
+  height: 1080px;
+  display: block;
+}
+
+#out-host,
+#out {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  display: block;
+}
+
+.is-render #stage {
+  transform: none;
+  box-shadow: none;
+}
+
+.is-render #viewport-wrap {
+  padding: 0;
+  place-items: start;
+}
+
+.is-render body,
+.is-render {
+  background: #000;
+}
+
+/* ------------------------------------------------------------------ HUD */
+.hud {
+  flex: none;
+  padding: 10px 16px 12px;
+  background: #0b0e12;
+  border-top: 1px solid rgba(236, 232, 218, 0.12);
+  font-size: 13px;
+  letter-spacing: 0.4px;
+}
+
+.hud-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 30px;
+}
+
+.hud-bar > * {
+  flex: none;
+}
+
+.hud-bar-thin {
+  min-height: 22px;
+}
+
+.hud-k {
+  color: #6b747e;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+}
+
+.hud-sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(236, 232, 218, 0.16);
+}
+
+.hud-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hud-time {
+  font-variant-numeric: tabular-nums;
+  font-size: 19px;
+  font-weight: 700;
+  color: #6ec1ff;
+  min-width: 96px;
+}
+
+.hud-cues {
+  flex: 1 1 200px;
+  min-width: 0;
+  color: #98a1ab;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hud-btn {
+  width: 34px;
+  height: 26px;
+  border: 1px solid rgba(236, 232, 218, 0.24);
+  background: rgba(236, 232, 218, 0.06);
+  color: var(--ink);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.hud-btn:hover {
+  border-color: #6ec1ff;
+}
+
+.hud-goto {
+  width: 68px;
+  padding: 3px 6px;
+  border: 1px solid rgba(236, 232, 218, 0.24);
+  background: rgba(236, 232, 218, 0.05);
+  color: var(--ink);
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+}
+
+.hud-goto:focus {
+  outline: none;
+  border-color: #6ec1ff;
+}
+
+.hud-scrub {
+  flex: 1 1 100%;
+  width: 100%;
+  margin: 6px 0 2px;
+  accent-color: #6ec1ff;
+}
+
+.hud-chapters {
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.hud-chip {
+  border: 1px solid rgba(236, 232, 218, 0.18);
+  background: transparent;
+  color: #98a1ab;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 4px 9px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.hud-chip:hover {
+  color: #ece8da;
+  border-color: #6ec1ff;
+}
+
+.hud-help {
+  margin: 8px 0 0;
+  color: #5c656f;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+
+.is-render .hud,
+.is-render #hud-root {
+  display: none;
+}
+
+#video-fallback {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: #0b0e12;
+}

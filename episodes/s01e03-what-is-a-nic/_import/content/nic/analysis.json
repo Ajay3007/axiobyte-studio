@@ -1,0 +1,1236 @@
+{
+  "total_duration": 717.99,
+  "language": "en",
+  "word_count": 1852,
+  "sentence_count": 119,
+  "words_per_minute": 154.8,
+  "articulation_wpm": 200.4,
+  "pauses": {
+    "count": 270,
+    "short": 177,
+    "long": 93,
+    "total_time": 163.527,
+    "average_duration": 0.606,
+    "longest": 2.003
+  },
+  "fast_speech_regions": [
+    {
+      "start": 3.0,
+      "end": 8.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 5.0,
+      "end": 14.0,
+      "words_per_minute": 208.8,
+      "kind": "fast"
+    },
+    {
+      "start": 22.0,
+      "end": 29.0,
+      "words_per_minute": 228.0,
+      "kind": "fast"
+    },
+    {
+      "start": 41.0,
+      "end": 47.0,
+      "words_per_minute": 222.0,
+      "kind": "fast"
+    },
+    {
+      "start": 50.0,
+      "end": 57.0,
+      "words_per_minute": 208.0,
+      "kind": "fast"
+    },
+    {
+      "start": 57.0,
+      "end": 68.0,
+      "words_per_minute": 214.3,
+      "kind": "fast"
+    },
+    {
+      "start": 67.0,
+      "end": 73.0,
+      "words_per_minute": 210.0,
+      "kind": "fast"
+    },
+    {
+      "start": 84.0,
+      "end": 89.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 94.0,
+      "end": 99.0,
+      "words_per_minute": 228.0,
+      "kind": "fast"
+    },
+    {
+      "start": 96.0,
+      "end": 101.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 98.0,
+      "end": 103.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 100.0,
+      "end": 105.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 158.0,
+      "end": 167.0,
+      "words_per_minute": 220.8,
+      "kind": "fast"
+    },
+    {
+      "start": 204.0,
+      "end": 210.0,
+      "words_per_minute": 222.0,
+      "kind": "fast"
+    },
+    {
+      "start": 244.0,
+      "end": 249.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 275.0,
+      "end": 280.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 280.0,
+      "end": 287.0,
+      "words_per_minute": 228.0,
+      "kind": "fast"
+    },
+    {
+      "start": 289.0,
+      "end": 294.0,
+      "words_per_minute": 228.0,
+      "kind": "fast"
+    },
+    {
+      "start": 299.0,
+      "end": 306.0,
+      "words_per_minute": 216.0,
+      "kind": "fast"
+    },
+    {
+      "start": 316.0,
+      "end": 325.0,
+      "words_per_minute": 206.4,
+      "kind": "fast"
+    },
+    {
+      "start": 415.0,
+      "end": 422.0,
+      "words_per_minute": 208.0,
+      "kind": "fast"
+    },
+    {
+      "start": 448.0,
+      "end": 453.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 450.0,
+      "end": 456.0,
+      "words_per_minute": 210.0,
+      "kind": "fast"
+    },
+    {
+      "start": 547.0,
+      "end": 552.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 577.0,
+      "end": 585.0,
+      "words_per_minute": 210.0,
+      "kind": "fast"
+    },
+    {
+      "start": 651.0,
+      "end": 662.0,
+      "words_per_minute": 221.1,
+      "kind": "fast"
+    },
+    {
+      "start": 702.0,
+      "end": 708.0,
+      "words_per_minute": 210.0,
+      "kind": "fast"
+    },
+    {
+      "start": 705.0,
+      "end": 710.0,
+      "words_per_minute": 204.0,
+      "kind": "fast"
+    },
+    {
+      "start": 714.0,
+      "end": 717.99,
+      "words_per_minute": 208.1,
+      "kind": "fast"
+    }
+  ],
+  "slow_speech_regions": [
+    {
+      "start": 28.0,
+      "end": 33.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 104.0,
+      "end": 109.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 125.0,
+      "end": 130.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 135.0,
+      "end": 140.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 144.0,
+      "end": 150.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 170.0,
+      "end": 175.0,
+      "words_per_minute": 96.0,
+      "kind": "slow"
+    },
+    {
+      "start": 187.0,
+      "end": 194.0,
+      "words_per_minute": 100.0,
+      "kind": "slow"
+    },
+    {
+      "start": 200.0,
+      "end": 206.0,
+      "words_per_minute": 102.0,
+      "kind": "slow"
+    },
+    {
+      "start": 233.0,
+      "end": 244.0,
+      "words_per_minute": 99.4,
+      "kind": "slow"
+    },
+    {
+      "start": 249.0,
+      "end": 254.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 264.0,
+      "end": 269.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 303.0,
+      "end": 311.0,
+      "words_per_minute": 93.0,
+      "kind": "slow"
+    },
+    {
+      "start": 331.0,
+      "end": 337.0,
+      "words_per_minute": 96.0,
+      "kind": "slow"
+    },
+    {
+      "start": 339.0,
+      "end": 344.0,
+      "words_per_minute": 96.0,
+      "kind": "slow"
+    },
+    {
+      "start": 345.0,
+      "end": 354.0,
+      "words_per_minute": 81.6,
+      "kind": "slow"
+    },
+    {
+      "start": 354.0,
+      "end": 363.0,
+      "words_per_minute": 86.4,
+      "kind": "slow"
+    },
+    {
+      "start": 389.0,
+      "end": 394.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 409.0,
+      "end": 414.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 422.0,
+      "end": 428.0,
+      "words_per_minute": 90.0,
+      "kind": "slow"
+    },
+    {
+      "start": 430.0,
+      "end": 436.0,
+      "words_per_minute": 84.0,
+      "kind": "slow"
+    },
+    {
+      "start": 456.0,
+      "end": 461.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 495.0,
+      "end": 503.0,
+      "words_per_minute": 102.0,
+      "kind": "slow"
+    },
+    {
+      "start": 534.0,
+      "end": 544.0,
+      "words_per_minute": 88.0,
+      "kind": "slow"
+    },
+    {
+      "start": 585.0,
+      "end": 590.0,
+      "words_per_minute": 96.0,
+      "kind": "slow"
+    },
+    {
+      "start": 603.0,
+      "end": 610.0,
+      "words_per_minute": 100.0,
+      "kind": "slow"
+    },
+    {
+      "start": 624.0,
+      "end": 629.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 636.0,
+      "end": 647.0,
+      "words_per_minute": 87.4,
+      "kind": "slow"
+    },
+    {
+      "start": 668.0,
+      "end": 674.0,
+      "words_per_minute": 102.0,
+      "kind": "slow"
+    },
+    {
+      "start": 671.0,
+      "end": 677.0,
+      "words_per_minute": 108.0,
+      "kind": "slow"
+    },
+    {
+      "start": 695.0,
+      "end": 704.0,
+      "words_per_minute": 81.6,
+      "kind": "slow"
+    }
+  ],
+  "emphasized_words": [
+    {
+      "word": "video,",
+      "start": 1.214,
+      "importance": "medium"
+    },
+    {
+      "word": "SSH",
+      "start": 3.158,
+      "importance": "medium"
+    },
+    {
+      "word": "server,",
+      "start": 4.06,
+      "importance": "medium"
+    },
+    {
+      "word": "wire.",
+      "start": 7.788,
+      "importance": "medium"
+    },
+    {
+      "word": "any",
+      "start": 12.679,
+      "importance": "medium"
+    },
+    {
+      "word": "NIC.",
+      "start": 15.645,
+      "importance": "high"
+    },
+    {
+      "word": "Today",
+      "start": 17.169,
+      "importance": "medium"
+    },
+    {
+      "word": "3D.",
+      "start": 20.865,
+      "importance": "high"
+    },
+    {
+      "word": "A",
+      "start": 30.1,
+      "importance": "medium"
+    },
+    {
+      "word": "NIC,",
+      "start": 30.36,
+      "importance": "high"
+    },
+    {
+      "word": "NIC.",
+      "start": 38.053,
+      "importance": "high"
+    },
+    {
+      "word": "RJ45",
+      "start": 39.815,
+      "importance": "high"
+    },
+    {
+      "word": "NIC.",
+      "start": 42.759,
+      "importance": "high"
+    },
+    {
+      "word": "NIC",
+      "start": 46.023,
+      "importance": "medium"
+    },
+    {
+      "word": "PCIe",
+      "start": 48.065,
+      "importance": "high"
+    },
+    {
+      "word": "allows.",
+      "start": 55.535,
+      "importance": "medium"
+    },
+    {
+      "word": "10",
+      "start": 65.286,
+      "importance": "medium"
+    },
+    {
+      "word": "14",
+      "start": 67.369,
+      "importance": "high"
+    },
+    {
+      "word": "These",
+      "start": 106.148,
+      "importance": "medium"
+    },
+    {
+      "word": "RJ45",
+      "start": 106.989,
+      "importance": "medium"
+    },
+    {
+      "word": "cable.",
+      "start": 116.536,
+      "importance": "medium"
+    },
+    {
+      "word": "10",
+      "start": 117.778,
+      "importance": "medium"
+    },
+    {
+      "word": "16",
+      "start": 124.451,
+      "importance": "high"
+    },
+    {
+      "word": "PAM16.",
+      "start": 128.158,
+      "importance": "high"
+    },
+    {
+      "word": "10",
+      "start": 131.344,
+      "importance": "medium"
+    },
+    {
+      "word": "one.",
+      "start": 134.45,
+      "importance": "medium"
+    },
+    {
+      "word": "The",
+      "start": 136.482,
+      "importance": "medium"
+    },
+    {
+      "word": "LEDs",
+      "start": 137.143,
+      "importance": "medium"
+    },
+    {
+      "word": "moving.",
+      "start": 146.599,
+      "importance": "medium"
+    },
+    {
+      "word": "Right",
+      "start": 148.682,
+      "importance": "medium"
+    },
+    {
+      "word": "isolation.",
+      "start": 156.485,
+      "importance": "medium"
+    },
+    {
+      "word": "so",
+      "start": 160.55,
+      "importance": "medium"
+    },
+    {
+      "word": "machine.",
+      "start": 165.096,
+      "importance": "medium"
+    },
+    {
+      "word": "They",
+      "start": 166.338,
+      "importance": "medium"
+    },
+    {
+      "word": "cable.",
+      "start": 169.142,
+      "importance": "medium"
+    },
+    {
+      "word": "Unglamorous,",
+      "start": 170.363,
+      "importance": "medium"
+    },
+    {
+      "word": "them.",
+      "start": 173.047,
+      "importance": "medium"
+    },
+    {
+      "word": "Under",
+      "start": 175.21,
+      "importance": "medium"
+    },
+    {
+      "word": "PHY.",
+      "start": 177.713,
+      "importance": "high"
+    },
+    {
+      "word": "raw",
+      "start": 184.022,
+      "importance": "medium"
+    },
+    {
+      "word": "bits.",
+      "start": 195.033,
+      "importance": "medium"
+    },
+    {
+      "word": "signal.",
+      "start": 201.4,
+      "importance": "medium"
+    },
+    {
+      "word": "This",
+      "start": 203.522,
+      "importance": "medium"
+    },
+    {
+      "word": "hot,",
+      "start": 204.263,
+      "importance": "medium"
+    },
+    {
+      "word": "This",
+      "start": 211.12,
+      "importance": "medium"
+    },
+    {
+      "word": "Mac.",
+      "start": 215.568,
+      "importance": "medium"
+    },
+    {
+      "word": "PCIe,",
+      "start": 230.153,
+      "importance": "high"
+    },
+    {
+      "word": "CPU",
+      "start": 232.397,
+      "importance": "medium"
+    },
+    {
+      "word": "packet.",
+      "start": 233.839,
+      "importance": "medium"
+    },
+    {
+      "word": "It",
+      "start": 235.724,
+      "importance": "medium"
+    },
+    {
+      "word": "VLAN",
+      "start": 241.701,
+      "importance": "medium"
+    },
+    {
+      "word": "CPU",
+      "start": 244.649,
+      "importance": "medium"
+    },
+    {
+      "word": "application.",
+      "start": 248.701,
+      "importance": "medium"
+    },
+    {
+      "word": "A",
+      "start": 251.198,
+      "importance": "high"
+    },
+    {
+      "word": "fan,",
+      "start": 262.991,
+      "importance": "medium"
+    },
+    {
+      "word": "so",
+      "start": 263.753,
+      "importance": "medium"
+    },
+    {
+      "word": "chassis.",
+      "start": 266.621,
+      "importance": "medium"
+    },
+    {
+      "word": "And",
+      "start": 268.968,
+      "importance": "medium"
+    },
+    {
+      "word": "PCIe",
+      "start": 270.87,
+      "importance": "high"
+    },
+    {
+      "word": "lanes",
+      "start": 273.253,
+      "importance": "medium"
+    },
+    {
+      "word": "software.",
+      "start": 286.269,
+      "importance": "medium"
+    },
+    {
+      "word": "The",
+      "start": 288.792,
+      "importance": "medium"
+    },
+    {
+      "word": "case.",
+      "start": 294.059,
+      "importance": "medium"
+    },
+    {
+      "word": "Mechanical,",
+      "start": 295.04,
+      "importance": "medium"
+    },
+    {
+      "word": "chassis.",
+      "start": 297.823,
+      "importance": "medium"
+    },
+    {
+      "word": "So",
+      "start": 300.119,
+      "importance": "medium"
+    },
+    {
+      "word": "Throughput,",
+      "start": 306.949,
+      "importance": "medium"
+    },
+    {
+      "word": "control.",
+      "start": 308.751,
+      "importance": "medium"
+    },
+    {
+      "word": "NIC",
+      "start": 310.894,
+      "importance": "medium"
+    },
+    {
+      "word": "CPU",
+      "start": 315.962,
+      "importance": "medium"
+    },
+    {
+      "word": "And,",
+      "start": 318.745,
+      "importance": "medium"
+    },
+    {
+      "word": "packet.",
+      "start": 333.536,
+      "importance": "medium"
+    },
+    {
+      "word": "Let's",
+      "start": 335.799,
+      "importance": "medium"
+    },
+    {
+      "word": "real.",
+      "start": 339.184,
+      "importance": "high"
+    },
+    {
+      "word": "Step",
+      "start": 341.207,
+      "importance": "medium"
+    },
+    {
+      "word": "cable.",
+      "start": 342.309,
+      "importance": "medium"
+    },
+    {
+      "word": "pairs.",
+      "start": 346.435,
+      "importance": "medium"
+    },
+    {
+      "word": "Step",
+      "start": 348.778,
+      "importance": "medium"
+    },
+    {
+      "word": "two,",
+      "start": 349.059,
+      "importance": "medium"
+    },
+    {
+      "word": "RJ45",
+      "start": 349.96,
+      "importance": "high"
+    },
+    {
+      "word": "magnetics.",
+      "start": 351.142,
+      "importance": "medium"
+    },
+    {
+      "word": "PHY.",
+      "start": 356.61,
+      "importance": "high"
+    },
+    {
+      "word": "Step",
+      "start": 359.249,
+      "importance": "medium"
+    },
+    {
+      "word": "PHY.",
+      "start": 360.452,
+      "importance": "high"
+    },
+    {
+      "word": "PHY",
+      "start": 362.015,
+      "importance": "high"
+    },
+    {
+      "word": "controller.",
+      "start": 369.152,
+      "importance": "medium"
+    },
+    {
+      "word": "to.",
+      "start": 377.571,
+      "importance": "medium"
+    },
+    {
+      "word": "CPU",
+      "start": 385.625,
+      "importance": "medium"
+    },
+    {
+      "word": "cores.",
+      "start": 386.125,
+      "importance": "medium"
+    },
+    {
+      "word": "RSS",
+      "start": 389.149,
+      "importance": "medium"
+    },
+    {
+      "word": ".",
+      "start": 389.69,
+      "importance": "high"
+    },
+    {
+      "word": "IP,",
+      "start": 396.019,
+      "importance": "medium"
+    },
+    {
+      "word": "flow,",
+      "start": 401.007,
+      "importance": "medium"
+    },
+    {
+      "word": "5.",
+      "start": 410.093,
+      "importance": "high"
+    },
+    {
+      "word": "DMA",
+      "start": 410.774,
+      "importance": "high"
+    },
+    {
+      "word": "CPU",
+      "start": 416.303,
+      "importance": "medium"
+    },
+    {
+      "word": "PCIe,",
+      "start": 422.733,
+      "importance": "high"
+    },
+    {
+      "word": ".",
+      "start": 425.497,
+      "importance": "high"
+    },
+    {
+      "word": "CPU",
+      "start": 427.641,
+      "importance": "medium"
+    },
+    {
+      "word": "PCIe.",
+      "start": 432.862,
+      "importance": "high"
+    },
+    {
+      "word": "DMA",
+      "start": 434.764,
+      "importance": "high"
+    },
+    {
+      "word": "PCIe",
+      "start": 438.068,
+      "importance": "medium"
+    },
+    {
+      "word": "PCIe",
+      "start": 442.332,
+      "importance": "high"
+    },
+    {
+      "word": "7.9",
+      "start": 444.635,
+      "importance": "high"
+    },
+    {
+      "word": "vastly",
+      "start": 448.018,
+      "importance": "medium"
+    },
+    {
+      "word": "10",
+      "start": 449.179,
+      "importance": "medium"
+    },
+    {
+      "word": "7.",
+      "start": 457.215,
+      "importance": "high"
+    },
+    {
+      "word": "RXQ",
+      "start": 458.217,
+      "importance": "high"
+    },
+    {
+      "word": "Now",
+      "start": 460.601,
+      "importance": "medium"
+    },
+    {
+      "word": "When",
+      "start": 476.33,
+      "importance": "medium"
+    },
+    {
+      "word": "Step",
+      "start": 481.373,
+      "importance": "medium"
+    },
+    {
+      "word": "On",
+      "start": 484.481,
+      "importance": "medium"
+    },
+    {
+      "word": "DPDK",
+      "start": 489.594,
+      "importance": "medium"
+    },
+    {
+      "word": "commonly",
+      "start": 497.434,
+      "importance": "medium"
+    },
+    {
+      "word": "rte",
+      "start": 498.074,
+      "importance": "high"
+    },
+    {
+      "word": "eth",
+      "start": 499.396,
+      "importance": "high"
+    },
+    {
+      "word": "rx",
+      "start": 500.858,
+      "importance": "medium"
+    },
+    {
+      "word": "call",
+      "start": 505.263,
+      "importance": "medium"
+    },
+    {
+      "word": "mBuffs,",
+      "start": 509.928,
+      "importance": "medium"
+    },
+    {
+      "word": "copy.",
+      "start": 516.395,
+      "importance": "medium"
+    },
+    {
+      "word": "CPU",
+      "start": 521.001,
+      "importance": "medium"
+    },
+    {
+      "word": "once",
+      "start": 522.703,
+      "importance": "medium"
+    },
+    {
+      "word": "to",
+      "start": 523.784,
+      "importance": "medium"
+    },
+    {
+      "word": "side.",
+      "start": 529.107,
+      "importance": "medium"
+    },
+    {
+      "word": "1.",
+      "start": 530.71,
+      "importance": "medium"
+    },
+    {
+      "word": "rte",
+      "start": 535.518,
+      "importance": "high"
+    },
+    {
+      "word": "eth",
+      "start": 536.98,
+      "importance": "high"
+    },
+    {
+      "word": "tx",
+      "start": 538.462,
+      "importance": "high"
+    },
+    {
+      "word": "2.",
+      "start": 541.543,
+      "importance": "high"
+    },
+    {
+      "word": "TX",
+      "start": 545.59,
+      "importance": "medium"
+    },
+    {
+      "word": "hey,",
+      "start": 553.304,
+      "importance": "medium"
+    },
+    {
+      "word": "3.",
+      "start": 556.951,
+      "importance": "high"
+    },
+    {
+      "word": "DMA",
+      "start": 558.574,
+      "importance": "high"
+    },
+    {
+      "word": "CPU",
+      "start": 562.441,
+      "importance": "medium"
+    },
+    {
+      "word": "4.",
+      "start": 564.505,
+      "importance": "high"
+    },
+    {
+      "word": "PHY",
+      "start": 565.186,
+      "importance": "high"
+    },
+    {
+      "word": "PHY,",
+      "start": 568.532,
+      "importance": "high"
+    },
+    {
+      "word": "16-level",
+      "start": 570.856,
+      "importance": "medium"
+    },
+    {
+      "word": "wire.",
+      "start": 573.501,
+      "importance": "medium"
+    },
+    {
+      "word": "5.",
+      "start": 575.003,
+      "importance": "high"
+    },
+    {
+      "word": "Completion.",
+      "start": 575.704,
+      "importance": "medium"
+    },
+    {
+      "word": "receive,",
+      "start": 589.102,
+      "importance": "medium"
+    },
+    {
+      "word": "CPU",
+      "start": 592.426,
+      "importance": "medium"
+    },
+    {
+      "word": "directly.",
+      "start": 604.462,
+      "importance": "medium"
+    },
+    {
+      "word": "Multi-Q",
+      "start": 605.844,
+      "importance": "medium"
+    },
+    {
+      "word": "RSS",
+      "start": 606.865,
+      "importance": "medium"
+    },
+    {
+      "word": "NIC",
+      "start": 608.327,
+      "importance": "medium"
+    },
+    {
+      "word": "CPU",
+      "start": 612.292,
+      "importance": "medium"
+    },
+    {
+      "word": "zero",
+      "start": 613.654,
+      "importance": "medium"
+    },
+    {
+      "word": "DMA",
+      "start": 615.833,
+      "importance": "high"
+    },
+    {
+      "word": "CPU's",
+      "start": 619.52,
+      "importance": "medium"
+    },
+    {
+      "word": "Polling",
+      "start": 625.411,
+      "importance": "medium"
+    },
+    {
+      "word": "DPDK",
+      "start": 627.615,
+      "importance": "medium"
+    },
+    {
+      "word": "Hardware",
+      "start": 639.543,
+      "importance": "medium"
+    },
+    {
+      "word": "checksums,",
+      "start": 641.087,
+      "importance": "medium"
+    },
+    {
+      "word": "segmentation,",
+      "start": 642.009,
+      "importance": "medium"
+    },
+    {
+      "word": "VLAN",
+      "start": 643.132,
+      "importance": "medium"
+    },
+    {
+      "word": "CPU",
+      "start": 649.63,
+      "importance": "medium"
+    },
+    {
+      "word": "millions.",
+      "start": 661.684,
+      "importance": "medium"
+    },
+    {
+      "word": "Cards",
+      "start": 663.086,
+      "importance": "medium"
+    },
+    {
+      "word": "job,",
+      "start": 666.01,
+      "importance": "medium"
+    },
+    {
+      "word": "Load",
+      "start": 668.313,
+      "importance": "medium"
+    },
+    {
+      "word": "telecom",
+      "start": 674.541,
+      "importance": "medium"
+    },
+    {
+      "word": "line",
+      "start": 681.21,
+      "importance": "medium"
+    },
+    {
+      "word": "So",
+      "start": 690.124,
+      "importance": "medium"
+    },
+    {
+      "word": "ANIC,",
+      "start": 692.328,
+      "importance": "high"
+    },
+    {
+      "word": "Copper,",
+      "start": 697.616,
+      "importance": "medium"
+    },
+    {
+      "word": "transformer,",
+      "start": 698.437,
+      "importance": "medium"
+    },
+    {
+      "word": "PHY,",
+      "start": 699.539,
+      "importance": "high"
+    },
+    {
+      "word": "DMA",
+      "start": 701.582,
+      "importance": "high"
+    },
+    {
+      "word": "allow.",
+      "start": 711.984,
+      "importance": "medium"
+    },
+    {
+      "word": "watching!",
+      "start": 713.528,
+      "importance": "medium"
+    }
+  ]
+}

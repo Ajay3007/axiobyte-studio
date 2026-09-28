@@ -1,0 +1,6 @@
+node_modules
+dist
+.DS_Store
+final/*.mp4
+final/stills
+content/nic/voiceover.mp3

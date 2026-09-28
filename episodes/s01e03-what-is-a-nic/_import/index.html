@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive procedural 3D model of a dual-port 10GBASE-T PCIe network interface card, by AxioByte." />
+    <meta name="theme-color" content="#14171b" />
+    <title>3D NIC · AxioByte</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <main class="app">
+      <div id="viewport" class="viewport"></div>
+
+      <header class="brand panel">
+        <p class="brand-kicker">AxioByte · Hardware</p>
+        <h1 class="brand-title">3D NIC</h1>
+        <p class="brand-sub">Network Interface Card</p>
+      </header>
+
+      <nav class="views panel" aria-label="Camera views">
+        <span class="panel-label">View</span>
+        <div class="segmented" role="group">
+          <button type="button" data-preset="overview" aria-pressed="true">Overview</button>
+          <button type="button" data-preset="front" aria-pressed="false">Front</button>
+          <button type="button" data-preset="top" aria-pressed="false">Top</button>
+          <button type="button" data-preset="rear" aria-pressed="false">Rear</button>
+          <button type="button" data-preset="pcie" aria-pressed="false">PCIe</button>
+        </div>
+      </nav>
+
+      <div class="controls panel">
+        <div class="segmented" role="group" aria-label="Mode">
+          <button type="button" data-mode="hardware" aria-pressed="true">Hardware mode</button>
+          <button type="button" data-mode="packets" aria-pressed="false" disabled title="Packet flow is coming soon">
+            Packet flow <span class="soon">Soon</span>
+          </button>
+        </div>
+        <button type="button" id="reset-camera" class="btn">Reset camera</button>
+      </div>
+
+      <p class="hint" id="hint">Drag to orbit, right-drag to pan, scroll to zoom. Click a part to inspect it.</p>
+
+      <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+      <aside id="info" class="info panel" aria-live="polite" hidden>
+        <button type="button" class="info-close" id="info-close" aria-label="Close details">×</button>
+        <p class="info-kicker"><span id="info-designator"></span><span id="info-category"></span></p>
+        <h2 id="info-title"></h2>
+        <p class="info-summary" id="info-summary"></p>
+        <p class="info-desc" id="info-desc"></p>
+        <dl class="info-details" id="info-details"></dl>
+        <div class="info-path" id="info-path" hidden></div>
+        <div class="info-actions" id="info-actions"></div>
+      </aside>
+
+      <div id="fallback" class="fallback" hidden>
+        <h2>3D view unavailable</h2>
+        <p>This page needs WebGL 2. Try a recent version of Chrome, Edge, Firefox or Safari, and make sure hardware acceleration is turned on.</p>
+      </div>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

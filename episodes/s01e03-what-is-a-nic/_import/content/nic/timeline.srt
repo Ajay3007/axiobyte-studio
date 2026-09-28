@@ -1,0 +1,475 @@
+1
+00:00:00,031 --> 00:00:08,069
+Every time you stream a video, join a call, or SSH into a server, a packet has to physically leave your computer and get onto a wire.
+
+2
+00:00:08,870 --> 00:00:16,307
+The piece of hardware that makes that happen is one of the most overlooked parts of any machine, the Network Interface Card, or NIC.
+
+3
+00:00:17,169 --> 00:00:19,153
+Today we're going to open one up.
+
+4
+00:00:19,302 --> 00:00:21,406
+not with a screwdriver, in 3D.
+
+5
+00:00:22,247 --> 00:00:29,239
+We'll go from, what is this thing, all the way to how a packet actually moves through it, the same way a driver engineer would explain it.
+
+6
+00:00:30,100 --> 00:00:36,130
+A NIC, network interface card, is the hardware that connects a computer to a network.
+
+7
+00:00:36,211 --> 00:00:38,554
+Your laptop's Wi-Fi chip is a NIC.
+
+8
+00:00:39,275 --> 00:00:43,280
+The little RJ45 jack on the back of a desktop is a NIC.
+
+9
+00:00:44,021 --> 00:00:55,895
+And the card we're looking at right now is a NIC built for servers, a PCIe expansion card with two copper Ethernet ports designed to move packets in and out of a machine as fast as the network allows.
+
+10
+00:00:56,736 --> 00:00:57,877
+Its job sounds simple.
+
+11
+00:00:58,378 --> 00:01:04,986
+Take bits off the wire and hand them to the operating system, and take data from the operating system and put it on the wire.
+
+12
+00:01:04,986 --> 00:01:12,977
+But at 10 gigabits per second, that's up to 14 million packets a second, in each direction, with almost no time to think about any one of them.
+
+13
+00:01:13,878 --> 00:01:16,982
+Everything about this card's design exists to make that possible.
+
+14
+00:01:17,623 --> 00:01:19,266
+So let's walk it, part by part.
+
+15
+00:01:19,987 --> 00:01:22,911
+This is the printed circuit board, the green backbone.
+
+16
+00:01:23,632 --> 00:01:27,076
+It's not just a mounting surface, it's a signal path in its own right.
+
+17
+00:01:27,897 --> 00:01:34,146
+Every trace you can see is a controlled impedance track carrying either a differential signal pair or power.
+
+18
+00:01:34,146 --> 00:01:44,224
+On a card like this, getting the trace lengths and spacing wrong is enough to corrupt data at these speeds, so the copper layout is engineered almost as carefully as the chip sitting on top of it.
+
+19
+00:01:46,148 --> 00:01:51,898
+These are the two RJ45 jacks, the physical ports your Ethernet cable plugs into.
+
+20
+00:01:52,047 --> 00:01:56,856
+Each one has eight gold contacts inside, wired to four twisted pairs in the cable.
+
+21
+00:01:57,698 --> 00:02:09,600
+At 10 gigabits, this port uses all four pairs simultaneously, in both directions at once, encoding data as 16 distinct voltage levels per symbol, a scheme called PAM16.
+
+22
+00:02:09,640 --> 00:02:14,730
+That's how you squeeze 10 gigabits down copper that was originally designed for one.
+
+23
+00:02:16,482 --> 00:02:26,919
+The two LEDs tell you what's happening electrically, green for link, a valid connection has been negotiated, and amber flickering for activity, meaning frames are actually moving.
+
+24
+00:02:28,682 --> 00:02:33,951
+Right behind each port sits a pair of small transformers, sometimes called the magnetics.
+
+25
+00:02:34,302 --> 00:02:37,026
+Their job isn't to boost the signal, it's isolation.
+
+26
+00:02:37,807 --> 00:02:45,477
+They galvanically separate this card from the cable, so a ground fault or power surge on the network side can't reach the card or the rest of your machine.
+
+27
+00:02:46,338 --> 00:02:49,462
+They also reject common mode noise picked up along the cable.
+
+28
+00:02:50,363 --> 00:02:53,207
+Unglamorous, but every wired Ethernet port has them.
+
+29
+00:02:55,210 --> 00:02:58,474
+Under the heatsink is the physical layer chip, or PHY.
+
+30
+00:02:59,255 --> 00:03:02,419
+This is where the analog world meets the digital world.
+
+31
+00:03:02,500 --> 00:03:15,293
+On receive, it takes the raw electrical waveform off the cable and, through fairly heavy digital signal processing, echo cancellation, crosstalk cancellation, error correcting decoding, turns it back into clean bits.
+
+32
+00:03:16,214 --> 00:03:21,720
+On transmit, it does the reverse, takes bits and shapes them into that same 16-level signal.
+
+33
+00:03:23,522 --> 00:03:29,368
+This chip runs hot, which is exactly why it's the one hiding under the heatsink and not out in the open air.
+
+34
+00:03:31,120 --> 00:03:35,848
+This is the brain of the card, the Ethernet controller, sometimes just called the Mac.
+
+35
+00:03:36,870 --> 00:03:40,817
+Once the feature hands it clean bits, the controller does the real networking work.
+
+36
+00:03:41,458 --> 00:03:54,360
+It checks the frame's checksum, figures out which receive queue the packet should go into, and, critically, it talks to the host computer's memory directly over PCIe, without waiting for the CPU to babysit every packet.
+
+37
+00:03:55,724 --> 00:04:09,463
+It also runs offload logic, checksum calculation, segmentation for large packets, VLAN tagging, tasks that used to be pure CPU work, now done in silicon so the processor is free to run your application.
+
+38
+00:04:11,198 --> 00:04:13,244
+A quick word on the heatsink.
+
+39
+00:04:13,264 --> 00:04:20,804
+It's finned aluminum, clipped down with spring-loaded pushpins, so it applies constant pressure even as the board flexes slightly with heat.
+
+40
+00:04:21,727 --> 00:04:27,182
+It's passive, no fan, so it depends entirely on airflow moving through the server chassis.
+
+41
+00:04:28,968 --> 00:04:35,216
+And this gold comb at the end is the PCIe edge connector, 8 lanes worth of contacts.
+
+42
+00:04:35,236 --> 00:04:41,363
+This is the card's only connection to the rest of the computer, and everything the controller does eventually funnels through here.
+
+43
+00:04:42,244 --> 00:04:46,810
+We'll come back to it in a minute, because it's the key to how packets actually get to your software.
+
+44
+00:04:48,792 --> 00:04:54,359
+The metal bracket on the back simply anchors the card to the chassis and exposes the two ports through the case.
+
+45
+00:04:55,040 --> 00:04:58,384
+Mechanical, but it also grounds the port shields to the chassis.
+
+46
+00:05:00,119 --> 00:05:04,866
+So why does a server need a card like this instead of the cheap Ethernet port built into a motherboard?
+
+47
+00:05:05,687 --> 00:05:06,328
+Three reasons.
+
+48
+00:05:06,949 --> 00:05:09,172
+Throughput, offload, and control.
+
+49
+00:05:10,173 --> 00:05:13,999
+A dedicated NIC can push far more traffic than an onboard controller.
+
+50
+00:05:14,620 --> 00:05:18,185
+It takes real work off the CPU through those offloads we just mentioned.
+
+51
+00:05:18,745 --> 00:05:27,578
+And, for the kind of software this card is built for, it can be driven directly by an application instead of the operating system's general-purpose network stack.
+
+52
+00:05:28,368 --> 00:05:31,593
+That last point matters a lot, and it's where things get interesting.
+
+53
+00:05:32,414 --> 00:05:33,896
+Let's follow an actual packet.
+
+54
+00:05:35,799 --> 00:05:39,424
+Let's trace one packet, start to finish, the way it happens for real.
+
+55
+00:05:41,207 --> 00:05:42,649
+Step one, the cable.
+
+56
+00:05:43,590 --> 00:05:46,775
+A frame arrives as an electrical waveform on the twisted pairs.
+
+57
+00:05:48,778 --> 00:05:51,642
+Step two, RJ45 and magnetics.
+
+58
+00:05:52,444 --> 00:05:57,531
+It enters the port, passes through the isolation transformers, and reaches the PHY.
+
+59
+00:05:59,249 --> 00:06:01,133
+Step three, the PHY.
+
+60
+00:06:01,875 --> 00:06:07,789
+The PHY decodes the waveform back into clean digital bits and hands them off on a simple internal bus.
+
+61
+00:06:08,129 --> 00:06:09,653
+Step four, the controller.
+
+62
+00:06:10,655 --> 00:06:14,564
+The controller checks the frame is valid, and here's the first real decision point.
+
+63
+00:06:15,206 --> 00:06:18,473
+It decides which receive queue this packet belongs to.
+
+64
+00:06:18,655 --> 00:06:26,446
+Modern NICs support multiple receive queues, often dozens per port, specifically so that traffic can be spread across multiple CPU cores.
+
+65
+00:06:27,227 --> 00:06:30,692
+The mechanism that does the spreading is called RSS .
+
+66
+00:06:32,013 --> 00:06:40,545
+The controller hashes fields from the packet header, source and destination IP, source and destination port, and that hash picks a queue.
+
+67
+00:06:40,545 --> 00:06:44,039
+Same flow, same hash, same queue, every time.
+
+68
+00:06:44,079 --> 00:06:48,797
+That's what lets one core own a queue without needing to coordinate with any other core.
+
+69
+00:06:49,672 --> 00:06:50,393
+Step 5.
+
+70
+00:06:50,774 --> 00:06:53,859
+DMA This is the part people underestimate.
+
+71
+00:06:54,480 --> 00:06:58,025
+The controller doesn't send the packet to the CPU to be copied into memory.
+
+72
+00:06:58,566 --> 00:07:06,138
+It writes the packet directly into a buffer in the host's RAM itself, over PCIe, using Direct Memory Access .
+
+73
+00:07:07,500 --> 00:07:11,106
+The CPU isn't involved in moving a single byte of this transfer.
+
+74
+00:07:11,761 --> 00:07:13,683
+Step six, PCIe.
+
+75
+00:07:14,524 --> 00:07:20,090
+That DMA write travels across the eight lanes of this connector as PCIe memory write transactions.
+
+76
+00:07:20,851 --> 00:07:34,785
+Eight lanes of third generation PCIe gives this card roughly 7.9 gigabytes per second in each direction, vastly more than either 10 gigabit port needs on its own, which leaves plenty of headroom for descriptor traffic and a second port
+
+77
+00:07:34,846 --> 00:07:36,267
+running at the same time.
+
+78
+00:07:36,854 --> 00:07:37,515
+Step 7.
+
+79
+00:07:37,936 --> 00:07:42,825
+The RXQ and Descriptor Ring Now here's the piece that ties hardware to software.
+
+80
+00:07:43,587 --> 00:07:49,518
+In host memory sits a data structure called a descriptor ring, a circular array that software prepared in advance.
+
+81
+00:07:50,399 --> 00:07:52,523
+Each descriptor is basically an empty pointer.
+
+82
+00:07:53,084 --> 00:07:55,409
+Here's a free buffer, put the next packet here.
+
+83
+00:07:56,330 --> 00:08:00,398
+When the controller finishes writing a packet, it marks that descriptor as done.
+
+84
+00:08:01,373 --> 00:08:03,619
+Step eight, the application picks it up.
+
+85
+00:08:04,481 --> 00:08:15,990
+On the software side, if you're running a high-performance data plane stack, this is where something like DPDK comes in, a worker core is continuously polling that ring, not waiting for an interrupt.
+
+86
+00:08:16,072 --> 00:08:33,212
+It calls a function, commonly rte underscore eth underscore rx underscore burst, which sweeps up a batch of completed descriptors in one call and hands your application the packets as ready-to-use buffers, called mBuffs, pulled from a pre-allocated pool called
+
+87
+00:08:33,252 --> 00:08:33,792
+a mempool.
+
+88
+00:08:33,893 --> 00:08:36,736
+No interrupt, no context switch, no extra copy.
+
+89
+00:08:37,537 --> 00:08:44,745
+The packet moved from copper wire to application memory with the CPU touching it exactly once to read it.
+
+90
+00:08:45,181 --> 00:08:49,328
+Transmit is the same path, run backward, and it starts on the software side.
+
+91
+00:08:50,289 --> 00:08:50,810
+Step 1.
+
+92
+00:08:51,471 --> 00:09:00,726
+The application builds a packet and hands it to the driver, which calls rte underscore eth underscore tx underscore burst.
+
+93
+00:09:01,162 --> 00:09:01,763
+Step 2.
+
+94
+00:09:02,204 --> 00:09:03,106
+Descriptors go up.
+
+95
+00:09:03,847 --> 00:09:15,829
+The driver writes descriptors into the TX ring, each one pointing at a buffer that already holds the outgoing packet, and then writes to a doorbell register, a simple, hey, new work, signal to the controller.
+
+96
+00:09:16,711 --> 00:09:17,231
+Step 3.
+
+97
+00:09:17,893 --> 00:09:24,064
+The controller DMA reads those buffers straight out of host memory, again with no CPU copy.
+
+98
+00:09:24,064 --> 00:09:24,725
+Step 4.
+
+99
+00:09:25,186 --> 00:09:26,368
+PHY and cable.
+
+100
+00:09:26,949 --> 00:09:33,781
+The controller hands the frame to the PHY, which encodes it back into that 16-level analog signal and puts it on the wire.
+
+101
+00:09:34,723 --> 00:09:35,264
+Step 5.
+
+102
+00:09:35,704 --> 00:09:36,185
+Completion.
+
+103
+00:09:37,087 --> 00:09:45,782
+Once the controller has sent the frame, it writes back a completion, and the driver returns that buffer to the mempool so it can be reused for the next packet.
+
+104
+00:09:45,998 --> 00:09:59,876
+Two independent, symmetric pipelines, one for receive, one for transmit, both bypassing the CPU for the actual data movement, and both driven entirely by polling instead of interrupts when you want maximum throughput.
+
+105
+00:10:00,797 --> 00:10:04,902
+A quick recap of the ideas that make this fast, because they're worth naming directly.
+
+106
+00:10:05,844 --> 00:10:15,516
+Multi-Q plus RSS turns one NIC into effectively N independent lanes, one per CPU core with zero locking between them.
+
+107
+00:10:15,833 --> 00:10:18,718
+DMA means the controller talks to memory directly.
+
+108
+00:10:19,380 --> 00:10:24,329
+The CPU's job is reduced to setting up buffers in advance and reading results after the fact.
+
+109
+00:10:25,411 --> 00:10:38,736
+Polling instead of interrupts, the model DPDK uses, avoids the fixed cost of an interrupt and a context switch on every single packet, which matters enormously once you're processing millions of packets per second.
+
+110
+00:10:39,543 --> 00:10:50,953
+Hardware offloads, checksums, segmentation, VLAN handling move repetitive, well-defined work into silicon that does it far cheaper than a general-purpose CPU core.
+
+111
+00:10:51,271 --> 00:11:02,085
+Put together, this is why a card that looks like a simple green board with two ports can be the difference between a server that pushes a few hundred thousand packets a second and one that pushes tens of millions.
+
+112
+00:11:03,086 --> 00:11:07,652
+Cards built this way show up anywhere packet throughput is the job, not a side effect.
+
+113
+00:11:08,313 --> 00:11:19,928
+Load balancers, firewalls and other security appliances, software routers and switches, telecom data planes, and virtualized network functions running inside the cloud.
+
+114
+00:11:19,928 --> 00:11:29,203
+Anywhere you hear the words line rate, packet forwarding, or data plane, there's a card very much like this one underneath, doing exactly what we just walked through.
+
+115
+00:11:30,124 --> 00:11:37,095
+So the next time someone says, just add ANIC, you'll know that Greencard is quietly running its own miniature pipeline.
+
+116
+00:11:37,616 --> 00:11:44,447
+Copper, transformer, PHY, controller, DMA engine, and a set of queues.
+
+117
+00:11:44,447 --> 00:11:52,225
+all built to get a packet from a cable into your application and back out again, as many millions of times a second as the wire will allow.
+
+118
+00:11:53,147 --> 00:11:53,909
+Thanks for watching!
+
+119
+00:11:54,811 --> 00:11:57,998
+If you want to explore the model yourself, the link's in the description.

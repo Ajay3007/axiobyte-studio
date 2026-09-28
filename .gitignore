@@ -38,3 +38,12 @@ build/
 
 # macOS
 .DS_Store
+
+# JavaScript (renderers/three, experiences/, episodes/*/three) — CONVENTIONS §14a
+node_modules/
+.vite/
+
+# Voiceover audio is a local input, never committed: timing comes from the
+# committed timeline/words.json, and episode.yaml pins the audio's sha256 so a
+# missing or re-recorded file fails loudly at compose time.
+episodes/*/audio/
