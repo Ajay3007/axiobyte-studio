@@ -54,7 +54,7 @@ between the two machines. The goldens are deterministic text, so it would *appea
 work — but you would be deciding a visual change is correct while unable to see a render
 or the reference episodes. That decision belongs on the Mac.
 
-Expected clean state on Windows: **459 passed, 12 skipped, 0 failed** — the 10 reference
+Expected clean state on Windows: **500 passed, 12 skipped, 0 failed** — the 10 reference
 tests plus the 2 Blender ones. This is exactly what CI's `windows-latest` job reports, so
 if your numbers differ, compare against the latest green run rather than guessing.
 
@@ -90,12 +90,35 @@ Read the diff. A golden that updates without being examined is not a test.
 Verify portability before pushing, since a green run here can still be Mac-only:
 
 ```bash
-AXIOBYTE_REFERENCE_ROOT=/nonexistent pytest      # expect 461 passed, 10 skipped
+AXIOBYTE_REFERENCE_ROOT=/nonexistent pytest      # expect 502 passed, 10 skipped
 ```
 
-(461, not 459, because Blender *is* installed here — only the reference tests skip.)
+(502, not 500, because Blender *is* installed here — only the reference tests skip.)
 
-Expected clean state on macOS: **471 passed, 0 skipped, 0 failed.**
+Expected clean state on macOS: **512 passed, 0 skipped, 0 failed.**
+
+---
+
+## The Three.js backend and the experiences (JavaScript)
+
+`renderers/three/`, `experiences/` and each Three.js episode's `three/` folder are an npm
+workspace at the repository root (`npm ci` once). Node ≥ 20.19 on both machines.
+
+| | Windows | macOS |
+|---|---|---|
+| `npm test -w @axiobyte/three` (vitest), `abs web build` | ✅ | ✅ |
+| `abs web test` (smoke test under `/axiobyte/`) | ✅ with Chrome installed | ✅ |
+| `abs render` / `abs compose` a Three.js episode | needs Chrome **and** ffmpeg | ✅ |
+| `check-determinism --expect <episode>/three/determinism.baseline` | ❌ the baseline is the Mac's | ✅ owns it |
+| Judging a frame | ❌ | ✅ |
+
+`abs render` runs Chrome **headful** by default (it gets the GPU and is faster) — a browser
+window appears per shot. Pass `--headless` when working at the machine. A Three.js shot's
+cache key includes the backend source, so editing `renderers/three/src/` during a render
+invalidates the shots already written; don't edit it mid-render.
+
+The voiceover (`episodes/*/audio/`) is never committed. Copy it in from wherever it is kept;
+`abs compose` refuses a file whose sha256 differs from the one in `episode.yaml`.
 
 ---
 
@@ -155,8 +178,9 @@ Windows. Plan a Mac session for it rather than discovering that mid-task.
 
 ```bash
 ruff check src tests && ruff format --check src tests && mypy && lint-imports && pytest
+npm test -w @axiobyte/three && npm run build && npm test -w @axiobyte/experiences   # if JS changed
 ```
 
-All five, every time. Renders are never committed
+All five (and the JS three when it changed), every time. Renders are never committed
 ([`ARCHITECTURE.md`](ARCHITECTURE.md) §6) — if `git status` offers you a `.png` under
 `out/` or `media/`, something is wrong with the ignore rules, not with the file.

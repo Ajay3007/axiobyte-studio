@@ -90,18 +90,31 @@ why the absence of red is the argument in the zero-copy episode.
 | 3D Tier 1 — isometric solids (no renderer) | ✅ |
 | 3D Tier 2 — baked Blender plates | ✅ |
 | 3D Tier 3 — live Blender + camera bridge | ⬜ |
-| Three.js backend — video target (deterministic frames → clip) | 🚧 |
-| Three.js backend — web target (interactive representations) | 🚧 |
-| Per-shot renderer selection (`renderer:` on a shot) | 🚧 |
-| Composer v0 — concatenate per-shot clips + voiceover | 🚧 |
+| Three.js backend — video target (deterministic frames → clip) | ✅ |
+| Three.js backend — web target (interactive representations) | ✅ |
+| Per-shot renderer selection (`renderer:` on a shot) | ✅ |
+| Composer v0 — concatenate per-shot clips + voiceover | ✅ |
 | Educational Grammar | ⬜ |
 | Full ep02 reproduction (Phase 0 gate) | ⬜ |
 
 Open `docs/previews/index.html` for one shot solved to 16:9, 9:16 (Reels) and 1:1, and
 `docs/previews/render/` for the same shot actually rendered through Manim in two formats.
 
-Two episodes are authored: `s01e01-kernel-slow` and `s01e02-zero-copy`, both
-anchored to the reference episodes' own voiceovers.
+Three episodes are authored. `s01e01-kernel-slow` and `s01e02-zero-copy` (Manim) are anchored
+to the reference episodes' own voiceovers. `s01e03-what-is-a-nic` is an 11:59 film on the
+**Three.js backend** whose scene is also the interactive NIC at
+[`/axiobyte/networking/nic/`](https://ajay3007.github.io/axiobyte/networking/nic/).
+
+```bash
+# a Three.js episode: shot by shot, then assembled with its voiceover
+.venv/bin/abs render  episodes/s01e03-what-is-a-nic --headless
+.venv/bin/abs compose episodes/s01e03-what-is-a-nic
+.venv/bin/abs preview episodes/s01e03-what-is-a-nic --open   # live, with the voiceover
+
+# the interactive experiences
+.venv/bin/abs web dev        # → http://localhost:5173/networking/nic/
+.venv/bin/abs web build && .venv/bin/abs web test
+```
 
 ```bash
 # scaffold the next episode from the concepts it will teach
@@ -151,11 +164,20 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev,manim]"
 .venv/bin/lint-imports              # the architecture's load-bearing contracts
 ```
 
+The JavaScript half (`renderers/three`, `experiences/`) is an npm workspace at the root:
+
+```bash
+npm ci
+npm test -w @axiobyte/three          # vitest
+npm run build && npm test -w @axiobyte/experiences   # build + smoke test under /axiobyte/
+```
+
 Tests marked `reference` run against the real episode files and skip when absent. Point
 `AXIOBYTE_REFERENCE_ROOT` at them to run those; everything else passes without them, and
 running with it unset is how a portability regression gets caught before CI does.
 
-CI runs the whole gate on Ubuntu **and** Windows.
+CI runs the whole Python gate on Ubuntu **and** Windows (`ci.yml`), and the JavaScript checks
+(`three.yml`), which also release the experiences — see [`docs/deployment.md`](docs/deployment.md).
 
 ---
 
