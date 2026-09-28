@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { Ease } from '../../engine/tween.js';
-import { circlePath, extrudeAlongX, extrudeAlongY, mergeAll, polygon, xz } from '../../engine/geometry.js';
-import { createPushPin } from '../parts/misc.js';
+import { Ease } from '../../../core/tween.js';
+import { circlePath, extrudeAlongX, extrudeAlongY, mergeAll, polygon, xz } from '../../../core/geometry.js';
+import { createPushPin } from '../../../core/hardware/parts/misc.js';
 import { HEATSINK } from './layout.js';
 
 /** Base outline: a square with two diagonal ears that carry the push pins. */

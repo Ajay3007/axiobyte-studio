@@ -1,4 +1,4 @@
-import './styles.css';
+import '@axiobyte/three/web/styles.css';
 import { createApp } from './app.js';
 
 function supportsWebGL2() {

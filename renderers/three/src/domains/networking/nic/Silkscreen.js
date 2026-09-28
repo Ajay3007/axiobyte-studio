@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { canvasTexture, CANVAS_FONT } from '../../engine/textures.js';
+import { canvasTexture, CANVAS_FONT } from '../../../core/textures.js';
 import { CONTROLLER, FINGERS, MAGNETICS, MISC, PCB, TOP, VRM, ZONES } from './layout.js';
 
 const PX = 170; // canvas pixels per cm

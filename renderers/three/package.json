@@ -1,21 +1,15 @@
 {
-  "name": "nic-3d",
+  "name": "@axiobyte/three",
+  "version": "0.1.0",
   "private": true,
-  "version": "1.0.0",
-  "description": "Interactive procedural 3D Network Interface Card built with Three.js (AxioByte visualization engine)",
+  "description": "AxioByte Studio's Three.js backend: one scene, two targets \u2014 deterministic video frames and interactive web pages.",
   "type": "module",
+  "exports": {
+    "./*": "./src/*",
+    "./tools/*": "./tools/*"
+  },
   "scripts": {
-    "dev": "vite",
-    "video": "npm run audio && vite --open /video.html",
-    "build": "vite build",
-    "preview": "vite preview",
-    "render": "node scripts/render.mjs",
-    "render:a": "node scripts/render.mjs --from 0 --to 0:32 --out final/preview-a.mp4",
-    "render:b": "node scripts/render.mjs --from 6:15 --to 8:45 --out final/preview-b.mp4",
-    "stills": "node scripts/render.mjs --stills 0:04,0:26,1:30,2:35,3:00,3:35,4:05,4:40,6:30,6:50,7:15,8:00,9:40,10:30,11:45",
-    "audio": "node scripts/prepare-audio.mjs",
-    "check:determinism": "node scripts/check-determinism.mjs",
-    "sheet": "node scripts/render.mjs --sheet auto"
+    "test": "vitest run"
   },
   "dependencies": {
     "three": "^0.186.1"

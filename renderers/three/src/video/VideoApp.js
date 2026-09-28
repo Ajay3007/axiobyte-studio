@@ -1,17 +1,16 @@
-import { createNicWorld } from '../scenes/nicWorld.js';
-import { createSignalPaths } from './scene/SignalPaths.js';
-import { TimelineParser } from './TimelineParser.js';
-import { buildStoryboard } from './storyboard.js';
+import { TimelineParser } from '../core/timeline/TimelineParser.js';
 import { VideoDirector } from './VideoDirector.js';
 import { Compositor } from './Compositor.js';
 import { W, H } from './overlay/theme.js';
 
 /**
- * Video mode.
+ * The Three.js backend's VIDEO target.
  *
- * Same NIC, same camera presets, same packet system as the interactive site
- * (see ../scenes/nicWorld.js) — but no OrbitControls, no DOM UI, no cursor and
- * no realtime clock. The frame at time t is produced by:
+ * Same world as the interactive page (a domain's world factory, e.g.
+ * domains/networking/nic/world.js) — but no OrbitControls, no DOM UI, no
+ * cursor and no realtime clock. Nothing here knows which model it renders:
+ * the caller supplies `createScene` (a domain's video scene) and
+ * `buildStoryboard` (an episode's score). The frame at time t is produced by:
  *
  *   director.update(t)    camera pose + card animation, from the storyboard
  *   engine.stepTo(t)      renders the 3D layer with a fixed dt
@@ -21,6 +20,8 @@ import { W, H } from './overlay/theme.js';
 export function createVideoApp({
   container,
   timelineData,
+  createScene,
+  buildStoryboard,
   fps = 30,
   supersample = 2,
   captions = false,
@@ -30,29 +31,18 @@ export function createVideoApp({
 }) {
   const timeline = new TimelineParser(timelineData);
 
-  const world = createNicWorld({
+  const scene = createScene({
     container,
-    reducedMotion: false,
     engine: { clock: 'manual', size: { width, height }, pixelRatio: supersample, controls: false, fov: 30 },
     // The site's hover highlight is deliberately faint; on video it needs to
     // survive compression and a 1080p viewport.
     highlight: { strength: 0.2 },
   });
-
-  const signalPaths = createSignalPaths();
-  world.scene.nic.root.add(signalPaths.group);
+  const { world } = scene;
 
   const story = buildStoryboard({ timeline, registry: world.registry, captions, tail });
-  const director = new VideoDirector({ world, story, signalPaths });
+  const director = new VideoDirector({ world, story, animation: scene.createAnimation(story) });
   const compositor = new Compositor({ width, height });
-
-  // The 3D layer's own per-frame work: board glow and LED patterns. Highlights
-  // and the heatsink are driven by the AnimationDirector instead, so the
-  // interactive Highlighter.update() easing is deliberately not used here.
-  world.engine.onTick((dt, t) => {
-    world.leds.update(dt, t);
-    world.scene.update(dt, t);
-  });
 
   let lastTime = -1;
 
@@ -90,8 +80,7 @@ export function createVideoApp({
     describeAt: (t) => director.describeAt(t),
     dispose() {
       director.dispose();
-      signalPaths.dispose();
-      world.dispose();
+      scene.dispose();
     },
   };
 

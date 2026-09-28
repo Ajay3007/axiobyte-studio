@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Ease } from '../engine/tween.js';
-import { RX_PATH, TX_PATH, hardwareRoute } from '../concepts/dataplane.js';
+import { Ease } from '../../../core/tween.js';
+import { RX_PATH, TX_PATH, hardwareRoute } from '../dataplane.js';
 
 const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const smooth = (t) => {

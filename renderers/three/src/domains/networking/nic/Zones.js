@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { boxAt, mergeAll } from '../../engine/geometry.js';
+import { boxAt, mergeAll } from '../../../core/geometry.js';
 import { TOP, ZONES } from './layout.js';
 
 const ACCENT = 0x6ec1ff;

@@ -1,8 +1,10 @@
-import './styles.css';
-import './video/video.css';
-import timelineData from '../content/nic/timeline.json';
-import { createVideoApp } from './video/VideoApp.js';
-import { createDebugOverlay } from './video/DebugOverlay.js';
+import '@axiobyte/three/web/styles.css';
+import '@axiobyte/three/video/video.css';
+import timelineData from '../timeline/words.json';
+import { createVideoApp } from '@axiobyte/three/video/VideoApp.js';
+import { createDebugOverlay } from '@axiobyte/three/video/DebugOverlay.js';
+import { createNicVideoScene } from '@axiobyte/three/domains/networking/nic/video.js';
+import { buildStoryboard } from './storyboard.js';
 
 const params = new URLSearchParams(location.search);
 const flag = (name, dflt) => (params.has(name) ? params.get(name) !== '0' : dflt);
@@ -43,6 +45,8 @@ async function boot() {
   const app = createVideoApp({
     container: document.getElementById('render-host'),
     timelineData,
+    createScene: createNicVideoScene,
+    buildStoryboard,
     fps: num('fps', 30),
     supersample: num('ss', RENDER ? 2 : 1),
     captions: flag('captions', false),
@@ -62,6 +66,8 @@ async function boot() {
   window.addEventListener('resize', fit);
 
   const audio = document.getElementById('voiceover');
+  // Only the preview plays sound; the renderer never fetches the audio.
+  if (!RENDER && audio) audio.src = audio.dataset.src;
   if (RENDER) {
     audio?.remove();
     document.body.classList.add('is-render');

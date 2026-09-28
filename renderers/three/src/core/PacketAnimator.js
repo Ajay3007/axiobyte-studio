@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Ease } from '../engine/tween.js';
-import { glowTexture } from '../engine/textures.js';
+import { Ease } from './tween.js';
+import { glowTexture } from './textures.js';
 
 /**
  * Moves glowing "packet" tokens between component anchors. This is the hook

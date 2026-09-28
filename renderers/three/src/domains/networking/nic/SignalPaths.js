@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CONTROLLER, MAGNETICS, PHY, PORT, PORTS, TOP, PCIE } from '../../hardware/nic/layout.js';
+import { CONTROLLER, MAGNETICS, PHY, PORT, PORTS, TOP, PCIE } from './layout.js';
 
 /**
  * Glowing signal routes laid over the real board routing. The PCB section

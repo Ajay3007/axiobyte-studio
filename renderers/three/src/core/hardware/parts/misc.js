@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { boxAt, extrudeAlongY, HelixCurve, mergeAll, roundedRect } from '../../engine/geometry.js';
+import { boxAt, extrudeAlongY, HelixCurve, mergeAll, roundedRect } from '../../geometry.js';
 
 function mesh(geo, mat, name) {
   const m = new THREE.Mesh(geo, mat);

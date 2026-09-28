@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { circlePath, extrudeAlongY, mergeAll, polygon, xz } from '../../engine/geometry.js';
+import { circlePath, extrudeAlongY, mergeAll, polygon, xz } from '../../../core/geometry.js';
 import { CORNER_CUT, FINGERS, HOLES, PCB, TOP } from './layout.js';
 
 export const FIDUCIALS = [

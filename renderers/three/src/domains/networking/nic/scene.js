@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { createNIC } from '../hardware/nic/NIC.js';
-import { HEATSINK } from '../hardware/nic/layout.js';
+import { createNIC } from './NIC.js';
+import { HEATSINK } from './layout.js';
 
 const FLOAT = 0.5; // model hovers slightly above the floor for a product-shot feel
 

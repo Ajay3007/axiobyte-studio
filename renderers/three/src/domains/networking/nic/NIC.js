@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Kit } from '../Kit.js';
+import { Kit } from '../../../core/hardware/Kit.js';
 import { createPCB } from './PCB.js';
 import { createSilkscreen } from './Silkscreen.js';
 import { createTraces } from './Traces.js';

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { boxAt, extrudeAlongX, mergeAll, polygon, roundedRect } from '../../engine/geometry.js';
-import { glowTexture } from '../../engine/textures.js';
+import { boxAt, extrudeAlongX, mergeAll, polygon, roundedRect } from '../../../core/geometry.js';
+import { glowTexture } from '../../../core/textures.js';
 import { PORT } from './layout.js';
 
 const T = 0.028; // shield sheet thickness

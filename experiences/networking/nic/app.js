@@ -1,7 +1,7 @@
-import { InteractionManager } from './interaction/InteractionManager.js';
-import { RX_PATH, TX_PATH, hardwareRoute, neighbors, STAGES } from './concepts/dataplane.js';
-import { createNicWorld } from './scenes/nicWorld.js';
-import { UI } from './ui/UI.js';
+import { InteractionManager } from '@axiobyte/three/web/InteractionManager.js';
+import { RX_PATH, TX_PATH, hardwareRoute, neighbors, STAGES } from '@axiobyte/three/domains/networking/dataplane.js';
+import { createNicWorld } from '@axiobyte/three/domains/networking/nic/world.js';
+import { UI } from './UI.js';
 
 /**
  * Interactive mode. Layers, bottom to top:

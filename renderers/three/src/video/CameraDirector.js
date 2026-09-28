@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Ease } from '../engine/tween.js';
+import { Ease } from '../core/tween.js';
 
 const TAU = Math.PI * 2;
 const shortestAngle = (a, b) => {

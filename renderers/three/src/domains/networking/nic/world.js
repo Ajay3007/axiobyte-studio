@@ -1,12 +1,12 @@
-import { Engine } from '../engine/Engine.js';
-import { createLighting } from '../engine/Lighting.js';
-import { createStage } from '../engine/Stage.js';
-import { CameraManager } from '../engine/CameraManager.js';
-import { ComponentRegistry } from '../interaction/ComponentRegistry.js';
-import { Highlighter } from '../interaction/Highlighter.js';
-import { LedController } from '../animation/LedController.js';
-import { PacketAnimator } from '../animation/PacketAnimator.js';
-import { createNicScene } from './nicScene.js';
+import { Engine } from '../../../core/Engine.js';
+import { createLighting } from '../../../core/Lighting.js';
+import { createStage } from '../../../core/Stage.js';
+import { CameraManager } from '../../../core/CameraManager.js';
+import { ComponentRegistry } from '../../../core/ComponentRegistry.js';
+import { Highlighter } from '../../../core/Highlighter.js';
+import { LedController } from '../../../core/hardware/LedController.js';
+import { PacketAnimator } from '../../../core/PacketAnimator.js';
+import { createNicScene } from './scene.js';
 
 /**
  * The NIC "world": engine + lights + stage + the card itself, wired to the

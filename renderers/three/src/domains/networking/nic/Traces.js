@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { mergeAll, offsetPolyline } from '../../engine/geometry.js';
+import { mergeAll, offsetPolyline } from '../../../core/geometry.js';
 import { CONTROLLER, FINGERS, MAGNETICS, PCB, PCIE, PHY, PORT, TOP, ZONES, controllerLeadOffsets, fingerX } from './layout.js';
 
 const H = 0.004; // copper + mask build-up above the laminate

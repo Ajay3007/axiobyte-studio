@@ -1,0 +1,20 @@
+{
+  "name": "@axiobyte/experiences",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive representations of AxioByte concepts, published at https://ajay3007.github.io/axiobyte/<domain>/<concept>/.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node test/smoke.mjs"
+  },
+  "dependencies": {
+    "@axiobyte/three": "0.1.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "vite": "^8.3.1"
+  }
+}

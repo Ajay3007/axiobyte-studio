@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { CameraDirector } from './CameraDirector.js';
-import { AnimationDirector } from './AnimationDirector.js';
 import { Overlay } from './overlay/Overlay.js';
 import { W as OW, H as OH } from './overlay/theme.js';
 
@@ -11,24 +10,21 @@ const _v = new THREE.Vector3();
  *
  *   timeline.json  →  storyboard  →  VideoDirector
  *                                      ├── CameraDirector   (where we look)
- *                                      ├── AnimationDirector(what the card does)
+ *                                      ├── animation        (what the model does — supplied by the domain)
  *                                      └── Overlay          (what we say on top)
  *
  * update(t) is the only entry point and is a pure function of t.
  */
 export class VideoDirector {
-  constructor({ world, story, signalPaths }) {
+  constructor({ world, story, animation }) {
     this.world = world;
     this.story = story;
     this.duration = story.duration;
 
     this.camera = new CameraDirector({ cameraManager: world.camera, engine: world.engine, shots: story.shots });
-    this.animation = new AnimationDirector({ world, signalPaths })
-      .setHighlights(story.highlights)
-      .setHeatsink(story.heatsink)
-      .setZones(story.zones)
-      .setSignals(story.signals);
-    story.flights.forEach((f) => this.animation.addFlight(f));
+    // The domain builds the model's animation lanes from the storyboard
+    // (e.g. the NIC's highlights, heatsink, packet flights, queue zones).
+    this.animation = animation;
 
     this.overlay = new Overlay({ width: OW, height: OH });
     this.overlay.setCues(story.cues);
@@ -65,7 +61,7 @@ export class VideoDirector {
       time: t,
       section: this.sectionAt(t),
       camera: this.camera.describeAt(t),
-      heatsink: this.animation.heatsinkAt(t),
+      heatsink: this.animation.heatsinkAt?.(t),
       highlights: Object.entries(this.animation.levelsAt(t))
         .filter(([, v]) => v > 0.05)
         .map(([id, v]) => `${id} ${v.toFixed(2)}`),

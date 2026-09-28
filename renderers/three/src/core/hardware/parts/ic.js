@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { extrudeAlongY, roundedRect } from '../../engine/geometry.js';
-import { canvasTexture, CANVAS_FONT } from '../../engine/textures.js';
+import { extrudeAlongY, roundedRect } from '../../geometry.js';
+import { canvasTexture, CANVAS_FONT } from '../../textures.js';
 
 /**
  * Gull-wing lead pointing along +X, starting at the body edge (x = 0).

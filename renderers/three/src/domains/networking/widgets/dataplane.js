@@ -1,5 +1,5 @@
-import { C, LAYER, TRACK } from '../theme.js';
-import { text, measure, panel, roundRect, arrow, line, glow, clamp01, lerp, easeOut, easeOutQuint, easeInOut, ramp, stagger, smooth } from '../draw.js';
+import { C, LAYER, TRACK } from '../../../video/overlay/theme.js';
+import { text, measure, panel, roundRect, arrow, line, glow, clamp01, lerp, easeOut, easeOutQuint, easeInOut, ramp, stagger, smooth } from '../../../video/overlay/draw.js';
 
 /** Reveal factor for an element scheduled `delay` seconds into a cue. */
 const smoothAt = (local, delay, dur = 0.5) => smooth((local - delay) / dur);

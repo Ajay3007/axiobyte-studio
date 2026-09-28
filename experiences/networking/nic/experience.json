@@ -1,0 +1,7 @@
+{
+  "concept": "nic",
+  "title": "Network Interface Card",
+  "summary": "An interactive, fully procedural 3D model of a dual-port 10GBASE-T PCIe NIC. Orbit it, click any part, lift the heatsink, and follow a packet from the RJ45 port to the RX queue.",
+  "episode": "s01e03-what-is-a-nic",
+  "tags": ["NIC", "PCIe", "DMA", "RSS", "RX/TX queues"]
+}

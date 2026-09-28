@@ -1,5 +1,5 @@
-import { C, LAYER, TRACK } from '../theme.js';
-import { text, panel, roundRect, arrow, line, glow, clamp01, lerp, easeOut, easeOutQuint, easeInOut, ramp, stagger } from '../draw.js';
+import { C, LAYER, TRACK } from '../../../video/overlay/theme.js';
+import { text, panel, roundRect, arrow, line, glow, clamp01, lerp, easeOut, easeOutQuint, easeInOut, ramp, stagger } from '../../../video/overlay/draw.js';
 
 const heading = (ctx, x, y, w, label, color, p) => {
   text(ctx, label, x, y, { size: 18, weight: 700, color, track: TRACK.xwide });

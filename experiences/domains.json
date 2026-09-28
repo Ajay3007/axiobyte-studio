@@ -1,0 +1,6 @@
+{
+  "networking": {
+    "title": "Networking",
+    "summary": "How packets get from a wire into memory and out again: the NIC, Ethernet, PCIe, DMA, RSS and DPDK."
+  }
+}

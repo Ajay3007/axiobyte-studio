@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { boxAt, mergeAll } from '../../engine/geometry.js';
-import { createIC } from '../parts/ic.js';
+import { boxAt, mergeAll } from '../../../core/geometry.js';
+import { createIC } from '../../../core/hardware/parts/ic.js';
 import { CONTROLLER, MAGNETICS, PHY, TOP } from './layout.js';
 
 /** Main Ethernet controller: 120-lead QFP with a laser-etched top marking. */

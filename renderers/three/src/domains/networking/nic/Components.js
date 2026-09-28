@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { mulberry32 } from '../../engine/rng.js';
-import { boxAt } from '../../engine/geometry.js';
-import { canvasTexture, CANVAS_FONT } from '../../engine/textures.js';
+import { mulberry32 } from '../../../core/rng.js';
+import { boxAt } from '../../../core/geometry.js';
+import { canvasTexture, CANVAS_FONT } from '../../../core/textures.js';
 import {
   PartBatch,
   createCapacitor,
@@ -13,7 +13,7 @@ import {
   createMosfet,
   createPolymerCap,
   createResistor,
-} from '../parts/index.js';
+} from '../../../core/hardware/parts/index.js';
 import { FINGERS, MISC, PCIE, TOP, VRM, fingerX } from './layout.js';
 
 /**

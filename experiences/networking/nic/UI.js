@@ -1,4 +1,4 @@
-import { STAGES } from '../concepts/dataplane.js';
+import { STAGES } from '@axiobyte/three/domains/networking/dataplane.js';
 
 const $ = (id) => document.getElementById(id);
 

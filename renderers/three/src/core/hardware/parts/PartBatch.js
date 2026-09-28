@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { boxAt, extrudeAlongY, mergeAll, roundedRect } from '../../engine/geometry.js';
+import { boxAt, extrudeAlongY, mergeAll, roundedRect } from '../../geometry.js';
 
 /** Chip package sizes in cm: [length, height, width]. */
 export const PACKAGES = {

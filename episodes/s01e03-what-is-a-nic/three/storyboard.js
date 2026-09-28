@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import { Ease } from '../engine/tween.js';
-import { brandMark, sectionLabel, sectionTitle, titleCard, endCard, scrim, vignette, fade, dim, progressBar, backdrop } from './overlay/widgets/titles.js';
-import { callout, chipRow, statBlock, phraseStack, codeChip, noteList, cardRow } from './overlay/widgets/callouts.js';
-import { flowRail, laneActivity, doorbell } from './overlay/widgets/flow.js';
-import { duplexDiagram, pairsDiagram, pam16Diagram, isolationDiagram, dspChain, offloadDiagram, recapFigure } from './overlay/widgets/diagrams.js';
-import { rssDiagram, dmaDiagram, descriptorRing, dpdkDiagram, comparison, archStack } from './overlay/widgets/dataplane.js';
-import { captionTrack } from './overlay/widgets/captions.js';
-import { C } from './overlay/theme.js';
+import { Ease } from '@axiobyte/three/core/tween.js';
+import { brandMark, sectionLabel, sectionTitle, titleCard, endCard, scrim, vignette, fade, dim, progressBar, backdrop } from '@axiobyte/three/video/overlay/widgets/titles.js';
+import { callout, chipRow, statBlock, phraseStack, codeChip, noteList, cardRow } from '@axiobyte/three/video/overlay/widgets/callouts.js';
+import { flowRail, laneActivity, doorbell } from '@axiobyte/three/video/overlay/widgets/flow.js';
+import { duplexDiagram, pairsDiagram, pam16Diagram, isolationDiagram, dspChain, offloadDiagram, recapFigure } from '@axiobyte/three/domains/networking/widgets/diagrams.js';
+import { rssDiagram, dmaDiagram, descriptorRing, dpdkDiagram, comparison, archStack } from '@axiobyte/three/domains/networking/widgets/dataplane.js';
+import { captionTrack } from '@axiobyte/three/video/overlay/widgets/captions.js';
+import { C } from '@axiobyte/three/video/overlay/theme.js';
 
 /**
  * The score.

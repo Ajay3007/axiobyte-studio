@@ -1,0 +1,19 @@
+{
+  "name": "axiobyte-studio",
+  "private": true,
+  "type": "module",
+  "description": "JavaScript side of AxioByte Studio: the Three.js backend and the interactive experiences. The Python engine is configured in pyproject.toml.",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "workspaces": [
+    "renderers/three",
+    "experiences"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @axiobyte/experiences",
+    "build": "npm run build -w @axiobyte/experiences",
+    "preview": "npm run preview -w @axiobyte/experiences",
+    "test": "npm test -w @axiobyte/three && npm test -w @axiobyte/experiences"
+  }
+}

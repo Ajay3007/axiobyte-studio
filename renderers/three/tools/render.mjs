@@ -1,33 +1,35 @@
 #!/usr/bin/env node
 /**
- * Offline renderer: timeline.json → frames → ffmpeg → final/nic-video.mp4
+ * The Three.js backend's offline renderer (VIDEO target):
+ * an episode's three/video.html → frames → ffmpeg → <episode>/out/<id>.mp4
  *
- *   node scripts/render.mjs                        full video, 1920x1080 @ 30fps
- *   node scripts/render.mjs --from 0 --to 0:30     preview A
- *   node scripts/render.mjs --from 7:15 --to 8:30  preview B
- *   node scripts/render.mjs --stills 0:05,3:00     PNG stills for review
+ *   node renderers/three/tools/render.mjs --episode <dir>                      whole film, 1920x1080 @ 30fps
+ *   node renderers/three/tools/render.mjs --episode <dir> --from 0 --to 0:30   a range (a shot, for abs render)
+ *   node renderers/three/tools/render.mjs --episode <dir> --stills 0:05,3:00   PNG stills for review
+ *
+ * --episode is required; --audio overrides <episode>/audio/voiceover.*. The
+ * audio is only needed when encoding a video with sound: stills, sheets,
+ * --probe and --no-audio renders work on a fresh clone without it.
  *
  * A Vite dev server is started in-process and driven by headless-capable
  * Chrome; the page exposes __VIDEO__.encodeFrame(i), which is a pure function
  * of the frame index. Frames are piped straight into ffmpeg, so nothing is
  * ever written to disk except the finished file.
  */
-import { createServer } from 'vite';
 import puppeteer from 'puppeteer-core';
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const AUDIO = path.join(ROOT, 'content/nic/voiceover.mpeg');
+import { resolveEpisode, videoServer, chromePath, rel } from './lib/episode.mjs';
 
 // ------------------------------------------------------------------- args
 function parseArgs(argv) {
   const o = {
     fps: 30,
     ss: 2,
-    out: 'final/nic-video.mp4',
+    episode: null,
+    audioPath: null,
+    out: null, // default: <episode>/out/<id>.mp4
     format: 'jpeg',
     quality: 0.97,
     crf: 17,
@@ -58,6 +60,8 @@ function parseArgs(argv) {
       case '--crf': o.crf = Number(next()); break;
       case '--preset': o.preset = next(); break;
       case '--tail': o.tail = Number(next()); break;
+      case '--episode': o.episode = next(); break;
+      case '--audio': o.audioPath = next(); break;
       case '--port': o.port = Number(next()); break;
       case '--from': o.from = time(next()); break;
       // Frames stepped (but not written) before the first output frame, so a
@@ -97,21 +101,6 @@ function time(s) {
 
 const fmt = (t) => `${String(Math.floor(t / 60)).padStart(2, '0')}:${(t % 60).toFixed(2).padStart(5, '0')}`;
 
-function chromePath() {
-  if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
-  const candidates = [
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary',
-    '/Applications/Chromium.app/Contents/MacOS/Chromium',
-    '/usr/bin/google-chrome',
-    '/usr/bin/chromium-browser',
-    '/usr/bin/chromium',
-  ];
-  const hit = candidates.find((p) => fs.existsSync(p));
-  if (!hit) throw new Error('Chrome not found. Set PUPPETEER_EXECUTABLE_PATH to a Chrome/Chromium binary.');
-  return hit;
-}
-
 function requireFfmpeg() {
   try {
     execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' });
@@ -124,21 +113,14 @@ function requireFfmpeg() {
 async function main() {
   const o = parseArgs(process.argv);
   if (!o.stills && !o.sheet && !o.probe) requireFfmpeg();
-  if (!fs.existsSync(AUDIO)) throw new Error(`Voiceover not found at ${AUDIO}`);
+  const ep = resolveEpisode(o.episode, { audio: o.audioPath });
+  const AUDIO = ep.audio;
+  const encodingSound = !o.stills && !o.sheet && !o.probe && o.audio;
+  if (encodingSound && !fs.existsSync(AUDIO)) {
+    throw new Error(`Voiceover not found at ${rel(AUDIO)} — it is a local input (gitignored). Put it there, pass --audio, or render with --no-audio.`);
+  }
 
-  const server = await createServer({
-    root: ROOT,
-    configFile: path.join(ROOT, 'vite.config.js'),
-    // Port 0 asks the OS for a free one, so a render never collides with a dev
-    // server (or with a previous run that did not shut down cleanly). HMR and
-    // the file watcher are off: a source edit during a 12-minute render would
-    // otherwise hot-reload the page out from under the frame loop.
-    server: { port: o.port || 0, strictPort: Boolean(o.port), host: '127.0.0.1', hmr: false, watch: null },
-    logLevel: 'warn',
-  });
-  await server.listen();
-  const port = server.httpServer.address().port;
-  const base = `http://127.0.0.1:${port}`;
+  const { server, base } = await videoServer(ep, { port: o.port || 0, strictPort: Boolean(o.port) });
 
   const browser = await puppeteer.launch({
     executablePath: chromePath(),
@@ -173,7 +155,7 @@ async function main() {
       tail: String(o.tail),
       captions: o.captions ? '1' : '0',
     });
-    await page.goto(`${base}/video.html?${q}`, { waitUntil: 'load', timeout: 120000 });
+    await page.goto(`${base}${ep.page}?${q}`, { waitUntil: 'load', timeout: 120000 });
     await page.waitForFunction('window.__VIDEO_READY__ === true', { timeout: 180000 });
 
     const info = await page.evaluate(() => ({
@@ -204,7 +186,7 @@ async function main() {
       } else {
         times = o.sheet.split(',').map(time);
       }
-      const dir = path.join(ROOT, 'final/stills');
+      const dir = path.join(ep.out, 'stills');
       fs.mkdirSync(dir, { recursive: true });
       const perSheet = o.cols * 4;
       for (let page0 = 0; page0 * perSheet < times.length; page0++) {
@@ -239,22 +221,22 @@ async function main() {
         );
         const file = path.join(dir, `sheet-${String(page0 + 1).padStart(2, '0')}.png`);
         fs.writeFileSync(file, Buffer.from(data.split(',')[1], 'base64'));
-        console.log(`sheet ${page0 + 1} (${slice.length} frames) → ${path.relative(ROOT, file)}`);
+        console.log(`sheet ${page0 + 1} (${slice.length} frames) → ${rel(file)}`);
       }
       return;
     }
 
     // ------------------------------------------------------------- stills
     if (o.stills) {
-      fs.mkdirSync(path.join(ROOT, 'final/stills'), { recursive: true });
+      fs.mkdirSync(path.join(ep.out, 'stills'), { recursive: true });
       for (const t of o.stills) {
         const data = await page.evaluate(
           (tt) => window.__VIDEO__.seek(tt) && window.__VIDEO__.compositor.canvas.toDataURL('image/png'),
           t,
         );
-        const file = path.join(ROOT, 'final/stills', `${fmt(t).replace(':', 'm').replace('.', 's')}.png`);
+        const file = path.join(ep.out, 'stills', `${fmt(t).replace(':', 'm').replace('.', 's')}.png`);
         fs.writeFileSync(file, Buffer.from(data.split(',')[1], 'base64'));
-        console.log(`still ${fmt(t)} → ${path.relative(ROOT, file)}`);
+        console.log(`still ${fmt(t)} → ${rel(file)}`);
       }
       return;
     }
@@ -267,7 +249,7 @@ async function main() {
     const total = last - first;
     if (total <= 0) throw new Error(`empty range ${fmt(from)} → ${fmt(to)}`);
 
-    const outPath = path.resolve(ROOT, o.out);
+    const outPath = o.out ? path.resolve(o.out) : path.join(ep.out, `${ep.id}.mp4`);
     fs.mkdirSync(path.dirname(outPath), { recursive: true });
 
     const dur = (total / o.fps).toFixed(3);
@@ -361,7 +343,7 @@ async function main() {
 
     const size = fs.statSync(outPath).size;
     console.log(
-      `\nwrote ${path.relative(ROOT, outPath)}  ${(size / 1e6).toFixed(1)} MB  ` +
+      `\nwrote ${rel(outPath)}  ${(size / 1e6).toFixed(1)} MB  ` +
         `(${fmt(from)} → ${fmt(to)}, ${total} frames, ${(bytes / 1e6).toFixed(0)} MB piped)`,
     );
     console.log(execFileSync('ffprobe', [

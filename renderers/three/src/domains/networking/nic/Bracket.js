@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { boxAt, extrudeAlongX, mergeAll, polygon } from '../../engine/geometry.js';
-import { createPanScrew } from '../parts/misc.js';
+import { boxAt, extrudeAlongX, mergeAll, polygon } from '../../../core/geometry.js';
+import { createPanScrew } from '../../../core/hardware/parts/misc.js';
 import { BRACKET, PORTS, TOP } from './layout.js';
 
 /** Plate profile in (u, v) = (-z, y), with port windows and hex vent pattern. */

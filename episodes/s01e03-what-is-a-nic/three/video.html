@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
+    <link rel="icon" href="data:," />
     <title>NIC Video · AxioByte</title>
-    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -19,15 +19,15 @@
         <div id="out-host"></div>
       </div>
     </div>
-    <!-- The supplied voiceover.mpeg is an MPEG program stream, which <audio>
-         cannot decode. `npm run audio` stream-copies the MP3 out of it; the
+    <!-- The voiceover (audio/voiceover.mpeg) is an MPEG program stream, which <audio>
+         cannot decode. tools/prepare-audio.mjs stream-copies the MP3 out to out/; the
          renderer still feeds ffmpeg the original .mpeg. -->
-    <audio id="voiceover" src="/content/nic/voiceover.mp3" preload="auto"></audio>
+    <audio id="voiceover" data-src="../out/voiceover.mp3" preload="auto"></audio>
     <div id="hud-root"></div>
     <div id="video-fallback" hidden>
       <h2>WebGL 2 required</h2>
       <p>This page renders the 3D NIC. Enable hardware acceleration and reload.</p>
     </div>
-    <script type="module" src="./src/video-main.js"></script>
+    <script type="module" src="./video-main.js"></script>
   </body>
 </html>
