@@ -249,6 +249,20 @@ class Timeline:
             fix="Check the sentence index in your cue table against timeline.json.",
         )
 
+    def find_sentence(self, time: float) -> Sentence | None:
+        """The sentence being spoken at a moment, if any.
+
+        Args:
+            time: Seconds from the start of the voiceover.
+
+        Returns:
+            The sentence whose span contains ``time``, or ``None`` in a silence.
+        """
+        for sentence in self.sentences:
+            if sentence.start <= time <= sentence.end:
+                return sentence
+        return None
+
     def words_in(self, start: float, end: float) -> list[Word]:
         """Every word that begins inside a time window.
 

@@ -14,6 +14,7 @@ from typing import Any
 import yaml
 
 from axiobyte_studio.core.errors import StudioError
+from axiobyte_studio.core.renderers import DEFAULT_RENDERER
 from axiobyte_studio.design.theme import DEFAULT_THEME
 from axiobyte_studio.storyboard.beats import BeatMap
 from axiobyte_studio.storyboard.picture import Picture
@@ -38,6 +39,11 @@ class Episode:
         beatmap: Its acts and beats.
         shotlist: Which staging covers which beats.
         timeline: Its voiceover.
+        renderer: The default renderer for shots that do not name one.
+        audio: The recorded voiceover, when declared: ``path`` (relative to the
+            episode), ``sha256`` and ``duration``. Timing never comes from it —
+            only the final mix does — so it may be absent from a checkout.
+        tail: Seconds of picture after the last word.
     """
 
     id: str
@@ -52,6 +58,9 @@ class Episode:
     beatmap: BeatMap | None = None
     shotlist: ShotList | None = None
     timeline: Timeline | None = None
+    renderer: str = DEFAULT_RENDERER
+    audio: dict[str, Any] = field(default_factory=dict)
+    tail: float = 0.0
 
     @classmethod
     def load(cls, root: str | Path) -> Episode:
@@ -83,6 +92,7 @@ class Episode:
             timeline_path = root / timeline_path
 
         beatmap = BeatMap.load(root / "storyboard" / "beats.yaml")
+        renderer = str(raw.get("renderer", DEFAULT_RENDERER))
         return cls(
             id=str(raw.get("id", root.name)),
             title=str(raw.get("title", "")),
@@ -94,8 +104,11 @@ class Episode:
             assumed=frozenset(raw.get("assumed", [])),
             picture=Picture.load(root / "picture.md"),
             beatmap=beatmap,
-            shotlist=ShotList.load(root / "storyboard" / "shots.yaml", beatmap),
+            shotlist=ShotList.load(root / "storyboard" / "shots.yaml", beatmap, renderer),
             timeline=Timeline.load(timeline_path),
+            renderer=renderer,
+            audio=dict(raw.get("audio") or {}),
+            tail=float(raw.get("tail", 0.0)),
         )
 
     # -- convenience --------------------------------------------------------
@@ -109,6 +122,17 @@ class Episode:
     def duration(self) -> float:
         """The voiceover's length, which is the episode's length."""
         return self.timeline.duration if self.timeline else 0.0
+
+    @property
+    def film_duration(self) -> float:
+        """The picture's length: the voiceover plus the tail after its last word."""
+        return self.duration + self.tail
+
+    @property
+    def audio_path(self) -> Path | None:
+        """Where the recorded voiceover is expected, when the episode declares one."""
+        path = self.audio.get("path")
+        return self.root / str(path) if path else None
 
     def platform_for(self, target: str) -> str | None:
         """Which platform's interface a target must stay clear of.

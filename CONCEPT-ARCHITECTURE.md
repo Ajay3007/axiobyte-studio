@@ -903,7 +903,9 @@ Ordered cheapest-first, so the most common mistakes fail in milliseconds:
   7. GRAMMAR       all ASSERT clauses pass
   8. NARRATION     narration contracts (warn only)
   9. LAYOUT        solvable in every declared target, no unsafe collisions
- 10. IMPLS         every (concept, verb, backend) pair has an implementation
+ 10. IMPLS         every shot names a renderer that can render it (per shot, ARCHITECTURE
+                   §8.0a); every (concept, verb, backend) pair has an implementation;
+                   shots on per-window backends tile the film  ← implemented as `renderers`
  11. ASSETS        every asset pinned and present
                               ↓
                      RenderPlan (nothing has rendered yet)

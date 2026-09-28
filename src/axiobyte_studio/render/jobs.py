@@ -11,20 +11,33 @@ a viewer noticing.
 
 Each target renders in its own subprocess, because Manim's ``config`` is
 process-global: two aspect ratios in one process would fight over the same canvas.
+
+Renderers are chosen per shot (ARCHITECTURE.md §8.0a). An episode whose shots are
+all Manim renders exactly as it always has: one generated scene per target. Any
+other episode is rendered shot by shot — each backend produces raw material for
+the shots it owns (Manim its whole scene, Three.js one clip per shot window) —
+and ``abs compose`` assembles the film from it.
 """
 
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from axiobyte_studio.backends.three import ThreeShotJob
 from axiobyte_studio.core.errors import StudioError
 from axiobyte_studio.render import cache
 from axiobyte_studio.storyboard.episode import Episode
 from axiobyte_studio.storyboard.plan import Plan, plan, require_ok
+from axiobyte_studio.storyboard.windows import shot_windows
+
+#: Formats the Three.js backend can render today: its overlay is laid out in
+#: absolute 1920x1080 pixels.
+THREE_TARGETS = frozenset({"16x9"})
 
 #: Draft first. A quality flag is the one place guessing is cheap.
 QUALITY = {"draft": "-ql", "medium": "-qm", "high": "-qh", "production": "-qk"}
@@ -92,6 +105,10 @@ class RenderResult:
         outputs: Files produced, per target.
         failures: Targets that failed, with the tail of their output.
         cached: Targets served from a previous identical render, by digest.
+        shot_jobs: Per-shot jobs for backends that render shot windows.
+        shots: The clip each of those shots produced.
+        shot_failures: Shots that failed, with the reason.
+        cached_shots: Shots served from a previous identical render.
     """
 
     plan: Plan
@@ -99,11 +116,15 @@ class RenderResult:
     outputs: dict[str, list[Path]] = field(default_factory=dict)
     failures: dict[str, str] = field(default_factory=dict)
     cached: dict[str, str] = field(default_factory=dict)
+    shot_jobs: list[ThreeShotJob] = field(default_factory=list)
+    shots: dict[str, Path] = field(default_factory=dict)
+    shot_failures: dict[str, str] = field(default_factory=dict)
+    cached_shots: set[str] = field(default_factory=set)
 
     @property
     def ok(self) -> bool:
-        """Whether every target rendered."""
-        return not self.failures
+        """Whether every target and every shot rendered."""
+        return not self.failures and not self.shot_failures
 
     def report(self) -> str:
         """Render the outcome for a terminal.
@@ -122,13 +143,26 @@ class RenderResult:
             else:
                 where = produced[0].parent if produced else "?"
                 lines.append(f"  ok    {job.target:<8} {job.scene}  →  {where}")
+        for shot_job in self.shot_jobs:
+            shot = shot_job.window.shot
+            where = self.shots.get(shot.id, shot_job.out)
+            span = f"{shot_job.window.start:7.2f} → {shot_job.window.end:7.2f}s"
+            if shot.id in self.shot_failures:
+                lines.append(f"  FAIL  {shot.renderer:<8} {shot.id}  {self.shot_failures[shot.id]}")
+            elif shot.id in self.cached_shots:
+                lines.append(f"  cached {shot.renderer:<7} {shot.id:<28} {span}  →  {where}")
+            else:
+                lines.append(f"  ok    {shot.renderer:<8} {shot.id:<28} {span}  →  {where}")
         lines.append("")
-        reused = len(self.cached)
-        rendered = len(self.jobs) - len(self.failures) - reused
+        reused = len(self.cached) + len(self.cached_shots)
+        failed = len(self.failures) + len(self.shot_failures)
+        rendered = len(self.jobs) + len(self.shot_jobs) - failed - reused
         summary = f"render: {rendered} rendered, {reused} cached"
-        if self.failures:
-            summary += f", {len(self.failures)} failed — see output above"
+        if failed:
+            summary += f", {failed} failed — see output above"
         lines.append(summary)
+        if self.shot_jobs and self.ok:
+            lines.append(f"next: abs compose {self.plan.episode.root}")
         return "\n".join(lines)
 
 
@@ -204,7 +238,7 @@ def verify_staging(episode: Episode) -> list[str]:
         ) from exc
     return [
         shot.stage_function
-        for shot in episode.shotlist.shots
+        for shot in episode.shotlist.by_renderer("manim")
         if not hasattr(module, shot.stage_function)
     ]
 
@@ -237,6 +271,8 @@ def render_episode(
     media_dir: Path | None = None,
     dry_run: bool = False,
     use_cache: bool = True,
+    headless: bool = False,
+    shots: list[str] | None = None,
 ) -> RenderResult:
     """Validate an episode, then render every declared target.
 
@@ -251,6 +287,9 @@ def render_episode(
         use_cache: Reuse a previous render when nothing that affects the output
             has changed. Conservative — a needless render costs minutes, a wrongly
             reused one costs trust.
+        headless: For the Three.js backend: run Chrome without a window.
+        shots: Render only shots whose id contains one of these (e.g. ``"0120"``).
+            Applies to per-shot backends; a Manim scene always renders whole.
 
     Returns:
         The result, whose ``ok`` says whether every target succeeded.
@@ -269,6 +308,21 @@ def render_episode(
     # THE GATE. There is no path past this that reaches a frame.
     checked = plan(episode)
     require_ok(checked)
+
+    if episode.shotlist and set(episode.shotlist.renderers) != {"manim"}:
+        return _render_shots(
+            episode,
+            checked,
+            targets=targets,
+            quality=quality,
+            fps=fps,
+            still=still,
+            media_dir=media_dir,
+            dry_run=dry_run,
+            use_cache=use_cache,
+            headless=headless,
+            only=shots,
+        )
 
     module = scene_module(episode)
     missing = verify_staging(episode)
@@ -302,53 +356,189 @@ def render_episode(
 
     out.mkdir(parents=True, exist_ok=True)
     for job in result.jobs:
-        print_ = cache.fingerprint(episode, job.target, quality=quality, still=still)
-        previous = cache.lookup(out, job.target)
-        reusable = (
-            use_cache
-            and previous is not None
-            and previous.intact
-            and previous.digest == print_.digest
-        )
-        if reusable and previous is not None:
-            result.cached[job.target] = print_.digest
-            result.outputs[job.target] = list(previous.outputs)
-            continue
-
-        completed = subprocess.run(
-            job.command(out, fps),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if completed.returncode != 0:
-            tail = (completed.stderr or completed.stdout).strip().splitlines()
-            result.failures[job.target] = tail[-1] if tail else "manim exited non-zero"
-            continue
-
-        # Manim decorates filenames with its own version, so match on the prefix
-        # and filter to real deliverables rather than its working files.
-        produced = sorted(
-            path
-            for path in out.rglob(f"{job.scene}*")
-            if path.suffix in MEDIA_SUFFIXES and "partial_movie_files" not in path.parts
-        )
-        # Manim exits 0 even when it rendered nothing — "There are no scenes inside
-        # that module" is an ERROR log and a clean exit. Trusting the exit code
-        # alone reports success for an empty render, which is the quietest possible
-        # failure. A render that produced no file did not succeed.
-        if not produced:
-            result.failures[job.target] = (
-                f"produced no output — manim found no scene named {job.scene!r}"
-            )
-            continue
-        result.outputs[job.target] = produced
-        cache.record(
-            out,
-            job.target,
-            print_,
-            produced,
-            episode_id=episode.id,
-            scene=job.scene,
+        _run_manim(
+            job, episode, out, result, quality=quality, still=still, fps=fps, use_cache=use_cache
         )
     return result
+
+
+def _run_manim(
+    job: RenderJob,
+    episode: Episode,
+    out: Path,
+    result: RenderResult,
+    *,
+    quality: str,
+    still: bool,
+    fps: int,
+    use_cache: bool,
+) -> None:
+    """Run one Manim target job, or reuse an identical previous render."""
+    print_ = cache.fingerprint(episode, job.target, quality=quality, still=still)
+    previous = cache.lookup(out, job.target)
+    reusable = (
+        use_cache and previous is not None and previous.intact and previous.digest == print_.digest
+    )
+    if reusable and previous is not None:
+        result.cached[job.target] = print_.digest
+        result.outputs[job.target] = list(previous.outputs)
+        return
+
+    completed = subprocess.run(
+        job.command(out, fps),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        tail = (completed.stderr or completed.stdout).strip().splitlines()
+        result.failures[job.target] = tail[-1] if tail else "manim exited non-zero"
+        return
+
+    # Manim decorates filenames with its own version, so match on the prefix
+    # and filter to real deliverables rather than its working files.
+    produced = sorted(
+        path
+        for path in out.rglob(f"{job.scene}*")
+        if path.suffix in MEDIA_SUFFIXES and "partial_movie_files" not in path.parts
+    )
+    # Manim exits 0 even when it rendered nothing — "There are no scenes inside
+    # that module" is an ERROR log and a clean exit. Trusting the exit code
+    # alone reports success for an empty render, which is the quietest possible
+    # failure. A render that produced no file did not succeed.
+    if not produced:
+        result.failures[job.target] = (
+            f"produced no output — manim found no scene named {job.scene!r}"
+        )
+        return
+    result.outputs[job.target] = produced
+    cache.record(
+        out,
+        job.target,
+        print_,
+        produced,
+        episode_id=episode.id,
+        scene=job.scene,
+    )
+
+
+def _render_shots(
+    episode: Episode,
+    checked: Plan,
+    *,
+    targets: list[str] | None,
+    quality: str,
+    fps: int,
+    still: bool,
+    media_dir: Path | None,
+    dry_run: bool,
+    use_cache: bool,
+    headless: bool,
+    only: list[str] | None = None,
+) -> RenderResult:
+    """Render an episode shot by shot, each on the backend its shot names.
+
+    Manim shots come from the episode's generated scene, rendered whole per target
+    (the composer trims each Manim shot's window out of it). Three.js shots render
+    one clip per window. Nothing here joins them — that is ``abs compose``.
+    """
+    assert episode.shotlist is not None and checked.cues is not None  # the plan passed
+    wanted = targets or list(episode.targets)
+    three = episode.shotlist.by_renderer("three")
+    unsupported = sorted(set(wanted) - THREE_TARGETS) if three else []
+    if unsupported:
+        raise StudioError(
+            f"{episode.id}: the Three.js backend cannot render {', '.join(unsupported)} yet",
+            context={"three.js shots": str(len(three))},
+            fix="Render --target 16x9, or re-stage those shots in Manim (it lays out per target).",
+        )
+
+    out = media_dir or episode.root / "out"
+    result = RenderResult(plan=checked)
+    windows = shot_windows(episode, checked.cues)
+
+    if episode.shotlist.by_renderer("manim"):
+        missing = verify_staging(episode)
+        if missing:
+            raise StudioError(
+                f"{episode.id}: {len(missing)} Manim shot(s) have no staging: {', '.join(missing)}",
+                fix="Define each function in shots/episode.py, or render the shot with three.",
+            )
+        module = scene_module(episode)
+        for target in wanted:
+            result.jobs.append(
+                RenderJob(
+                    target=target,
+                    scene=scene_name(target),
+                    module=module,
+                    quality=quality,
+                    still=still,
+                )
+            )
+
+    for window in windows:
+        if only and not any(key in window.shot.id for key in only):
+            continue
+        if window.shot.renderer == "three":
+            clip = out / "shots" / f"{window.shot.id}.mp4"
+            result.shot_jobs.append(
+                ThreeShotJob(episode.root, window, clip, fps=fps, headless=headless, still=still)
+            )
+
+    if dry_run:
+        return result
+
+    out.mkdir(parents=True, exist_ok=True)
+    for job in result.jobs:
+        _run_manim(
+            job, episode, out, result, quality=quality, still=still, fps=fps, use_cache=use_cache
+        )
+    for shot_job in result.shot_jobs:
+        _run_three(shot_job, result, use_cache=use_cache)
+    return result
+
+
+def _run_three(job: ThreeShotJob, result: RenderResult, *, use_cache: bool) -> None:
+    """Render one Three.js shot, or reuse an identical previous clip."""
+    shot_id = job.window.shot.id
+    sidecar = job.out.with_suffix(".json")
+    digest = job.fingerprint()
+    if job.still:
+        completed = subprocess.run(job.command(), check=False)
+        if completed.returncode != 0:
+            result.shot_failures[shot_id] = "three.js still failed — see output above"
+        else:
+            result.shots[shot_id] = job.episode_root / "out" / "stills"
+        return
+    if (
+        use_cache
+        and job.out.exists()
+        and sidecar.exists()
+        and json.loads(sidecar.read_text(encoding="utf-8")).get("digest") == digest
+    ):
+        result.cached_shots.add(shot_id)
+        result.shots[shot_id] = job.out
+        return
+    job.out.parent.mkdir(parents=True, exist_ok=True)
+    # Not captured: a Three.js render reports frame progress, and a shot can
+    # take minutes. The exit code and the file on disk decide success.
+    completed = subprocess.run(job.command(), check=False)
+    if completed.returncode != 0 or not job.out.exists():
+        result.shot_failures[shot_id] = "three.js render failed — see output above"
+        return
+    first, last = job.window.frames(job.fps)
+    sidecar.write_text(
+        json.dumps(
+            {
+                "shot": shot_id,
+                "renderer": "three",
+                "digest": digest,
+                "frames": [first, last],
+                "fps": job.fps,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    result.shots[shot_id] = job.out

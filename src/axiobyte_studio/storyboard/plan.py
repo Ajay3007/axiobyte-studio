@@ -16,7 +16,9 @@ from enum import StrEnum
 from axiobyte_studio.concepts.base import ConceptKind, InteractionConcept
 from axiobyte_studio.concepts.registry import ConceptRegistry, registry
 from axiobyte_studio.core.errors import CueNotFoundError, StudioError
+from axiobyte_studio.core.renderers import RENDERERS
 from axiobyte_studio.storyboard.episode import Episode
+from axiobyte_studio.storyboard.windows import shot_windows
 from axiobyte_studio.timeline.cues import CueTable
 
 
@@ -113,6 +115,7 @@ def plan(episode: Episode, concepts: ConceptRegistry | None = None) -> Plan:
     _step_budget(result, sdk)
     _step_picture(result)
     _step_coverage(result)
+    _step_renderers(result)
     _step_order(result)
     return result
 
@@ -362,7 +365,75 @@ def _step_coverage(result: Plan) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 7. ORDER — the film runs forwards.
+# 7. RENDERERS — every shot names a backend that can render it, and the shots tile
+#    the film so clips from different backends can be joined.
+# ---------------------------------------------------------------------------
+
+
+def _step_renderers(result: Plan) -> None:
+    """Renderer choice is per shot (ARCHITECTURE.md §8.0a); check each choice.
+
+    A shot may name any backend on the ladder, but it must be one that can render a
+    shot today, and a Blender shot must say why — Blender is the specialist backend,
+    never the default route to 3D. The shots must also tile the film, or the
+    composer would have a gap or an overlap to join.
+    """
+    before = len(result.findings)
+    episode = result.episode
+    if not episode.shotlist:
+        _record(result, "renderers   every shot has a backend that can render it", before)
+        return
+
+    for shot in episode.shotlist.shots:
+        renderer = RENDERERS.get(shot.renderer)
+        if renderer is None:
+            result.findings.append(
+                Finding(
+                    "renderers",
+                    Severity.ERROR,
+                    shot.id,
+                    f"names renderer {shot.renderer!r}, which does not exist",
+                    f"Use one of: {', '.join(RENDERERS)}.",
+                )
+            )
+            continue
+        if not renderer.renders_shots:
+            result.findings.append(
+                Finding(
+                    "renderers",
+                    Severity.ERROR,
+                    shot.id,
+                    f"names {shot.renderer!r}, which cannot render a shot yet",
+                    "Bake a plate with `abs asset bake` and stage it in a Manim shot, or "
+                    "render the shot with three.",
+                )
+            )
+        if renderer.needs_reason and not shot.reason.strip():
+            result.findings.append(
+                Finding(
+                    "renderers",
+                    Severity.WARN,
+                    shot.id,
+                    f"chooses {shot.renderer!r} without saying why",
+                    "Add `reason:` — Blender is for what Three.js cannot reasonably do "
+                    "(path-traced light, true depth of field, volumes).",
+                )
+            )
+
+    # A Manim-only episode renders as one scene; anything else is cut into shot
+    # windows and joined, so the windows must tile the film.
+    if result.cues is not None and set(episode.shotlist.renderers) != {"manim"}:
+        try:
+            shot_windows(episode, result.cues)
+        except StudioError as exc:
+            result.findings.append(
+                Finding("renderers", Severity.ERROR, episode.id, exc.message, exc.fix or "")
+            )
+    _record(result, "renderers   every shot has a backend that can render it", before)
+
+
+# ---------------------------------------------------------------------------
+# 8. ORDER — the film runs forwards.
 # ---------------------------------------------------------------------------
 
 

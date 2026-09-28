@@ -157,7 +157,16 @@ class TestPlanCascade:
 
     def test_steps_run_in_the_documented_order(self, episode: Episode):
         names = [name.split()[0] for name, _ in plan(episode).steps]
-        assert names == ["cues", "closure", "focus", "budget", "picture", "coverage", "order"]
+        assert names == [
+            "cues",
+            "closure",
+            "focus",
+            "budget",
+            "picture",
+            "coverage",
+            "renderers",
+            "order",
+        ]
 
     def test_require_ok_is_a_no_op_when_sound(self, episode: Episode):
         require_ok(plan(episode))

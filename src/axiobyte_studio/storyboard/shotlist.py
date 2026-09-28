@@ -17,6 +17,7 @@ from pathlib import Path
 import yaml
 
 from axiobyte_studio.core.errors import StudioError
+from axiobyte_studio.core.renderers import DEFAULT_RENDERER
 from axiobyte_studio.storyboard.beats import BeatMap
 
 
@@ -30,12 +31,18 @@ class Shot:
         covers: The beats this staging is responsible for.
         act: Which act it belongs to.
         intent: What the shot is for, in the author's words.
+        renderer: Which backend renders it (ARCHITECTURE.md §8.0a). Chosen per
+            shot, never per episode; an episode only supplies the default.
+        reason: Why this renderer, when the choice needs defending — required
+            for Blender, the specialist backend.
     """
 
     id: str
     covers: tuple[str, ...]
     act: str = ""
     intent: str = ""
+    renderer: str = DEFAULT_RENDERER
+    reason: str = ""
 
     @property
     def stage_function(self) -> str:
@@ -56,11 +63,12 @@ class ShotList:
     derived: bool = True
 
     @classmethod
-    def derive(cls, beatmap: BeatMap) -> ShotList:
+    def derive(cls, beatmap: BeatMap, renderer: str = DEFAULT_RENDERER) -> ShotList:
         """Infer one shot per act.
 
         Args:
             beatmap: The episode's beats.
+            renderer: The episode's default renderer, given to every derived shot.
 
         Returns:
             The derived shot list.
@@ -73,17 +81,19 @@ class ShotList:
                     covers=tuple(beat.id for beat in act.beats),
                     act=act.id,
                     intent=act.title,
+                    renderer=renderer,
                 )
             )
         return cls(shots=tuple(shots), derived=True)
 
     @classmethod
-    def load(cls, path: str | Path, beatmap: BeatMap) -> ShotList:
+    def load(cls, path: str | Path, beatmap: BeatMap, renderer: str = DEFAULT_RENDERER) -> ShotList:
         """Load a declared shot list, or derive one when none exists.
 
         Args:
             path: Path to ``shots.yaml``.
             beatmap: The episode's beats, used when deriving.
+            renderer: The episode's default renderer, for shots that name none.
 
         Returns:
             The shot list.
@@ -93,7 +103,7 @@ class ShotList:
         """
         path = Path(path)
         if not path.exists():
-            return cls.derive(beatmap)
+            return cls.derive(beatmap, renderer)
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
         if not isinstance(raw, dict) or "shots" not in raw:
             raise StudioError(
@@ -107,6 +117,8 @@ class ShotList:
                     covers=tuple(spec.get("covers", [])),
                     act=str(spec.get("act", "")),
                     intent=str(spec.get("intent", "")),
+                    renderer=str(spec.get("renderer", renderer)),
+                    reason=str(spec.get("reason", "")),
                 )
                 for spec in raw["shots"]
             ),
@@ -145,6 +157,26 @@ class ShotList:
         """
         known = {beat.id for beat in beatmap.beats}
         return sorted(self.covered - known)
+
+    def by_renderer(self, renderer: str) -> list[Shot]:
+        """The shots one backend is responsible for.
+
+        Args:
+            renderer: A renderer id.
+
+        Returns:
+            Those shots, in narrated order.
+        """
+        return [shot for shot in self.shots if shot.renderer == renderer]
+
+    @property
+    def renderers(self) -> list[str]:
+        """Every renderer this list uses, in first-used order."""
+        seen: list[str] = []
+        for shot in self.shots:
+            if shot.renderer not in seen:
+                seen.append(shot.renderer)
+        return seen
 
     def shot_for(self, beat_id: str) -> Shot | None:
         """Which shot stages a beat.

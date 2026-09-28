@@ -8,11 +8,15 @@ the gate that runs before a frame is drawn.
 from __future__ import annotations
 
 import argparse
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 from axiobyte_studio import __version__
 from axiobyte_studio.backends.blender.bake import MOVES, PlateSpec, bake
+from axiobyte_studio.backends.three import node_binary, three_root, workspace_root
+from axiobyte_studio.compose import compose_episode
 from axiobyte_studio.concepts.base import ConceptKind, InteractionConcept
 from axiobyte_studio.concepts.registry import registry
 from axiobyte_studio.core.errors import StudioError
@@ -48,14 +52,57 @@ def _cmd_render(args: argparse.Namespace) -> int:
         still=args.still,
         dry_run=args.dry_run,
         use_cache=not args.no_cache,
+        headless=args.headless,
+        shots=args.shot or None,
     )
     if args.dry_run:
-        print(f"{episode.id}: plan passed; {len(result.jobs)} job(s) would run")
+        total = len(result.jobs) + len(result.shot_jobs)
+        print(f"{episode.id}: plan passed; {total} job(s) would run")
         for job in result.jobs:
             print(f"  {job.target:<8} {job.scene}  {' '.join(job.command(Path('out'), args.fps))}")
+        for shot_job in result.shot_jobs:
+            window = shot_job.window
+            print(
+                f"  {window.shot.renderer:<8} {window.shot.id:<28} "
+                f"{window.start:7.2f} → {window.end:7.2f}s"
+            )
         return 0
     print(result.report())
     return 0 if result.ok else 1
+
+
+def _cmd_compose(args: argparse.Namespace) -> int:
+    """Join the rendered shots into the film and lay the voiceover under it."""
+    episode = Episode.load(args.episode)
+    result = compose_episode(
+        episode,
+        target=args.target,
+        fps=args.fps,
+        film=args.out,
+        audio=args.audio,
+        with_audio=not args.no_audio,
+    )
+    print(result.report())
+    return 0
+
+
+def _cmd_preview(args: argparse.Namespace) -> int:
+    """Live preview of a Three.js episode, with its voiceover, for authoring cues."""
+    episode = Episode.load(args.episode)
+    if "three" not in (episode.shotlist.renderers if episode.shotlist else []):
+        print(f"{episode.id} has no Three.js shots to preview", file=sys.stderr)
+        return 1
+    argv = [node_binary(), str(three_root() / "tools" / "preview.mjs"), "--episode"]
+    argv += [str(episode.root), "--port", str(args.port)] + (["--open"] if args.open else [])
+    return subprocess.run(argv, check=False).returncode
+
+
+def _cmd_web(args: argparse.Namespace) -> int:
+    """Build, serve or test the interactive experiences (experiences/)."""
+    npm = shutil.which("npm")
+    if npm is None:
+        raise StudioError("npm not found", fix="Install Node.js 20.19 or newer.")
+    return subprocess.run([npm, "run", args.action], cwd=workspace_root(), check=False).returncode
 
 
 def _cmd_sheet(args: argparse.Namespace) -> int:
@@ -214,7 +261,36 @@ def build_parser() -> argparse.ArgumentParser:
     render_cmd.add_argument(
         "--no-cache", action="store_true", help="re-render even if nothing changed"
     )
+    render_cmd.add_argument(
+        "--headless", action="store_true", help="three.js shots: no browser window (slower)"
+    )
+    render_cmd.add_argument(
+        "--shot", action="append", help="only shots whose id contains this, e.g. 0120; repeatable"
+    )
     render_cmd.set_defaults(func=_cmd_render)
+
+    compose_cmd = sub.add_parser("compose", help="join rendered shots into the film, with audio")
+    compose_cmd.add_argument("episode", type=Path)
+    compose_cmd.add_argument("--target", default="16x9")
+    compose_cmd.add_argument("--fps", type=int, default=30)
+    compose_cmd.add_argument("--out", type=Path, help="default: <episode>/out/<id>.mp4")
+    compose_cmd.add_argument("--audio", type=Path, help="voiceover file, overriding episode.yaml")
+    compose_cmd.add_argument("--no-audio", action="store_true", help="picture only")
+    compose_cmd.set_defaults(func=_cmd_compose)
+
+    preview_cmd = sub.add_parser("preview", help="live preview of a Three.js episode")
+    preview_cmd.add_argument("episode", type=Path)
+    preview_cmd.add_argument("--port", type=int, default=5174)
+    preview_cmd.add_argument("--open", action="store_true", help="open it in the browser")
+    preview_cmd.set_defaults(func=_cmd_preview)
+
+    web_cmd = sub.add_parser("web", help="the interactive experiences (experiences/)")
+    web_cmd.add_argument(
+        "action",
+        choices=["dev", "build", "preview", "test"],
+        help="dev server · production build · serve the build · smoke-test it under /axiobyte/",
+    )
+    web_cmd.set_defaults(func=_cmd_web)
 
     sheet_cmd = sub.add_parser("storyboard", help="storyboard tools")
     sheet_sub = sheet_cmd.add_subparsers(dest="subcommand", required=True)
