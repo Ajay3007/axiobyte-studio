@@ -1,0 +1,25 @@
+# One shot per chapter of the film. Every shot names its renderer; all of these
+# are Three.js (the episode default), so any one can later be re-staged in Manim
+# without touching the others — the composer joins clips from any backend.
+#
+# A shot's window runs from the silence before its first beat's sentence to the
+# silence before the next shot's (render/shots.py), so cuts land between words.
+shots:
+  - { id: shot_0010_cold_open,    act: open,  covers: [open.packet] }
+  - { id: shot_0020_what_is_a_nic, act: what, covers: [what.nic, what.rate] }
+  - { id: shot_0030_pcb,          act: pcb,   covers: [pcb.board] }
+  - { id: shot_0040_rj45,         act: rj45,  covers: [rj45.ports] }
+  - { id: shot_0050_magnetics,    act: mag,   covers: [mag.magnetics] }
+  - { id: shot_0060_phy,          act: phy,   covers: [phy.phy] }
+  - { id: shot_0070_controller,   act: ctl,   covers: [ctl.controller, ctl.queue] }
+  - { id: shot_0080_heatsink,     act: hs,    covers: [hs.heatsink] }
+  - { id: shot_0090_pcie,         act: bus,   covers: [bus.pcie] }
+  - { id: shot_0100_why,          act: why,   covers: [why.question, why.reasons] }
+  - id: shot_0110_receive_path
+    intent: "one packet from the cable to the application"
+    covers: [rx_steer.follow, rx_steer.rss, rx_steer.flow, rx_dma.dma, rx_dma.cpu, rx_dma.lanes,
+             rx_ring.ring, rx_ring.mempool, rx_ring.poll]
+  - { id: shot_0120_transmit_path, act: tx,   covers: [tx.backward, tx.ring, tx.dma] }
+  - { id: shot_0130_why_fast,     act: fast,  covers: [fast.recap, fast.rss, fast.poll] }
+  - { id: shot_0140_where,        act: where, covers: [where.cards, where.appliances] }
+  - { id: shot_0150_whole_path,   act: outro, covers: [outro.next, outro.path] }

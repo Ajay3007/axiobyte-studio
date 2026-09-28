@@ -1,0 +1,30 @@
+id: s01e03-what-is-a-nic
+title: "What Is a NIC?"
+pillar: p01-high-performance-data-plane
+
+# The Three.js backend renders this film at 1920x1080. Its overlay is laid out in
+# absolute 16:9 pixels, so 16x9 is the only target it can honestly declare.
+targets: [16x9]
+theme: systems
+
+# Shots render on the Three.js backend unless storyboard/shots.yaml says
+# otherwise, shot by shot (ARCHITECTURE.md §8.0a). The same scene is the
+# interactive page at experiences/networking/nic/.
+renderer: three
+
+# What the audience is declared to already know.
+assumed: [packet, cpu, memory_buffer, worker_core, interrupt_driven]
+
+# THE ONE RULE: every beat is a word start in this transcript.
+voiceover: "timeline/words.json"
+
+# The recording itself is a local input and is never committed (.gitignore):
+# timing comes from words.json above. Only `abs compose` needs the audio, and it
+# refuses a file whose hash is not the one words.json was transcribed from.
+audio:
+  path: "audio/voiceover.mpeg"
+  sha256: a40965eeac236fac3c85f2a3611c5dd736f79787fcf0248b2e398ed62b2f77ef
+  duration: 717.99
+
+# Seconds of picture after the last word, so the end card is not cut mid-word.
+tail: 1.5

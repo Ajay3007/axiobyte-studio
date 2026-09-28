@@ -1,0 +1,201 @@
+# Beats are the atom: one idea, landing on one word of the recorded voiceover.
+# Acts follow the film's chapters (three/storyboard.js SEC table). The receive
+# path is one chapter but three acts, so no act asks a viewer to hold more than
+# a handful of new ideas.
+acts:
+  - id: open
+    keyword: "COLD OPEN"
+    beats:
+      - id: open.packet
+        cue: "packet@0"
+        intent: "a packet has to physically leave your computer — the hook"
+
+  - id: what
+    keyword: "WHAT IS A NIC?"
+    title: "What is a NIC?"
+    beats:
+      - id: what.nic
+        cue: "NIC@5"
+        concept: nic
+        objective: NIC-1
+        intent: "the boundary between the wire and memory, named"
+      - id: what.rate
+        cue: "gigabits@11"
+        intent: "10 Gb/s is 14.88 Mpps — why the card is built the way it is"
+
+  - id: pcb
+    keyword: "ANATOMY · PCB"
+    beats:
+      - id: pcb.board
+        cue: "printed@14"
+        intent: "the green backbone is a signal path, not a mounting surface"
+
+  - id: rj45
+    keyword: "ANATOMY · RJ45 PORTS"
+    beats:
+      - id: rj45.ports
+        cue: "RJ45@18"
+        intent: "eight contacts, four pairs, PAM-16 in both directions at once"
+
+  - id: mag
+    keyword: "ANATOMY · MAGNETICS"
+    beats:
+      - id: mag.magnetics
+        cue: "magnetics@23"
+        concept: magnetics
+        objective: MAG-1
+        intent: "isolation, not amplification"
+
+  - id: phy
+    keyword: "ANATOMY · PHY"
+    beats:
+      - id: phy.phy
+        cue: "PHY@28"
+        concept: phy
+        objective: PHY-1
+        intent: "where the analog world meets the digital world"
+
+  - id: ctl
+    keyword: "ANATOMY · CONTROLLER"
+    beats:
+      - id: ctl.controller
+        cue: "controller@33"
+        intent: "the brain of the card"
+      - id: ctl.queue
+        cue: "queue@35"
+        concept: nic_queue
+        objective: NICQ-1
+        intent: "it decides which receive queue a packet goes into"
+
+  - id: hs
+    keyword: "ANATOMY · HEATSINK"
+    beats:
+      - id: hs.heatsink
+        cue: "heatsink@37"
+        intent: "lift it: the PHY is what runs hot"
+
+  - id: bus
+    keyword: "ANATOMY · PCIe + BRACKET"
+    beats:
+      - id: bus.pcie
+        cue: "PCIe@40"
+        concept: pcie
+        objective: PCIE-1
+        intent: "the card's only road to the rest of the computer"
+
+  - id: why
+    keyword: "WHY A DEDICATED NIC?"
+    beats:
+      - id: why.question
+        cue: "why@45"
+        intent: "why not the cheap port on the motherboard?"
+      - id: why.reasons
+        cue: "Throughput@47"
+        intent: "throughput, offload, control"
+
+  - id: rx_steer
+    keyword: "RECEIVE PATH"
+    title: "Follow one packet"
+    beats:
+      - id: rx_steer.follow
+        cue: "follow@52"
+        intent: "one packet, start to finish"
+      - id: rx_steer.rss
+        cue: "RSS@64"
+        concept: rss
+        objective: RSS-1
+        intent: "the controller hashes the flow; the hash picks the queue"
+      - id: rx_steer.flow
+        cue: "flow@66"
+        concept: rss
+        refutes: RSS-M1
+        intent: "same flow, same hash, same queue, every time"
+
+  - id: rx_dma
+    keyword: "RECEIVE PATH"
+    beats:
+      - id: rx_dma.dma
+        cue: "Direct@71"
+        concept: dma
+        objective: DMA-1
+        intent: "the controller writes the packet into host RAM itself"
+      - id: rx_dma.cpu
+        cue: "involved@72"
+        concept: dma
+        refutes: DMA-M1
+        intent: "the CPU isn't involved in moving a single byte"
+      - id: rx_dma.lanes
+        cue: "transactions@74"
+        concept: pcie
+        intent: "the DMA write crosses the eight lanes as memory-write transactions"
+
+  - id: rx_ring
+    keyword: "RECEIVE PATH"
+    beats:
+      - id: rx_ring.ring
+        cue: "ring@79"
+        concept: descriptor_ring
+        objective: RING-1
+        intent: "a circular array software prepared in advance"
+      - id: rx_ring.mempool
+        cue: "mempool@86"
+        concept: mempool
+        objective: POOL-1
+        intent: "the buffers come from a pool allocated up front"
+      - id: rx_ring.poll
+        cue: "interrupt@87"
+        concept: polling
+        objective: POLL-1
+        intent: "no interrupt, no context switch, no extra copy"
+
+  - id: tx
+    keyword: "TRANSMIT PATH"
+    beats:
+      - id: tx.backward
+        cue: "backward@89"
+        intent: "the same path, run backward"
+      - id: tx.ring
+        cue: "TX@94"
+        concept: descriptor_ring
+        intent: "descriptors go up into the TX ring"
+      - id: tx.dma
+        cue: "reads@96"
+        concept: dma
+        intent: "the controller DMA-reads the buffers — again no CPU copy"
+
+  - id: fast
+    keyword: "WHY IT IS FAST"
+    beats:
+      - id: fast.recap
+        cue: "recap@104"
+        intent: "name the ideas that make it fast"
+      - id: fast.rss
+        cue: "RSS@105"
+        concept: rss
+        refutes: RSS-M2
+        intent: "N independent lanes, one per core, zero locking"
+      - id: fast.poll
+        cue: "Polling@108"
+        concept: polling
+        refutes: POLL-M2
+        intent: "polling instead of interrupts"
+
+  - id: where
+    keyword: "WHERE THESE CARDS LIVE"
+    beats:
+      - id: where.cards
+        cue: "Cards@111"
+        intent: "anywhere throughput is the job, not a side effect"
+      - id: where.appliances
+        cue: "firewalls@112"
+        intent: "anywhere packet throughput is the job"
+
+  - id: outro
+    keyword: "THE WHOLE PATH"
+    beats:
+      - id: outro.next
+        cue: "next@114"
+        intent: "the next time someone says 'just add a NIC'"
+      - id: outro.path
+        cue: "Copper@115"
+        intent: "copper, transformer, PHY, controller, DMA engine, queues — the route is the card"
