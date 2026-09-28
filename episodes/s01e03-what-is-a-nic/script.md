@@ -1,7 +1,7 @@
 # What Is a NIC? — Voiceover Script
 
 **Video:** A full introduction to the Network Interface Card, from basics to DPDK-level internals
-**Companion visual:** the AxioByte 3D NIC model (`nic-3d`)
+**Companion visual:** the AxioByte 3D NIC — `renderers/three/src/domains/networking/nic/`, interactive at `/axiobyte/networking/nic/`
 **Estimated length:** ~14–16 minutes at a natural pace
 
 Visual directions are in *[brackets]*. They map directly to the camera presets and console API in the build:
