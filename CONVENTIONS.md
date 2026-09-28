@@ -248,6 +248,22 @@ Rule 4 is the newest and the one most easily lost: every `row`, `column`, `left`
 
 ---
 
+## 14a. JavaScript — `renderers/three/`, `experiences/`, `episodes/*/three/`
+
+- ES modules only; Node ≥ 20.19. One npm workspace at the repo root; one lockfile.
+- **Video-target code never reads a wall clock** (`Date.now`, `performance.now`, `requestAnimationFrame`
+  time). The host pushes time in. `tools/check-determinism.mjs` is the test.
+- **No root-relative URLs** in anything that ships (`./asset`, never `/asset`): every
+  experience is served under `/axiobyte/<domain>/<concept>/`, and builds use a relative base.
+- No absolute or machine paths in tools: resolve from `import.meta.url`; Chrome via
+  `PUPPETEER_EXECUTABLE_PATH` or a search list.
+- Layering inside `@axiobyte/three`: `core` ← `video` / `web` ← `domains`. `core` imports neither
+  target; a domain may import both; nothing in the package imports an episode or an experience.
+- Shots name their renderer: `renderer: manim | three | blender` — lower-case backend ids, the
+  same strings as `backends/<id>/`.
+
+---
+
 ## 15. What is enforced where
 
 | Rule | Enforced by | When |

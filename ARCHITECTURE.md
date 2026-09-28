@@ -8,6 +8,15 @@
 > pixels*. What a shot should contain, and why — concepts, actors, actions, motion, camera, and the
 > educational grammar that connects them — is [`CONCEPT-ARCHITECTURE.md`](CONCEPT-ARCHITECTURE.md).
 
+> **Renderer-agnostic by definition (revised 2026-09).** AxioByte Studio is an educational
+> *video generation system*, not a Manim framework and not a Blender pipeline. **Manim, Three.js
+> and Blender are peer backends.** A renderer is chosen **per shot** (and, later, per layer), by
+> the rule in §8.0: *the simplest renderer that achieves the shot* — Manim, then Three.js, then
+> Blender only when its capabilities are actually required. One episode may mix all three; the
+> composer (§2, subsystem 14) assembles the result. Three.js additionally has a **web target**:
+> the same scene that renders video frames can be served as an interactive page (§8.6), which is
+> how AxioByte concepts get their interactive representation on the public site (§8.7).
+
 ---
 
 ## 0. The reference standard, and what this replaces
@@ -106,9 +115,9 @@ So the engine splits into three strata:
                                    ▼
    ┌──────────────────────────────────────────────────────────────────────┐
    │  BACKEND LAYER           "what it looks like"                        │
-   │  manim/ · blender/ · raster/ · (future: web/, usd/)                  │
+   │  manim/ · three/ · blender/ · raster/ · (future: usd/)               │
    │  Owns geometry, materials, easing implementation, frame emission.    │
-   │  Swappable. Each registers impls for (concept, verb) pairs.          │
+   │  Swappable, chosen PER SHOT (later per layer) — never per episode.   │
    └───────────────────────────────┬──────────────────────────────────────┘
                                    │  layers: RGBA sequences + camera track
                                    ▼
@@ -155,9 +164,9 @@ enforced mechanically (see `CONVENTIONS.md` §6, import contracts).
 | 9 | **Material System** | Semantic materials ("silicon", "copper trace", "data glow") → backend materials | core, design | hardcode hex |
 | 10 | **Effects System** | Glow, vignette, grid, trails, particles, depth haze — as declarative specs | core, design | be a Manim mixin |
 | 11 | **Typography & Chrome** | Type ladder, labels, code panels; **KeywordBar, CaptionBar, title cards, scrims** — camera-pinned | core, design, layout | own its own palette |
-| 12 | **Backends** | `manim/`, `blender/`, `raster/` — the only place tool APIs are touched | all of the above | leak upward |
+| 12 | **Backends** | `manim/`, `three/`, `blender/`, `raster/` — the only place tool APIs are touched; selected per shot (§8.0) | all of the above | leak upward, or be chosen per episode |
 | 13 | **Render Pipeline** | Plan → schedule → execute → **content-hash cache** → manifest | core, backends | re-render unchanged work |
-| 14 | **Composition** | Layer stacking (with depth), audio mix, transitions, aspect adaptation | render | re-do animation |
+| 14 | **Composition** | Assemble per-shot clips from any mix of backends in cue order; audio mix; later layer stacking (with depth), transitions, aspect adaptation | render | re-do animation |
 | 15 | **Publishing** | Per-platform encode, captions, thumbnails, metadata, upload staging | compose | re-layout or re-animate |
 
 Plus two cross-cutting concerns: **Asset Library** (§6) and **Testing Framework** (§9).
@@ -426,6 +435,7 @@ axiobyte-studio/
 │   │   │   ├── bake.py            #      asset → RGBA sequence + depth, offline
 │   │   │   ├── rig.py             #      lighting/material rigs from tokens
 │   │   │   └── track.py           #      camera matrix export (§8.2)
+│   │   ├── three/                 #    ★ adapter: shot → renderers/three video target → clip (§8.6)
 │   │   └── raster/                #    stills, thumbnails, SVG, contact sheets
 │   │
 │   ├── render/                    # 13. plan → schedule → execute → cache → manifest
@@ -444,6 +454,17 @@ axiobyte-studio/
 │   │                              #      reused across every episode forever
 │   ├── materials/ hdri/ fonts/ audio/ icons/ luts/
 │   └── previews/                  #    auto-generated thumbnail per asset
+│
+├── renderers/three/               # ══ THE THREE.JS BACKEND ══ (npm workspace, @axiobyte/three)
+│   ├── src/core/                  #    engine, camera, tweens, registry, highlight, flow, hardware kit
+│   ├── src/video/                 #    VIDEO target: manual clock, directors, compositor, overlay
+│   ├── src/web/                   #    WEB target: interactive shell, picking, info panel
+│   ├── src/domains/<domain>/      #    domain visuals, e.g. networking/nic — reused by every
+│   │                              #      episode and interactive page of that domain
+│   └── tools/                     #    offline render (frames → ffmpeg), determinism check
+│
+├── experiences/<domain>/<concept>/ # ══ INTERACTIVE REPRESENTATIONS ══ one multi-page build,
+│                                  #    published on the AxioByte site at /axiobyte/<domain>/<concept>/
 │
 ├── episodes/                      # ══ THE ONLY PLACE EPISODE LOGIC MAY EXIST ══
 │   └── s01e02-zero-copy/
@@ -759,7 +780,28 @@ is 0.6 s everywhere in the catalogue unless an episode explicitly overrides it w
 
 ---
 
-## 8. The 3D strategy, Blender + Manim
+## 8. Renderers — Manim, Three.js, Blender
+
+### 8.0a Renderer selection: the simplest renderer that achieves the shot
+
+**3D does not mean Blender.** Every shot declares `renderer:` (default `manim`), and the choice
+follows one ladder:
+
+1. **Manim** — diagrams, typography, equations, protocol stacks, Tier-1 isometric solids.
+2. **Three.js** — real 3D: lit hardware, orbiting cameras, depth, many instanced parts; and any
+   shot whose scene should *also* exist as an interactive representation (§8.6).
+3. **Blender** — only for what Three.js cannot reasonably do: path-traced light, physically
+   accurate depth of field, heavy particles or volumes, film-grade materials. A Blender shot
+   states its reason in the shot definition; `abs plan` warns when the reason is missing.
+
+If Manim + Three.js can produce the video, Blender is not introduced. Renderer choice is per
+shot, never per episode, so one episode is routinely `manim, three, three, manim, three`; the
+composer joins the clips. Per-*layer* choice (a Three.js background under a Manim overlay in one
+shot) is the next step and rides on the Layer Manifest (Contract C).
+
+The tier table below predates this section and is kept for its reasoning about *cost*; read
+"Blender" in Tier 2 as "any 3D backend that can emit RGBA plates" — Three.js can.
+
 
 ### 8.0 Three tiers of 3D, ordered by value per unit of effort
 
@@ -832,12 +874,13 @@ shots quietly stop getting made.
   3D geometry — a packet label passing behind a heatsink. This is what separates "3D background
   with 2D stickers on top" from an integrated frame.
 
-### 8.4 Adding a third renderer later
+### 8.4 Adding a renderer
 
 The backend protocol is: declare `capabilities()`, implement `(concept, verb)` impls, emit layers
 conforming to the Layer Manifest. A WebGL or USD backend is additive — no change to `core/`,
 `actors/`, `design/`, or any existing episode. That is the five-year test the brief sets, and it is
-the only reason the IR exists.
+the only reason the IR exists. Three.js (§8.6) is the worked example: it arrived as
+`backends/three/` + `renderers/three/` with no change to `core/`, `actors/` or `design/`.
 
 ### 8.5 Render pipeline and the cache
 
@@ -861,6 +904,35 @@ format leaves the other untouched.
 
 This is Phase 1, not a later nicety: it is the reason a shot has no aspect ratio in the first place,
 and it is what turns two 97 KB files into one authored shot set.
+
+### 8.6 The Three.js backend: one scene, two targets
+
+```
+renderers/three/src/core   engine (raf | manual clock) · camera presets + frustum fit · tweens ·
+                           component registry (ids, anchors) · highlighter · flow tokens · hardware kit
+        ├── src/video      VIDEO target — manual clock, deterministic per frame; shot/camera/animation
+        │                  directors; 2D overlay; tools/render.mjs → frames → ffmpeg → clip
+        └── src/web        WEB target — orbit controls, picking, tooltip / info panel → static site
+```
+
+Both targets build a scene through the **same world factory** (e.g.
+`domains/networking/nic/world.js`); nothing about the model is duplicated between the film and
+the interactive page. Determinism is a hard rule for the video target: no wall-clock reads, the
+host pushes time in, and `tools/check-determinism.mjs` proves byte-identical frames across
+sessions.
+
+**Honest boundary.** The Python engine and the Three.js backend share *data*, not code: concept
+YAML, the voiceover word timeline (`words.json`, same schema), design tokens and component
+metadata. Driving Three.js directly from the Shot IR is future work; today a Three.js episode's
+score is authored in JS, anchored to the same words with the same fail-loud rule.
+
+### 8.7 Interactive representations and the public site
+
+Each concept may have an interactive representation under `experiences/<domain>/<concept>/`.
+All of them build together (one Vite multi-page build, relative base) and ship as **one**
+versioned release asset, `axiobyte-experiences-X.Y.Z`. The public site (`Ajay3007.github.io`)
+pins that version and mounts it under `/axiobyte/`, e.g. `/axiobyte/networking/nic/`. The site
+never contains engine source and never commits build output. See `docs/deployment.md`.
 
 ---
 

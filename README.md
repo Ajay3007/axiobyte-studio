@@ -15,6 +15,21 @@ What's on screen?                    What misconception is this frame destroying
 
 Every subsystem exists to make the right-hand column mechanically checkable.
 
+**Renderer-agnostic.** The Studio generates educational video; **Manim, Three.js and Blender are
+peer backends**, chosen *per shot* — the simplest one that achieves the shot, and Blender only
+when its capabilities are genuinely needed ([`ARCHITECTURE.md`](ARCHITECTURE.md) §8). One episode
+can mix renderers; the composer assembles the clips. Three.js also has a **web target**: the same
+scene that renders a film can be served as an interactive page.
+
+### One ecosystem, two repositories
+
+| Repository | Role |
+|---|---|
+| **axiobyte-studio** (this repo) | Everything that *makes* things: the engine, concepts, renderers, episodes, and the source of every interactive representation (`experiences/`) |
+| [**Ajay3007.github.io**](https://github.com/Ajay3007/Ajay3007.github.io) | Everything that *shows* things: the public site. It pins a release of `experiences/` and serves it at `https://ajay3007.github.io/axiobyte/<domain>/<concept>/` — e.g. [`/axiobyte/networking/nic/`](https://ajay3007.github.io/axiobyte/networking/nic/). It holds no engine source. |
+
+Deployment is described in [`docs/deployment.md`](docs/deployment.md).
+
 ---
 
 ## Read these first
@@ -75,6 +90,10 @@ why the absence of red is the argument in the zero-copy episode.
 | 3D Tier 1 — isometric solids (no renderer) | ✅ |
 | 3D Tier 2 — baked Blender plates | ✅ |
 | 3D Tier 3 — live Blender + camera bridge | ⬜ |
+| Three.js backend — video target (deterministic frames → clip) | 🚧 |
+| Three.js backend — web target (interactive representations) | 🚧 |
+| Per-shot renderer selection (`renderer:` on a shot) | 🚧 |
+| Composer v0 — concatenate per-shot clips + voiceover | 🚧 |
 | Educational Grammar | ⬜ |
 | Full ep02 reproduction (Phase 0 gate) | ⬜ |
 

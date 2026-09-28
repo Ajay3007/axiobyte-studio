@@ -123,6 +123,12 @@ than in a later pillar. Additional measure: episodes 4 and 5 should share the
 ## Phase 3 — Live 3D
 **~6 weeks · Goal: shots that baked plates cannot fake**
 
+> **Revised 2026-09 — renderer selection (ARCHITECTURE.md §8.0a).** Live 3D arrived first through
+> **Three.js**, not Blender: `s01e03-what-is-a-nic` is a full episode on the Three.js video
+> backend, and the same scene is the NIC interactive page. 3D hero shots now default to
+> Three.js. The Blender items below remain valid but are a **specialist** path, taken only for
+> shots Three.js cannot reasonably produce — not the default route to 3D.
+
 Only now, and only because Tier 2 has already been carrying the 3D look for two phases.
 
 | # | Work | Notes |
