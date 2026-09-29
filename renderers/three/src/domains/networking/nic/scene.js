@@ -1,15 +1,23 @@
 import * as THREE from 'three';
 import { createNIC } from './NIC.js';
 import { HEATSINK } from './layout.js';
+import { createHostMemory, HOST_METADATA, HOST_PANEL } from '../HostMemory.js';
 
 const FLOAT = 0.5; // model hovers slightly above the floor for a product-shot feel
 
 /**
  * Scene module for the NIC. This is the only place that knows both the
  * hardware model and the engine services (registry, camera, tweens).
+ *
+ * `hostMemory` draws the host side of the dataplane beside the card — descriptor
+ * rings, packet buffers and the polling CPU core in a HOST MEMORY region, joined to
+ * the card's PCIe connector by a DMA link — instead of queue zones on the PCB.
+ * The interactive page uses it. `queuesOnCard: false` alone removes the on-board
+ * queue zones without drawing a 3D host region: the film does that, and shows the
+ * host side in its own diagram column instead.
  */
-export function createNicScene({ engine, registry, camera }) {
-  const nic = createNIC();
+export function createNicScene({ engine, registry, camera, hostMemory = false, queuesOnCard = !hostMemory }) {
+  const nic = createNIC({ queuesOnCard });
   const holder = new THREE.Group();
   holder.name = 'nic-holder';
   holder.add(nic.root);
@@ -24,6 +32,39 @@ export function createNicScene({ engine, registry, camera }) {
 
   nic.components.forEach((c) => registry.register(c));
 
+  // The host region sits on the floor beyond the card's far end — outside the card,
+  // and inside the empty part of the Overview on desktop and portrait alike, so the
+  // Overview (still framed on the card) shows both without moving the camera.
+  let host = null;
+  if (hostMemory) {
+    host = createHostMemory(nic.kit);
+    const hx = box.max.x - center.x + 3.9;
+    const hz = box.min.z - center.z - 3.5;
+    host.group.position.set(hx, 0, hz);
+    engine.scene.add(host.group);
+    host.group.updateWorldMatrix(true, true);
+    host.components.forEach((c) => registry.register({ ...c, meta: HOST_METADATA[c.id] }));
+
+    // PCIe / DMA: out of the edge connector, along the card's near edge, round its far
+    // end and into host memory — a bus leaving the card, not a line through it.
+    const out = registry.anchorWorld('pcie-connector', 'out');
+    const card = new THREE.Box3().setFromObject(nic.root);
+    const lane = card.max.z + 0.7;
+    const turn = card.max.x + 1.0;
+    const floor = 0.05;
+    const hostEdge = hz + HOST_PANEL.d / 2;
+    host.link = host.createLink(
+      [
+        new THREE.Vector3(out.x, out.y, out.z),
+        new THREE.Vector3(out.x, floor, lane),
+        new THREE.Vector3(turn, floor, lane),
+        new THREE.Vector3(turn, floor, hostEdge),
+      ],
+      new THREE.Vector3((out.x + turn) / 2, 0.6, lane),
+    );
+    engine.scene.add(host.link);
+  }
+
   const modelBox = () => new THREE.Box3().setFromObject(nic.root);
   const boxOf = (...ids) => {
     const b = new THREE.Box3();
@@ -31,7 +72,16 @@ export function createNicScene({ engine, registry, camera }) {
     return b;
   };
 
-  camera.definePreset('overview', () => ({ box: modelBox(), direction: new THREE.Vector3(-0.62, 0.6, 0.8), padding: 1.06 }));
+  // A portrait screen (a phone, a tablet held upright) cannot fit the card's long side from the
+  // landscape angle without shrinking it to a sliver, so it looks from the bracket end and a
+  // little higher, and the card runs up the screen instead. Landscape — desktop, and the 16:9
+  // film — keeps exactly the view it always had. Presets are evaluated when used, so this
+  // follows the viewport at the moment the camera moves.
+  camera.definePreset('overview', () =>
+    engine.aspect < 1
+      ? { box: modelBox(), direction: new THREE.Vector3(-0.9, 0.8, 0.3), padding: 1.1 }
+      : { box: modelBox(), direction: new THREE.Vector3(-0.62, 0.6, 0.8), padding: 1.06 },
+  );
   camera.definePreset('front', () => ({ box: modelBox(), direction: new THREE.Vector3(0, 0.25, 1), padding: 1.06 }));
   camera.definePreset('top', () => ({ box: modelBox(), direction: new THREE.Vector3(0, 1, 0.02), padding: 1.06 }));
   camera.definePreset('rear', () => ({ box: boxOf('bracket'), direction: new THREE.Vector3(-1, 0.2, 0.15), padding: 1.15 }));
@@ -77,9 +127,12 @@ export function createNicScene({ engine, registry, camera }) {
     isActionActive: (id) => (id === 'toggle-heatsink' ? nic.heatsink.lifted : false),
     update(dt, elapsed) {
       nic.update(elapsed);
+      host?.fitLabels(engine.camera, engine.size.height);
     },
     dispose() {
       holder.removeFromParent();
+      host?.group.removeFromParent();
+      host?.link?.removeFromParent();
       nic.dispose();
     },
   };

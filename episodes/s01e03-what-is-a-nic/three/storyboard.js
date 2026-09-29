@@ -4,9 +4,10 @@ import { brandMark, sectionLabel, sectionTitle, titleCard, endCard, scrim, vigne
 import { callout, chipRow, statBlock, phraseStack, codeChip, noteList, cardRow } from '@axiobyte/three/video/overlay/widgets/callouts.js';
 import { flowRail, laneActivity, doorbell } from '@axiobyte/three/video/overlay/widgets/flow.js';
 import { duplexDiagram, pairsDiagram, pam16Diagram, isolationDiagram, dspChain, offloadDiagram, recapFigure } from '@axiobyte/three/domains/networking/widgets/diagrams.js';
-import { rssDiagram, dmaDiagram, descriptorRing, dpdkDiagram, comparison, archStack } from '@axiobyte/three/domains/networking/widgets/dataplane.js';
+import { rssDiagram, dmaDiagram, descriptorRing, dpdkDiagram, comparison, archStack, hostFrame } from '@axiobyte/three/domains/networking/widgets/dataplane.js';
 import { captionTrack } from '@axiobyte/three/video/overlay/widgets/captions.js';
 import { C } from '@axiobyte/three/video/overlay/theme.js';
+import { ZONES, TOP } from '@axiobyte/three/domains/networking/nic/layout.js';
 
 /**
  * The score.
@@ -28,12 +29,22 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
   const audioEnd = tl.duration;
   const duration = audioEnd + tail;
 
+  const v = (x, y, z) => new THREE.Vector3(x, y, z);
   const boxOf = (...ids) => {
     const b = new THREE.Box3();
-    ids.forEach((id) => b.union(registry.worldBox(id)));
+    ids.forEach((id) => b.union(typeof id === 'string' ? registry.worldBox(id) : id));
     return b;
   };
-  const v = (x, y, z) => new THREE.Vector3(x, y, z);
+  // The board area beside the controller where the queue zones used to be drawn. The
+  // queues are no longer on the card (they are rings in host memory), but shots that
+  // merely framed this area keep exactly the framing they had.
+  const cardRoot = registry.get('nic-controller').object.parent;
+  cardRoot.updateWorldMatrix(true, false);
+  const beside = (key) =>
+    new THREE.Box3(v(ZONES[key].x0, TOP, ZONES[key].z0), v(ZONES[key].x1, TOP + 0.14, ZONES[key].z1)).applyMatrix4(cardRoot.matrixWorld);
+  // Just beyond the card's PCIe edge, where the packet waits while it is in host memory
+  // (the AnimationDirector parks it there): framed with the connector so it stays in view.
+  const hostSide = boxOf('pcie-connector').expandByPoint(registry.anchorWorld('pcie-connector', 'out').clone().add(v(0, -0.45, 1.9)));
   /** A framed look at some components from a given direction. */
   const look = (ids, dir, padding, extra = {}) => ({ box: boxOf(...ids), direction: dir, padding, ...extra });
 
@@ -56,6 +67,17 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     outro: { index: '08', label: 'THE WHOLE PATH', from: E(113) + 0.4, to: duration },
   };
   const sections = Object.entries(SEC).map(([key, s]) => ({ key, ...s }));
+
+  // The receive path is one chapter told in four phases. Each phase begins where its shot
+  // does (storyboard/shots.yaml): midway through the silence before its first sentence,
+  // the rule storyboard/windows.py cuts on. The chapter label names the current phase.
+  const cutBefore = (i) => (E(i - 1) + S(i)) / 2;
+  const RX_PHASES = [
+    { label: SEC.rx.label, from: SEC.rx.from + 2.6 },
+    { label: 'RSS', from: cutBefore(63) },
+    { label: 'DMA + PCIe', from: cutBefore(68) },
+    { label: 'RING + DPDK', from: cutBefore(77) },
+  ];
 
   // ------------------------------------------------------------------ camera
   const shots = [
@@ -95,7 +117,7 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     // 02.5 — controller
     { at: S(33) - 1.5, view: look(['nic-controller'], v(-0.35, 0.85, 0.55), 2.5), transition: 2.8, motion: { orbit: 0.008, push: [1.08, 0.97] }, label: 'controller' },
     { at: W("checks the frame's checksum", 219) - 1.0, view: look(['nic-controller'], v(-0.38, 0.8, 0.58), 3.5), frame: [0.26, 0], transition: 2.8, motion: { orbit: 0.006, push: [1.03, 0.95] }, label: 'controller-detail' },
-    { at: W('offload logic', 234) - 1.2, view: look(['nic-controller', 'rx-queue', 'tx-queue'], v(-0.36, 0.86, 0.5), 2.35), frame: [0.26, 0], transition: 2.8, motion: { orbit: 0.006 }, label: 'controller-offload' },
+    { at: W('offload logic', 234) - 1.2, view: look(['nic-controller', beside('rx'), beside('tx')], v(-0.36, 0.86, 0.5), 2.35), frame: [0.26, 0], transition: 2.8, motion: { orbit: 0.006 }, label: 'controller-offload' },
 
     // 02.6 — heatsink
     { at: S(37) - 1.2, view: look(['heatsink'], v(-0.78, 0.36, 0.56), 2.3), transition: 2.6, motion: { orbit: 0.009, push: [1.05, 0.94], phi: 0.08 }, label: 'heatsink' },
@@ -115,17 +137,19 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     { at: S(56) - 1.2, view: look(['rj45-1', 'magnetics-1'], v(-0.74, 0.5, 0.5), 2.1), transition: 2.6, motion: { orbit: 0.006, push: [1.04, 0.95] }, label: 'rx-port' },
     { at: S(58) - 1.4, view: look(['phy', 'heatsink'], v(-0.6, 0.34, 0.72), 1.9), transition: 2.6, motion: { orbit: 0.006, push: [1.05, 0.95] }, label: 'rx-phy' },
     { at: S(60) - 1.2, view: look(['nic-controller'], v(-0.4, 0.78, 0.6), 2.8), transition: 2.6, motion: { orbit: 0.006, push: [1.05, 0.96] }, label: 'rx-mac' },
-    { at: W('RSS', 385) - 3.0, view: look(['nic-controller', 'rx-queue'], v(-0.36, 0.84, 0.52), 2.6), frame: [0.26, 0], transition: 3.0, motion: { orbit: 0.005 }, label: 'rx-rss' },
+    { at: W('RSS', 385) - 3.0, view: look(['nic-controller', beside('rx')], v(-0.36, 0.84, 0.52), 2.6), frame: [0.26, 0], transition: 3.0, motion: { orbit: 0.005 }, label: 'rx-rss' },
     { at: S(68) - 1.6, view: look(['nic-controller', 'pcie-connector'], v(-0.3, 0.74, 0.7), 1.95), frame: [0.26, 0], transition: 3.0, motion: { orbit: 0.005, push: [1.03, 0.96] }, label: 'rx-dma' },
     { at: S(73) - 1.6, view: look(['pcie-connector'], v(0.18, 0.5, 0.96), 2.35), frame: [0.26, 0], transition: 3.0, motion: { orbit: 0.005, push: [1.05, 0.95] }, label: 'rx-pcie' },
-    { at: S(77) - 1.8, view: look(['rx-queue', 'nic-controller'], v(-0.42, 0.8, 0.58), 2.65), frame: [0.27, 0], transition: 3.2, motion: { orbit: 0.005 }, label: 'rx-ring' },
+    // The ring lives in host memory: look at where the data leaves the card for it.
+    { at: S(77) - 1.8, view: look(['pcie-connector', 'nic-controller'], v(-0.42, 0.8, 0.58), 2.2), frame: [0.27, 0], transition: 3.2, motion: { orbit: 0.005 }, label: 'rx-ring' },
     { at: S(83) - 1.6, view: 'overview', padding: 1.6, frame: [0.27, 0], transition: 3.2, motion: { orbit: 0.008, push: [1.02, 0.97] }, label: 'rx-dpdk' },
     { at: S(87) - 1.4, view: 'overview', padding: 1.15, frame: [-0.14, 0], transition: 2.8, motion: { orbit: 0.009, push: [1.03, 0.95] }, label: 'rx-nocopy' },
 
     // 05 — transmit
-    { at: S(89) - 1.2, view: look(['tx-queue', 'rx-queue', 'nic-controller'], v(-0.4, 0.82, 0.55), 2.2), frame: [0.24, 0], transition: 3.0, motion: { orbit: 0.006, push: [1.06, 0.97] }, label: 'tx-queues' },
-    { at: S(93) - 1.2, view: look(['tx-queue'], v(-0.4, 0.82, 0.55), 3.6), frame: [0.24, 0], transition: 2.6, motion: { orbit: 0.005, push: [1.04, 0.95] }, label: 'tx-ring' },
-    { at: W('writes to a doorbell register', 545) - 1.6, view: look(['nic-controller', 'tx-queue'], v(-0.34, 0.82, 0.56), 2.4), frame: [0.24, 0], transition: 2.8, motion: { orbit: 0.005 }, label: 'tx-doorbell' },
+    { at: S(89) - 1.2, view: look([beside('tx'), beside('rx'), 'nic-controller'], v(-0.4, 0.82, 0.55), 2.2), frame: [0.24, 0], transition: 3.0, motion: { orbit: 0.006, push: [1.06, 0.97] }, label: 'tx-queues' },
+    // The TX ring is in host memory too: descriptors reach the card across PCIe.
+    { at: S(93) - 1.2, view: look([hostSide], v(-0.4, 0.82, 0.55), 1.7), frame: [0.24, 0], transition: 2.6, motion: { orbit: 0.005, push: [1.04, 0.95] }, label: 'tx-ring' },
+    { at: W('writes to a doorbell register', 545) - 1.6, view: look(['nic-controller', beside('tx')], v(-0.34, 0.82, 0.56), 2.4), frame: [0.24, 0], transition: 2.8, motion: { orbit: 0.005 }, label: 'tx-doorbell' },
     { at: S(95) - 1.2, view: look(['nic-controller', 'pcie-connector'], v(-0.3, 0.72, 0.72), 2.0), frame: [0.24, 0], transition: 2.8, motion: { orbit: 0.005, push: [1.03, 0.96] }, label: 'tx-dma' },
     { at: S(98) - 1.2, view: look(['phy', 'magnetics-1', 'rj45-1'], v(-0.78, 0.5, 0.5), 1.9), frame: [0.2, 0], transition: 2.8, motion: { orbit: 0.006, push: [1.04, 0.95] }, label: 'tx-phy' },
     { at: S(99) + 5.4, view: look(['bracket', 'rj45-1'], v(-0.94, 0.3, 0.38), 1.45), transition: 2.8, motion: { orbit: 0.006, push: [1.02, 0.97], pan: [-0.6, 0, 0] }, label: 'tx-cable' },
@@ -153,7 +177,6 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     { id: 'heatsink', from: S(28) - 2.0, to: S(28) + 1.0, level: 0.45 },
     { id: 'phy', from: S(28) + 0.4, to: E(32), level: 1.0 },
     { id: 'nic-controller', from: S(33), to: E(36), level: 1.0 },
-    { id: 'rx-queue', from: W('receive queue', 222), to: W('offload logic', 234), level: 0.6 },
     { id: 'heatsink', from: S(37), to: E(39), level: 0.5 },
     { id: 'pcie-connector', from: S(40), to: E(42) + 0.4, level: 1.0 },
     { id: 'bracket', from: S(43), to: E(44), level: 0.45 },
@@ -164,12 +187,12 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     { id: 'heatsink', from: S(58) - 1.6, to: S(58) + 0.6, level: 0.35 },
     { id: 'phy', from: S(58), to: S(60) + 0.6, level: 1.0 },
     { id: 'nic-controller', from: S(60), to: S(73), level: 1.0 },
-    { id: 'rx-queue', from: W('RSS', 385) - 1.0, to: S(68), level: 0.85 },
     { id: 'pcie-connector', from: S(68) + 2.0, to: S(77), level: 1.0 },
-    { id: 'rx-queue', from: S(77) - 1.0, to: S(83) + 1.0, level: 0.95 },
+    // The ring is in host memory: the card's gateway to it stays lit instead.
+    { id: 'pcie-connector', from: S(77) - 1.0, to: S(83) + 1.0, level: 0.9 },
 
     // Transmit.
-    { id: 'tx-queue', from: S(89) + 1.0, to: S(95), level: 0.95 },
+    { id: 'pcie-connector', from: S(93) + 0.4, to: S(95), level: 0.8 },
     { id: 'nic-controller', from: W('writes to a doorbell register', 545), to: S(98), level: 1.0 },
     { id: 'pcie-connector', from: S(95), to: S(97), level: 0.85 },
     { id: 'phy', from: S(98) - 0.6, to: S(99) + 5.0, level: 0.95 },
@@ -222,10 +245,9 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     },
   ];
 
-  const zones = [
-    { zone: 'rx', from: S(77), to: S(87), rate: 1.5, level: 0.95 },
-    { zone: 'tx', from: S(92), to: S(97), rate: 1.4, level: 0.95 },
-  ];
+  // No descriptor slots on the card: the rings are in host memory, and the film shows
+  // them there (descriptorRing inside hostFrame), not on the PCB.
+  const zones = [];
 
   const signals = [
     { from: W('every trace', 85), to: W('trace lengths and spacing', 92), keys: { front: 1 }, speed: 0.26, pulse: 1 },
@@ -538,7 +560,9 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
 
     // -------------------------------------------------------- 04 receive
     sectionTitle({ start: SEC.rx.from - 1.4, end: SEC.rx.from + 3.2, index: 'CHAPTER 04', title: 'HOW A PACKET IS RECEIVED' }),
-    sectionLabel({ start: SEC.rx.from + 2.6, end: SEC.rx.to, index: SEC.rx.index, label: SEC.rx.label }),
+    ...RX_PHASES.map((phase, i) =>
+      sectionLabel({ start: phase.from, end: RX_PHASES[i + 1]?.from ?? SEC.rx.to, index: SEC.rx.index, label: phase.label }),
+    ),
     flowRail({ start: S(54) - 0.4, end: E(88) + 0.1, stages: RX_RAIL, positionAt: railTravel(rxRailTimes, 1.5), label: 'RECEIVE PATH' }),
 
     callout({ start: S(54) + 0.3, end: S(56) - 0.4, title: 'THE CABLE', subtitle: 'four twisted pairs, analog waveform', at: [112, 700], width: 520 }),
@@ -579,7 +603,7 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
       at: [112, 700],
       width: 420,
     }),
-    callout({ start: S(73) + 0.6, end: S(77) - 0.5, title: 'PCIe MEMORY WRITES', subtitle: 'the packet crosses eight lanes', at: [112, 668], color: C.gold, width: 540 }),
+    callout({ start: S(73) + 0.6, end: S(77) - 0.5, title: 'PCIe MEMORY WRITES', subtitle: 'eight lanes, into host memory', at: [112, 668], color: C.gold, width: 540 }),
     rpanel(S(73) + 1.1, S(77) - 0.5, 196, 246, { x: 1150, w: 658 }),
     laneActivity({ start: S(73) + 1.2, end: S(77) - 0.5, at: [1258, 262], color: C.gold, width: 430 }),
     rpanel(W('7.9 gigabytes', 442) - 0.6, S(77) - 0.5, 546, 160, { x: 1150, w: 658 }),
@@ -591,6 +615,7 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
       items: [{ value: '≈7.9 GB/s', label: 'x8 PCIe 3.0, each direction', small: true }],
     }),
     rpanel(S(77) + 0.7, S(83) - 0.4, 236, 700, { x: 1132, w: 676, fill: 'rgba(9,12,16,0.84)' }),
+    hostFrame({ start: S(77) + 0.7, end: S(83) - 0.4, rect: [1132, 236, 676, 700], label: 'HOST MEMORY · RX DESCRIPTOR RING', leaderUntil: W('empty pointer', 468) - 0.5 }),
     descriptorRing({ start: S(77) + 0.8, end: S(83) - 0.4, at: [1454, 486], radius: 172, slots: 16, rate: 0.85 }),
     lpanel(W('empty pointer', 468) - 0.5, S(83) - 0.4, 596, 254, { w: 580 }),
     noteList({
@@ -603,7 +628,24 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
       width: 470,
     }),
     rpanel(S(83) + 0.5, W('no interrupt', 511) - 0.6, 118, 592, { x: 852, w: 956, fill: 'rgba(9,12,16,0.86)' }),
-    dpdkDiagram({ start: S(83) + 0.6, end: W('no interrupt', 511) - 0.6, at: [1118, 160], width: 596 }),
+    hostFrame({ start: S(83) + 0.5, end: W('no interrupt', 511) - 0.6, rect: [852, 118, 956, 592], label: 'HOST · MEMORY + CPU' }),
+    // Built as the narration names each part, not all at once: the NIC's write and the
+    // ring recap the last step; the worker arrives with "DPDK", its poll loop with
+    // "polling", the application with rte_eth_rx_burst, the mbufs as the packets are handed
+    // over, and the pool they came from with "pulled from a pre-allocated pool" (the word
+    // "mempool" itself lands after this diagram has gone).
+    dpdkDiagram({
+      start: S(83) + 0.6,
+      end: W('no interrupt', 511) - 0.6,
+      at: [1118, 160],
+      width: 596,
+      timing: {
+        nodes: [0, 0.55, W('DPDK', 486) - 0.2 - (S(83) + 0.6), W('rte', 494) - 0.2 - (S(83) + 0.6)],
+        poll: W('polling', 490) - 0.2 - (S(83) + 0.6),
+        mbufs: W('hands your application the packets', 504) - (S(83) + 0.6),
+        mempool: W('pulled from', 509) - 0.3 - (S(83) + 0.6),
+      },
+    }),
     codeChip({
       start: W('rte', 494) - 0.5,
       end: W('no interrupt', 511) - 0.6,
@@ -623,8 +665,8 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     callout({
       start: W('the packet moved', 516) + 0.4,
       end: E(88) + 0.1,
-      title: 'CPU TOUCHES IT ONCE',
-      subtitle: 'copper wire → application memory',
+      title: 'NO CPU COPY',
+      subtitle: 'DMA put it in memory · the CPU reads it there',
       at: [160, 470],
       width: 560,
     }),
@@ -644,8 +686,8 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
     callout({
       start: S(93) + 0.4,
       end: W('writes to a doorbell register', 545) - 0.4,
-      title: 'TX DESCRIPTORS',
-      subtitle: 'each points at a buffer already holding the frame',
+      title: 'TX DESCRIPTOR RING',
+      subtitle: 'host memory · each points at a buffer holding the frame',
       at: [112, 700],
       color: C.amber,
       width: 640,
@@ -732,7 +774,7 @@ export function buildStoryboard({ timeline: tl, registry, captions = false, tail
       layers: [
         { title: 'APPLICATION', sub: 'your packet logic', kind: 'sw' },
         { title: 'DPDK · mbufs', sub: 'poll-mode driver, mempool', kind: 'sw' },
-        { title: 'RX / TX QUEUES', sub: 'descriptor rings' },
+        { title: 'RX / TX RINGS', sub: 'descriptors · host memory' },
         { title: 'DMA', sub: 'straight into host memory' },
         { title: 'NIC CONTROLLER', sub: 'MAC, RSS, offloads' },
         { title: 'PHY', sub: 'bits ↔ waveform' },

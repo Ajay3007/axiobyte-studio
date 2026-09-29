@@ -1,12 +1,13 @@
-# Frame hashes of the NIC film (sha256 prefix of the PNG), recorded from the
-# pre-migration nic-3d on 2026-09-28: macOS, Chrome headless shell, SwiftShader.
+# Frame hashes of the NIC film (sha256 prefix of the PNG), recorded on 2026-09-28
+# after v1.1 moved the descriptor rings off the PCB into host memory; the old hashes
+# still reproduce from 5cc0160. macOS, Chrome headless shell, SwiftShader.
 # Like the Manim goldens, this baseline belongs to the Mac: other GPUs or Chrome
 # builds may hash differently. Use it to prove a refactor changed no pixel:
 #   node renderers/three/tools/check-determinism.mjs --episode episodes/s01e03-what-is-a-nic \
 #     --expect episodes/s01e03-what-is-a-nic/three/determinism.baseline
-frame 90 4b0ae9251e2d5639
-frame 3600 c15ac9647c969fda
-frame 11670 efdf40f7ecb2b95e
-frame 12330 a7212f6af9895a1d
-frame 15480 ad741060a6a2bd61
-frame 20880 521c661ef0f68411
+frame 90 95f920a4f3f3f006
+frame 3600 ef13be3bc490c705
+frame 11670 aafda70508e95511
+frame 12330 e48e8ddc5c6e81a0
+frame 15480 5fa14da6a0fd957b
+frame 20880 4cc72710b5d25e58

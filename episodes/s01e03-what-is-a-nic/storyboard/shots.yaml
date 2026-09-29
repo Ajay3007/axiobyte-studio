@@ -15,10 +15,13 @@ shots:
   - { id: shot_0080_heatsink,     act: hs,    covers: [hs.heatsink] }
   - { id: shot_0090_pcie,         act: bus,   covers: [bus.pcie] }
   - { id: shot_0100_why,          act: why,   covers: [why.question, why.reasons] }
-  - id: shot_0110_receive_path
-    intent: "one packet from the cable to the application"
-    covers: [rx_steer.follow, rx_steer.rss, rx_steer.flow, rx_dma.dma, rx_dma.cpu, rx_dma.lanes,
-             rx_ring.ring, rx_ring.mempool, rx_ring.poll]
+  # The receive path, one packet from the cable to the application, in its four phases.
+  # Each phase opens on its own sentence (the anchor beats), so each can be re-rendered
+  # or re-staged on its own.
+  - { id: shot_0110_rx_on_card,  covers: [rx_steer.follow] }
+  - { id: shot_0112_rss,         covers: [rx_steer.queues, rx_steer.rss, rx_steer.flow] }
+  - { id: shot_0114_dma_pcie,    covers: [rx_dma.step, rx_dma.dma, rx_dma.cpu, rx_dma.lanes] }
+  - { id: shot_0116_ring_dpdk,   covers: [rx_ring.step, rx_ring.ring, rx_ring.mempool, rx_ring.poll] }
   - { id: shot_0120_transmit_path, act: tx,   covers: [tx.backward, tx.ring, tx.dma] }
   - { id: shot_0130_why_fast,     act: fast,  covers: [fast.recap, fast.rss, fast.poll] }
   - { id: shot_0140_where,        act: where, covers: [where.cards, where.appliances] }

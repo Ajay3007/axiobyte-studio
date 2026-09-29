@@ -77,9 +77,12 @@ export class Engine {
     this.scene.environment = this.envMap;
     this.scene.environmentIntensity = 0.55;
 
-    // Horizontal frame shift (px) so the model stays visible beside a side panel.
+    // Frame shift (px) so the model stays visible beside or above a panel: x moves the
+    // image left (a side panel), y moves it up (a bottom sheet). Both 0 unless asked for.
     this.viewShift = 0;
+    this.viewShiftY = 0;
     this._viewShift = 0;
+    this._viewShiftY = 0;
 
     this.tweens = new Tweens(clock === 'manual' ? 0 : performance.now());
     this.tickers = new Set();
@@ -121,18 +124,23 @@ export class Engine {
     this.renderer.setAnimationLoop(null);
   }
 
-  setViewShift(px) {
+  setViewShift(px, py = 0) {
     this.viewShift = px;
+    this.viewShiftY = py;
   }
 
   _applyViewShift(dt) {
-    const target = this.viewShift;
-    if (this._viewShift === target) return;
-    this._viewShift += (target - this._viewShift) * (1 - Math.exp(-dt * 7));
-    if (Math.abs(target - this._viewShift) < 0.5) this._viewShift = target;
+    const tx = this.viewShift;
+    const ty = this.viewShiftY;
+    if (this._viewShift === tx && this._viewShiftY === ty) return;
+    const k = 1 - Math.exp(-dt * 7);
+    this._viewShift += (tx - this._viewShift) * k;
+    this._viewShiftY += (ty - this._viewShiftY) * k;
+    if (Math.abs(tx - this._viewShift) < 0.5) this._viewShift = tx;
+    if (Math.abs(ty - this._viewShiftY) < 0.5) this._viewShiftY = ty;
     const { width: w, height: h } = this.size;
-    if (this._viewShift === 0) this.camera.clearViewOffset();
-    else this.camera.setViewOffset(w, h, this._viewShift, 0, w, h);
+    if (this._viewShift === 0 && this._viewShiftY === 0) this.camera.clearViewOffset();
+    else this.camera.setViewOffset(w, h, this._viewShift, this._viewShiftY, w, h);
   }
 
   /**
@@ -175,7 +183,7 @@ export class Engine {
     const { width: w, height: h } = this.size;
     this.renderer.setSize(w, h);
     this.camera.aspect = w / h;
-    if (this._viewShift) this.camera.setViewOffset(w, h, this._viewShift, 0, w, h);
+    if (this._viewShift || this._viewShiftY) this.camera.setViewOffset(w, h, this._viewShift, this._viewShiftY, w, h);
     else this.camera.updateProjectionMatrix();
   }
 

@@ -14,12 +14,17 @@ import { UI } from './UI.js';
 export function createApp(container) {
   const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-  const world = createNicWorld({ container, reducedMotion });
+  // The interactive page shows where the rings and buffers live: in host memory,
+  // across PCIe from the card (the film is still built card-only).
+  const world = createNicWorld({ container, reducedMotion, hostMemory: true });
   const { engine, registry, camera, scene, leds, highlighter, packets } = world;
 
   let selectedId = null;
   const ui = new UI({
     onPreset: (name) => {
+      // A bottom sheet across the screen would cover the view asked for: close it first, so
+      // the preset looks exactly as it does with nothing selected. A side panel stays open.
+      if (selectedId && sheetAcross()) select(null, { refocus: false });
       camera.focus(name);
       ui.setActivePreset(name);
     },
@@ -42,13 +47,60 @@ export function createApp(container) {
     occluders: scene.nic.occluders,
   });
 
+  // Keep the selected part out from under the info panel. On narrow screens held upright the
+  // panel is a bottom sheet across the screen (styles.css, max-width 760px): move the image so
+  // the part lands midway between the brand block and the top of the sheet, both measured as
+  // actually laid out. Beside a panel at the side — wide screens, and short landscape screens
+  // where it takes only the right-hand part — slide the image left.
+  // `pose` is the view a camera move is heading to; without one, the camera as it is.
+  const sheetLayout = window.matchMedia('(max-width: 760px)');
+  function sheetAcross() {
+    const { clientWidth: w, clientHeight: h } = container;
+    return sheetLayout.matches && (h > 500 || ui.info.offsetWidth > w * 0.6);
+  }
+  function applyViewShift(pose = null) {
+    if (!selectedId) return engine.setViewShift(0, 0);
+    const { clientWidth: w, clientHeight: h } = container;
+    if (sheetAcross()) {
+      const top = document.querySelector('.brand')?.getBoundingClientRect().bottom ?? 0;
+      const shift = partScreenY(selectedId, pose, h) - (top + ui.info.offsetTop) / 2;
+      return engine.setViewShift(0, Math.min(h / 2, Math.max(-h / 3, shift)));
+    }
+    const beside = w > 900 || h <= 500;
+    engine.setViewShift(beside ? Math.min(210, ui.info.offsetWidth / 2 + 12) : 0, 0);
+  }
+  // Where a part's centre lands on screen (px from the top, before any shift).
+  function partScreenY(id, pose, h) {
+    const cam = engine.camera.clone();
+    if (pose) {
+      cam.position.copy(pose.position);
+      cam.lookAt(pose.target);
+    }
+    cam.clearViewOffset();
+    cam.updateMatrixWorld();
+    const p = registry.worldBox(id).getCenter(cam.position.clone()).project(cam);
+    return ((1 - p.y) / 2) * h;
+  }
+  // A cue that the panel scrolls, shown only while more of it is below the fold.
+  function updateScrollCue() {
+    const el = ui.info;
+    el.classList.toggle('has-more', !el.hidden && el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+  }
+  const onResize = () => {
+    applyViewShift();
+    updateScrollCue();
+  };
+  window.addEventListener('resize', onResize);
+  ui.info.addEventListener('scroll', updateScrollCue, { passive: true });
+
   function select(id, { refocus = true } = {}) {
     selectedId = id;
     highlighter.setSelected(id);
     ui.showInfo(id ? registry.get(id).meta : null);
-    // On wide screens, slide the image left so the part isn't hidden behind the info panel.
-    const wide = container.clientWidth > 900;
-    engine.setViewShift(id && wide ? Math.min(210, ui.info.offsetWidth / 2 + 12) : 0);
+    ui.info.scrollTop = 0;
+    const view = id && refocus ? camera.describe(id) : null;
+    applyViewShift(view ? camera.solve(view) : null);
+    updateScrollCue();
     if (id && refocus) {
       camera.focus(id, { duration: 900 });
       ui.setActivePreset(null);
@@ -105,6 +157,8 @@ export function createApp(container) {
   return {
     api,
     dispose() {
+      window.removeEventListener('resize', onResize);
+      ui.info.removeEventListener('scroll', updateScrollCue);
       interaction.dispose();
       ui.dispose();
       world.dispose();

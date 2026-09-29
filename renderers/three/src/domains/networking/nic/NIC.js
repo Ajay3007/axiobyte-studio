@@ -17,8 +17,13 @@ import { MAGNETICS, PORT, PORTS, TOP } from './layout.js';
  * Builds the complete dual-port 10GBASE-T card in board-local coordinates.
  * Returns plain data the scene layer can register: the model knows nothing
  * about raycasting, cameras or UI.
+ *
+ * `queuesOnCard` (the default, which the film is built with) draws the RX/TX queue
+ * areas on the PCB as conceptual zones. With it off, the card carries no queue
+ * zones or queue silkscreen — the rings are drawn in host memory instead (see
+ * ../HostMemory.js), which is where they live.
  */
-export function createNIC() {
+export function createNIC({ queuesOnCard = true } = {}) {
   const kit = new Kit();
   const root = new THREE.Group();
   root.name = 'nic';
@@ -26,7 +31,7 @@ export function createNIC() {
   const pcb = createPCB(kit);
   const traces = createTraces(kit);
   const parts = createComponents(kit);
-  const silk = createSilkscreen(kit, parts.marks);
+  const silk = createSilkscreen(kit, parts.marks, { queueZones: queuesOnCard });
   root.add(pcb.group, traces, silk, parts.group);
 
   const components = [];
@@ -65,7 +70,7 @@ export function createNIC() {
   add('bracket', bracket.group, { anchors: bracket.anchors });
 
   const zones = {};
-  for (const key of ['rx', 'tx']) {
+  for (const key of queuesOnCard ? ['rx', 'tx'] : []) {
     const z = createZone(kit, key);
     zones[key] = z;
     add(`${key}-queue`, z.group, { hitObjects: z.hitObjects, anchors: z.anchors, setHighlight: z.setHighlight });

@@ -66,6 +66,10 @@ The Studio drives these through `backends/three/` — `abs render` calls `render
 window. They need Node ≥ 20.19, Chrome/Chromium (`PUPPETEER_EXECUTABLE_PATH` to override), and
 ffmpeg for video.
 
+Fonts are self-hosted: Barlow Semi Condensed (SIL OFL 1.1, `src/web/fonts/`) ships with every build,
+so neither the web nor the video target fetches anything from a font CDN — pages and renders work
+offline and typography cannot silently change with the network.
+
 ## Performance notes (from the NIC)
 
 - Passives are batched into `InstancedMesh`es, one per sub-part per package; geometries and

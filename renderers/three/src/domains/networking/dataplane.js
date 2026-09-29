@@ -14,8 +14,8 @@ export const STAGES = {
   'rx-queue': { name: 'RX queue', components: ['rx-queue'], summary: 'Descriptor marked done; waiting for a poll.' },
   'tx-queue': { name: 'TX queue', components: ['tx-queue'], summary: 'Descriptors posted by software, waiting for the NIC.' },
   'descriptor-ring': { name: 'Descriptor ring', host: true, components: [], summary: 'Circular array of buffer pointers shared with the NIC.' },
-  mempool: { name: 'DPDK mempool', host: true, components: [], summary: 'Pre-allocated mbufs in hugepage memory.' },
-  'worker-core': { name: 'Worker core', host: true, components: [], summary: 'Polls with rte_eth_rx_burst(), no interrupts.' },
+  mempool: { name: 'DPDK mempool', host: true, components: ['host-mbufs'], summary: 'Pre-allocated mbufs in hugepage memory.' },
+  'worker-core': { name: 'Worker core', host: true, components: ['host-cpu'], summary: 'Polls with rte_eth_rx_burst(), no interrupts.' },
   application: { name: 'Application', host: true, components: [], summary: 'Forwarding, filtering, or your packet logic.' },
 };
 

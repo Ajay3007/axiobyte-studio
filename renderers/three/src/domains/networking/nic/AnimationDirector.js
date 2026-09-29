@@ -39,9 +39,19 @@ export class AnimationDirector {
     this.cableOut = this.cableIn.clone();
 
     // The same stop lists demoRx() / demoTx() use, wrapped so they can be seeked.
+    // Descriptor rings live in host memory: when the card carries no queue zones, a
+    // received packet leaves through the edge connector to a point just off the card
+    // (toward the host), and a transmitted one arrives from there. Same stop count, so
+    // a storyboard's stop times still line up.
+    const rxStops = hardwareRoute(RX_PATH, { port: 1 });
+    const txStops = hardwareRoute(TX_PATH, { port: 1 });
+    this.hostPort = registry.anchorWorld('pcie-connector', 'out').clone().add(new THREE.Vector3(0, -0.45, 1.5));
+    const onCard = (stops) => stops.filter((s) => registry.has(s.id));
+    const rx = registry.has('rx-queue') ? rxStops : [...onCard(rxStops), this.hostPort];
+    const tx = registry.has('tx-queue') ? txStops : [this.hostPort, ...onCard(txStops)];
     this.routes = {
-      rx: packets.buildRoute([this.cableIn, ...hardwareRoute(RX_PATH, { port: 1 })], { hopDuration: 700, color: 0x6ec1ff, trail: 7, scale: 1.7 }),
-      tx: packets.buildRoute([...hardwareRoute(TX_PATH, { port: 1 }), this.cableOut], { hopDuration: 700, color: 0xffb454, trail: 7, scale: 1.7 }),
+      rx: packets.buildRoute([this.cableIn, ...rx], { hopDuration: 700, color: 0x6ec1ff, trail: 7, scale: 1.7 }),
+      tx: packets.buildRoute([...tx, this.cableOut], { hopDuration: 700, color: 0xffb454, trail: 7, scale: 1.7 }),
     };
     for (const r of Object.values(this.routes)) r.seek(0, { visible: false });
   }

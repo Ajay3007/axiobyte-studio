@@ -1,5 +1,5 @@
 import { C, LAYER, TRACK } from '../../../video/overlay/theme.js';
-import { text, measure, panel, roundRect, arrow, line, glow, clamp01, lerp, easeOut, easeOutQuint, easeInOut, ramp, stagger, smooth } from '../../../video/overlay/draw.js';
+import { text, measure, panel, roundRect, arrow, line, glow, leader, clamp01, lerp, easeOut, easeOutQuint, easeInOut, ramp, stagger, smooth } from '../../../video/overlay/draw.js';
 
 /** Reveal factor for an element scheduled `delay` seconds into a cue. */
 const smoothAt = (local, delay, dur = 0.5) => smooth((local - delay) / dur);
@@ -200,15 +200,15 @@ export function dmaDiagram({ start, end, at = [988, 262], color = C.accent }) {
       }
       ctx.restore();
 
-      // The CPU, deliberately outside the data path.
+      // The CPU: it does not copy the bytes (the struck-out tie) — it processes the packet after.
       ctx.save();
       ctx.globalAlpha *= ramp(p, 2.0, 2.7);
-      const cw = 210;
+      const cw = 300;
       const cx = x0 + (w - cw) / 2;
       const cy = by + bh + 92;
       panel(ctx, cx, cy, cw, 78, { fill: 'rgba(10,12,15,0.72)', stroke: 'rgba(236,232,218,0.14)' });
       text(ctx, 'CPU', cx + cw / 2, cy + 32, { size: 26, weight: 700, color: 'rgba(152,161,171,0.72)', align: 'center' });
-      text(ctx, 'not in the data path', cx + cw / 2, cy + 58, { size: 16, weight: 500, color: 'rgba(152,161,171,0.55)', align: 'center', track: TRACK.wide });
+      text(ctx, 'no byte copy · processes after', cx + cw / 2, cy + 58, { size: 16, weight: 500, color: 'rgba(152,161,171,0.55)', align: 'center', track: TRACK.wide });
       line(ctx, [[cx + cw / 2, cy], [cx + cw / 2, ay + bh / 2 - 8]], { color: 'rgba(236,232,218,0.16)', width: 1, dash: [5, 6] });
       const strike = easeOut(clamp01((p - 2.6) / 0.6));
       if (strike > 0) {
@@ -342,12 +342,19 @@ export function descriptorRing({ start, end, at = [1400, 520], radius = 188, slo
   };
 }
 
-/** Where the hardware ring meets the DPDK poll-mode driver. */
-export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, width = 810 }) {
+/**
+ * Where the hardware ring meets the DPDK poll-mode driver.
+ *
+ * `timing` (optional, seconds after `start`, like rssDiagram's `footerAt` and archStack's
+ * `delays`) lets each part arrive on the word that names it rather than all at once:
+ *   { nodes: [t0, t1, t2, t3], poll, mbufs, mempool }
+ * Any field left out keeps its default; without `timing` the diagram builds exactly as before.
+ */
+export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, width = 810, timing = null }) {
   const nodes = [
-    { title: 'RX QUEUE', sub: 'in the NIC' },
+    { title: 'NIC · DMA', sub: 'writes the buffer, marks it done' },
     { title: 'DESCRIPTOR RING', sub: 'host memory' },
-    { title: 'DPDK WORKER', sub: 'polling, no interrupt' },
+    { title: 'DPDK WORKER', sub: 'CPU core · polls the ring' },
     { title: 'APPLICATION', sub: 'your packet logic' },
   ];
   return {
@@ -369,8 +376,9 @@ export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, wid
       ctx.fillStyle = C.line;
       ctx.fillRect(x0, y0 + 16, w * easeOut(clamp01(p / 0.8)), 1);
 
+      const nodeAlpha = (i) => (timing?.nodes ? smoothAt(p, timing.nodes[i], 0.5) : stagger(p, i, 0.55, 0.5));
       nodes.forEach((n, i) => {
-        const a = stagger(p, i, 0.55, 0.5);
+        const a = nodeAlpha(i);
         if (a <= 0.01) return;
         const y = y0 + 52 + i * (bh + gap);
         ctx.save();
@@ -379,7 +387,7 @@ export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, wid
         box(ctx, x0, y, bw, bh, { title: n.title, sub: n.sub, color, active: true, titleSize: 27 });
         ctx.restore();
         if (i < nodes.length - 1) {
-          const a2 = stagger(p, i + 1, 0.55, 0.5);
+          const a2 = nodeAlpha(i + 1);
           ctx.save();
           ctx.globalAlpha *= a2;
           arrow(ctx, x0 + bw / 2, y + bh + 6, x0 + bw / 2, y + bh + gap - 6, { color: `${color}AA`, width: 2, head: 9 });
@@ -390,7 +398,8 @@ export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, wid
       // The poll loop drawn as a returning arc on the worker box.
       const workerY = y0 + 52 + 2 * (bh + gap);
       ctx.save();
-      ctx.globalAlpha *= ramp(p, 2.0, 2.7);
+      const pollAt = timing?.poll ?? 2.0;
+      ctx.globalAlpha *= ramp(p, pollAt, pollAt + 0.7);
       ctx.strokeStyle = `${color}88`;
       ctx.lineWidth = 1.6;
       ctx.beginPath();
@@ -400,14 +409,19 @@ export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, wid
       text(ctx, 'poll', x0 + bw + 14, (workerY + y0 + 52 + bh) / 2 + 12, { size: 15, weight: 600, color, track: TRACK.wide });
       ctx.restore();
 
-      // Mempool feeding mbufs into the worker.
+      // Mempool feeding mbufs into the worker. The mbufs and the pool they come from can
+      // arrive separately (timing.mbufs, timing.mempool); by default they arrive together.
       ctx.save();
-      ctx.globalAlpha *= ramp(p, 3.0, 3.8);
+      const base = ctx.globalAlpha;
+      const mempoolAt = timing?.mempool ?? 3.0;
+      const mbufsAt = timing?.mbufs ?? 3.0;
+      ctx.globalAlpha = base * ramp(p, mempoolAt, mempoolAt + 0.8);
       const mx = x0 - 236;
       const my = workerY - 12;
       panel(ctx, mx, my, 210, 104, { fill: C.panel, stroke: C.line, accent: C.violet, accentW: 3 });
       text(ctx, 'MEMPOOL', mx + 20, my + 36, { size: 24, weight: 700, color: C.ink });
       text(ctx, 'pre-allocated mbufs', mx + 20, my + 64, { size: 16, weight: 500, color: C.muted, track: TRACK.wide });
+      ctx.globalAlpha = base * ramp(p, mbufsAt, mbufsAt + 0.8);
       for (let i = 0; i < 5; i++) {
         const u = ((p * 0.5 + i * 0.2) % 1);
         const bx = lerp(mx + 210, x0, easeInOut(u));
@@ -510,6 +524,63 @@ export function archStack({ start, end, at = [1240, 132], layers, color = C.acce
           ctx.restore();
         }
       });
+    },
+  };
+}
+
+/**
+ * Marks a region of the diagram column as the HOST side and ties it to the card:
+ * a violet frame (memory's colour) with its label, and a gold PCIe · DMA leader
+ * from the card's edge connector — projected from 3D every frame — to the frame.
+ * The diagrams inside it (descriptor ring, DPDK) then read as what they are:
+ * structures in host memory, reached from the NIC only across PCIe.
+ *
+ *   hostFrame({ start, end, rect: [x, y, w, h], label: 'HOST MEMORY' })
+ */
+export function hostFrame({ start, end, rect, label = 'HOST MEMORY', from = { id: 'pcie-connector', name: 'out' }, leaderUntil = null }) {
+  const [x, y, w, h] = rect;
+  return {
+    id: `host-frame:${label}`,
+    start,
+    end,
+    layer: LAYER.diagram,
+    fadeIn: 0.5,
+    fadeOut: 0.4,
+    draw(ctx, k) {
+      const p = easeOutQuint(clamp01(k.local / 0.8));
+      // PCIe · DMA: from the connector on the card to the host frame's left edge. `leaderUntil`
+      // (absolute seconds) fades the link out early, for when something else will cover the
+      // connector — a leader into a hidden connector would appear to point at whatever covers it.
+      const src = k.project(from.id, from.name ?? 'center');
+      const dst = [x, y + Math.min(h - 40, 150)];
+      const linkAlpha = leaderUntil == null ? 1 : 1 - ramp(k.local, leaderUntil - start - 0.4, leaderUntil - start);
+      if (src && linkAlpha > 0) {
+        ctx.save();
+        ctx.globalAlpha *= linkAlpha;
+        leader(ctx, src, dst, { color: C.gold, progress: p, dotR: 4.5 });
+        if (p > 0.7) {
+          ctx.save();
+          ctx.globalAlpha *= ramp(p, 0.7, 1);
+          const tag = 'PCIe · DMA';
+          const tw = measure(ctx, tag, { size: 18, weight: 700, track: TRACK.wide });
+          const tx = dst[0] - 34 - tw - 26;
+          panel(ctx, tx, dst[1] - 44, tw + 20, 30, { fill: C.panelSolid, stroke: 'rgba(240,192,96,0.45)' });
+          text(ctx, tag, tx + 10, dst[1] - 23, { size: 18, weight: 700, color: C.gold, track: TRACK.wide });
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+      // The host region itself.
+      ctx.save();
+      ctx.globalAlpha *= ramp(k.local, 0.1, 0.5);
+      ctx.strokeStyle = 'rgba(176,155,255,0.62)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, x, y, w, h, 6);
+      ctx.stroke();
+      const lw = measure(ctx, label, { size: 18, weight: 700, track: TRACK.xwide });
+      panel(ctx, x + 18, y - 16, lw + 24, 32, { fill: C.panelSolid, stroke: 'rgba(176,155,255,0.62)' });
+      text(ctx, label, x + 30, y + 6, { size: 18, weight: 700, color: C.violet, track: TRACK.xwide });
+      ctx.restore();
     },
   };
 }

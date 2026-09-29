@@ -99,6 +99,9 @@ export class CameraManager {
     const t0 = controls.target.clone();
     const s0 = new THREE.Spherical().setFromVector3(camera.position.clone().sub(t0));
     const s1 = new THREE.Spherical().setFromVector3(position.clone().sub(target));
+    // A solved view must land where it was solved: OrbitControls clamps the camera to its
+    // user-zoom limit every frame, which would pull a far framing back in and crop the subject.
+    if (controls.maxDistance !== undefined) controls.maxDistance = Math.max(controls.maxDistance, s1.radius);
     let dTheta = s1.theta - s0.theta;
     if (dTheta > Math.PI) dTheta -= Math.PI * 2;
     if (dTheta < -Math.PI) dTheta += Math.PI * 2;

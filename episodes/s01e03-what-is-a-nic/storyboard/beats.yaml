@@ -100,6 +100,11 @@ acts:
       - id: rx_steer.follow
         cue: "follow@52"
         intent: "one packet, start to finish"
+      # Anchor beats (.queues, .step) carry no concept: they only mark where a phase of
+      # the receive path begins, so its shot can start there (storyboard/shots.yaml).
+      - id: rx_steer.queues
+        cue: "queues@63"
+        intent: "many receive queues per port, so traffic can spread across cores"
       - id: rx_steer.rss
         cue: "RSS@64"
         concept: rss
@@ -114,6 +119,9 @@ acts:
   - id: rx_dma
     keyword: "RECEIVE PATH"
     beats:
+      - id: rx_dma.step
+        cue: "Step@68"
+        intent: "step five: the packet leaves the card"
       - id: rx_dma.dma
         cue: "Direct@71"
         concept: dma
@@ -132,6 +140,9 @@ acts:
   - id: rx_ring
     keyword: "RECEIVE PATH"
     beats:
+      - id: rx_ring.step
+        cue: "Step@77"
+        intent: "step seven: the structure that ties hardware to software"
       - id: rx_ring.ring
         cue: "ring@79"
         concept: descriptor_ring

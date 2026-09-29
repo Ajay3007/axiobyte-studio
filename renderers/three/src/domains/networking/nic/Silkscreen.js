@@ -10,7 +10,7 @@ const INK = 'rgba(234,236,226,0.88)';
  * ({ type, ... } in board coordinates) so part builders can contribute
  * designators without knowing anything about canvases.
  */
-export function layoutMarks() {
+export function layoutMarks({ queueZones = true } = {}) {
   const marks = [];
   const c = CONTROLLER;
   const half = c.size / 2 + c.leadLen + 0.08;
@@ -29,10 +29,14 @@ export function layoutMarks() {
   marks.push({ type: 'text', x: 12.25, z: 0.28, text: 'E318251   94V-0   2638', size: 0.12, weight: 500, align: 'left' });
   marks.push({ type: 'text', x: 15.25, z: 6.72, text: 'REV B1', size: 0.13, weight: 600 });
 
-  for (const [key, label] of [
-    ['rx', 'RX QUEUE'],
-    ['tx', 'TX QUEUE'],
-  ]) {
+  // Conceptual queue areas printed on the board (the film's view). Off when the rings
+  // are drawn where they live, in host memory.
+  for (const [key, label] of queueZones
+    ? [
+        ['rx', 'RX QUEUE'],
+        ['tx', 'TX QUEUE'],
+      ]
+    : []) {
     const zn = ZONES[key];
     marks.push({ type: 'dashed', x0: zn.x0, z0: zn.z0, x1: zn.x1, z1: zn.z1 });
     marks.push({ type: 'text', x: zn.x0, z: zn.z0 - 0.14, text: label, size: 0.14, weight: 600, align: 'left', spacing: 1.5 });
@@ -128,9 +132,9 @@ function draw(ctx, marks) {
   }
 }
 
-export function createSilkscreen(kit, extraMarks = []) {
+export function createSilkscreen(kit, extraMarks = [], { queueZones = true } = {}) {
   const depth = FINGERS.tab.z;
-  const tex = kit.texture(canvasTexture(PCB.L * PX, depth * PX, (ctx) => draw(ctx, [...layoutMarks(), ...extraMarks])));
+  const tex = kit.texture(canvasTexture(PCB.L * PX, depth * PX, (ctx) => draw(ctx, [...layoutMarks({ queueZones }), ...extraMarks])));
   const mat = kit.own(
     new THREE.MeshStandardMaterial({
       map: tex,

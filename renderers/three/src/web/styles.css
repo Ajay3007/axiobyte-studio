@@ -1,3 +1,6 @@
+/* Self-hosted Barlow Semi Condensed — no font is fetched from a CDN at runtime. */
+@import './fonts/barlow-semi-condensed.css';
+
 :root {
   --bg-0: #2b3139;
   --bg-1: #14171b;
@@ -370,6 +373,26 @@ button:focus-visible {
   display: none;
 }
 
+/* When the panel's content runs past its height, a fade at the bottom edge says so; it goes
+   once the end is reached (app.js toggles .has-more). Sticky, so it stays on the panel's
+   edge while the content scrolls under it; the negative margin keeps it out of the layout. */
+.info::after {
+  content: '';
+  position: sticky;
+  bottom: -18px;
+  display: block;
+  height: 40px;
+  margin: -40px -18px 0;
+  background: linear-gradient(rgba(22, 26, 31, 0), rgba(22, 26, 31, 0.96));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.info.has-more::after {
+  opacity: 1;
+}
+
 .fallback {
   position: absolute;
   inset: 0;
@@ -424,10 +447,34 @@ button:focus-visible {
     display: none;
   }
 
+  /* A bottom sheet, capped so the part it describes keeps the space above it (app.js lifts
+     the image into that space). */
   .info {
     top: auto;
     bottom: calc(var(--gap) + 116px);
-    max-height: 45vh;
+    max-height: 40vh;
+  }
+}
+
+/* Below ~352px the mode buttons and "Reset camera" no longer fit on one row (their
+   non-wrapping labels need ~312px), so the reset button takes a second row, still on the
+   right. The two-row bar is 42px taller; the views bar and the info panel, which stack
+   above it at fixed offsets, move up by the same amount so the spacing stays as it is. */
+@media (max-width: 359px) {
+  .controls {
+    flex-wrap: wrap;
+  }
+
+  #reset-camera {
+    margin-left: auto;
+  }
+
+  .views {
+    bottom: calc(var(--gap) + 98px);
+  }
+
+  .info {
+    bottom: calc(var(--gap) + 158px);
   }
 }
 

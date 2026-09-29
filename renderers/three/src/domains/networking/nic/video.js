@@ -10,7 +10,10 @@ import { AnimationDirector } from './AnimationDirector.js';
  * Passed to createVideoApp({ createScene }) by any episode that films the NIC.
  */
 export function createNicVideoScene({ container, engine, highlight }) {
-  const world = createNicWorld({ container, reducedMotion: false, engine, highlight });
+  // The film shows no queues on the card: descriptor rings and packet buffers live in
+  // host memory, which the film draws in its diagram column (the storyboard's host
+  // frame), joined to the card's PCIe connector.
+  const world = createNicWorld({ container, reducedMotion: false, engine, highlight, queuesOnCard: false });
 
   const signalPaths = createSignalPaths();
   world.scene.nic.root.add(signalPaths.group);

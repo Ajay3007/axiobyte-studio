@@ -189,7 +189,7 @@ class TestRenderDispatch:
     def test_a_three_episode_renders_shot_by_shot(self, nic: Episode):
         result = render_episode(nic, dry_run=True)
         assert result.jobs == []
-        assert len(result.shot_jobs) == 15
+        assert len(result.shot_jobs) == 18
 
     def test_three_refuses_a_format_it_cannot_lay_out(self, nic: Episode):
         with pytest.raises(StudioError, match="cannot render 9x16"):
@@ -210,7 +210,7 @@ class TestRenderDispatch:
         )
         result = render_episode(Episode.load(scratch_nic), dry_run=True)
         assert [job.target for job in result.jobs] == ["16x9"]
-        assert len(result.shot_jobs) == 14
+        assert len(result.shot_jobs) == 17
         assert "shot_0030_pcb" not in {j.window.shot.id for j in result.shot_jobs}
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@axiobyte/experiences",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Interactive representations of AxioByte concepts, published at https://ajay3007.github.io/axiobyte/<domain>/<concept>/.",
   "type": "module",
