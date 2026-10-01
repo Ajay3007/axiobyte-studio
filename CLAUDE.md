@@ -54,7 +54,7 @@ between the two machines. The goldens are deterministic text, so it would *appea
 work — but you would be deciding a visual change is correct while unable to see a render
 or the reference episodes. That decision belongs on the Mac.
 
-Expected clean state on Windows: **500 passed, 12 skipped, 0 failed** — the 10 reference
+Expected clean state on Windows: **574 passed, 12 skipped, 0 failed** — the 10 reference
 tests plus the 2 Blender ones. This is exactly what CI's `windows-latest` job reports, so
 if your numbers differ, compare against the latest green run rather than guessing.
 
@@ -90,12 +90,12 @@ Read the diff. A golden that updates without being examined is not a test.
 Verify portability before pushing, since a green run here can still be Mac-only:
 
 ```bash
-AXIOBYTE_REFERENCE_ROOT=/nonexistent pytest      # expect 502 passed, 10 skipped
+AXIOBYTE_REFERENCE_ROOT=/nonexistent pytest      # expect 576 passed, 10 skipped
 ```
 
-(502, not 500, because Blender *is* installed here — only the reference tests skip.)
+(576, not 574, because Blender *is* installed here — only the reference tests skip.)
 
-Expected clean state on macOS: **512 passed, 0 skipped, 0 failed.**
+Expected clean state on macOS: **586 passed, 0 skipped, 0 failed.**
 
 ---
 

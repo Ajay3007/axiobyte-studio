@@ -1,0 +1,16 @@
+id: host_memory
+kind: atomic
+version: 1.0.0
+domain: memory
+title: "Host memory"
+pedagogy:
+  objectives:
+    - id: HMEM-1
+      statement: "Host memory is the DRAM the CPU's memory controller serves: one physical address space that cores reach through their caches and devices reach by DMA. Descriptor rings and packet buffers are regions software allocates in it, not hardware of their own."
+  misconceptions:
+    - id: HMEM-M1
+      wrong: "Descriptor rings and packet buffers live on the NIC."
+      refute_by: "Draw them allocated inside host memory, among other memory; the NIC reaches them over PCIe."
+anchors: [memory_interface, region]
+relations:
+  requires: []

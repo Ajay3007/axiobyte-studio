@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive 3D system: a NIC in its PCIe slot, the lanes to the CPU, the memory channels to host memory, and DMA — the NIC writing packets straight into memory while no core copies them — by AxioByte." />
+    <meta name="theme-color" content="#14171b" />
+    <title>NIC to host memory · AxioByte</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="app">
+      <div id="viewport" class="viewport"></div>
+
+      <header class="brand panel">
+        <p class="brand-kicker"><a href="../../" title="All AxioByte models">AxioByte</a> · Networking</p>
+        <h1 class="brand-title">NIC to host memory</h1>
+        <p class="brand-sub">A system: card, link, CPU, memory</p>
+        <button type="button" id="about-open" class="btn about-btn" aria-controls="info">About this system</button>
+      </header>
+
+      <nav class="views panel" aria-label="Camera views">
+        <span class="panel-label">View</span>
+        <div class="segmented" role="group">
+          <button type="button" data-preset="system" aria-pressed="true">System</button>
+          <button type="button" data-preset="pcie-path" aria-pressed="false">PCIe path</button>
+          <button type="button" data-preset="memory-path" aria-pressed="false">Memory path</button>
+          <button type="button" data-preset="dma" aria-pressed="false">DMA</button>
+        </div>
+      </nav>
+
+      <div class="controls panel">
+        <button type="button" id="dma-toggle" class="btn" aria-pressed="true">DMA flow</button>
+        <button type="button" id="reset-camera" class="btn">Reset camera</button>
+      </div>
+
+      <p class="hint" id="hint">Drag to orbit, scroll to zoom. Click a part, a connection, an asset's name or the DMA label to inspect it.</p>
+
+      <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+      <aside id="info" class="info panel" aria-live="polite" hidden>
+        <button type="button" class="info-close" id="info-close" aria-label="Close">×</button>
+
+        <div id="part" hidden>
+          <p class="info-kicker"><span id="info-designator"></span><span id="info-category"></span></p>
+          <h2 id="info-title"></h2>
+          <p class="info-summary" id="info-summary"></p>
+          <p class="info-desc" id="info-desc"></p>
+          <dl class="info-details" id="info-details"></dl>
+          <div class="info-path" id="info-path" hidden></div>
+          <p class="info-link"><a id="info-page" href="#" hidden>Open this asset's own page →</a></p>
+        </div>
+
+        <div id="about" class="about" hidden>
+          <p class="info-kicker"><span>COMPOSITION</span><span>nic_host</span></p>
+          <h2>NIC to host memory</h2>
+          <p class="info-summary">
+            How a received packet gets from a network card into the computer's memory: the card, the PCIe link, the CPU and
+            host memory, connected as one system.
+          </p>
+          <p class="info-desc">
+            This is a composition: four assets from the AxioByte library, each the same model as on its own page, placed and
+            connected. Nothing here is a new piece of hardware. The board they would all sit on is not modelled — the links
+            between the assets are drawn schematically, not as copper.
+          </p>
+
+          <h3>The assets</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="nic">NIC</button> the card, in its slot — <a href="../nic/">its page</a></li>
+            <li><button type="button" data-part="pcie">PCIe</button> the slot and its eight lanes — <a href="../../io/pcie/">its page</a></li>
+            <li><button type="button" data-part="cpu">CPU</button> root complex and memory controller — <a href="../../computing/cpu/">its page</a></li>
+            <li><button type="button" data-part="memory">Host memory</button> the modules and their allocations — <a href="../../memory/host-memory/">its page</a></li>
+          </ul>
+
+          <h3>How they connect</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="nic.pcie-connector">Card edge ↔ slot</button> the NIC's edge connector seated in the PCIe slot</li>
+            <li><button type="button" data-part="route.pcie">PCIe x8</button> the eight lanes, from the slot to the CPU's root complex</li>
+            <li><button type="button" data-part="route.memory">Memory channels</button> from the CPU's memory controller to both modules</li>
+          </ul>
+          <p class="info-desc">
+            The card touches the slot; the other two are links across a motherboard that is not drawn. The eight lanes arrive
+            at the CPU as one x8 link, and the memory channels leave it as one connection that reaches both modules.
+          </p>
+
+          <h3>DMA</h3>
+          <p class="info-desc">
+            Before any packet arrives, the driver has allocated packet buffers in host memory and written their addresses into
+            a descriptor ring, also in host memory. When a packet arrives, the NIC's DMA engine reads a descriptor, then sends
+            the packet up the PCIe link as memory writes. The CPU's root complex hands them to its memory controller, which
+            writes them into the buffer the descriptor named. No core copies the bytes; software finds the packet where it
+            landed. <button type="button" class="inline-part" data-part="interaction.dma">Show the DMA path</button>
+          </p>
+
+          <h3>Composition</h3>
+          <dl class="info-details">
+            <dt>Id</dt><dd>nic_host</dd>
+            <dt>Instances</dt><dd>nic · pcie · cpu · host_memory, each at scale 1</dd>
+            <dt>Connections</dt><dd>card ↔ slot (mate); PCIe x8 and memory channels (routes)</dd>
+            <dt>Interaction</dt><dd>dma — from the NIC to the packet-buffer region</dd>
+            <dt>Contract</dt><dd>assets/compositions/nic_host.yaml</dd>
+          </dl>
+
+          <h3>What is simplified</h3>
+          <p class="info-desc">
+            The assets sit closer together than on a real motherboard, and the links between them are schematic. One slot, one
+            CPU, two modules; real systems have more of each. The DMA path is drawn as one flow of packets; in reality the NIC
+            also reads descriptors and writes status back, and memory writes are interleaved across channels.
+          </p>
+        </div>
+      </aside>
+
+      <div id="fallback" class="fallback" hidden>
+        <h2>3D view unavailable</h2>
+        <p>
+          This page needs WebGL 2. Try a recent version of Chrome, Edge, Firefox or Safari, and make sure hardware acceleration
+          is turned on. In short: a NIC receives a packet and writes it, by DMA over PCIe and through the CPU's root complex and
+          memory controller, straight into a buffer in host memory — no core copies it.
+        </p>
+      </div>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

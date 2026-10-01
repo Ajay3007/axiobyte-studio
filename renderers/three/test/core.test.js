@@ -81,7 +81,7 @@ describe('ComponentRegistry — the contract every model is built against', () =
 
 describe('networking/dataplane — where a packet is, independent of any model', () => {
   it('RX and TX are the same road in opposite directions', () => {
-    expect([...TX_PATH].reverse().filter((s) => s !== 'tx-queue')).toEqual(RX_PATH.filter((s) => s !== 'rx-queue'));
+    expect([...TX_PATH].reverse()).toEqual(RX_PATH);
   });
 
   it('every stage on a path is defined', () => {
@@ -92,7 +92,7 @@ describe('networking/dataplane — where a packet is, independent of any model',
     const route = hardwareRoute(RX_PATH, { port: 2 });
     expect(route[0]).toEqual({ id: 'rj45-2' });
     expect(route).toContainEqual({ id: 'nic-controller', anchor: 'dma' });
-    expect(route.at(-1)).toEqual({ id: 'rx-queue' });
+    expect(route.at(-1)).toEqual({ id: 'pcie-connector' }); // the rings are in host memory, not on the card
   });
 
   it('knows what comes before and after a part', () => {

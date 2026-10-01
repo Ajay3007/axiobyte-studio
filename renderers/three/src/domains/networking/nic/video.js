@@ -13,7 +13,7 @@ export function createNicVideoScene({ container, engine, highlight }) {
   // The film shows no queues on the card: descriptor rings and packet buffers live in
   // host memory, which the film draws in its diagram column (the storyboard's host
   // frame), joined to the card's PCIe connector.
-  const world = createNicWorld({ container, reducedMotion: false, engine, highlight, queuesOnCard: false });
+  const world = createNicWorld({ container, reducedMotion: false, engine, highlight });
 
   const signalPaths = createSignalPaths();
   world.scene.nic.root.add(signalPaths.group);
@@ -28,12 +28,11 @@ export function createNicVideoScene({ container, engine, highlight }) {
 
   return {
     world,
-    /** Animation lanes (highlights, heatsink, packet flights, zones, signals) from a storyboard. */
+    /** Animation lanes (highlights, heatsink, packet flights, signals) from a storyboard. */
     createAnimation(story) {
       const animation = new AnimationDirector({ world, signalPaths })
         .setHighlights(story.highlights)
         .setHeatsink(story.heatsink)
-        .setZones(story.zones)
         .setSignals(story.signals);
       story.flights.forEach((f) => animation.addFlight(f));
       return animation;

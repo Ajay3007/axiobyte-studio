@@ -4,10 +4,10 @@ const $ = (id) => document.getElementById(id);
 
 /**
  * Explanation/UI layer. Pure DOM: it receives component metadata and emits
- * intents (preset, reset, action, close) through callbacks.
+ * intents (preset, reset, action, close, mode) through callbacks.
  */
 export class UI {
-  constructor({ onPreset, onReset, onAction, onClose, getActionState, getPath }) {
+  constructor({ onPreset, onReset, onAction, onClose, getActionState, getPath, onMode }) {
     this.onAction = onAction;
     this.getActionState = getActionState;
     this.getPath = getPath;
@@ -28,8 +28,9 @@ export class UI {
     on($('info-close'), 'click', onClose);
     document.querySelectorAll('[data-mode]').forEach((b) =>
       on(b, 'click', () => {
-        if (b.disabled) return;
+        if (b.disabled || b.getAttribute('aria-pressed') === 'true') return;
         document.querySelectorAll('[data-mode]').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+        onMode?.(b.dataset.mode);
       }),
     );
   }

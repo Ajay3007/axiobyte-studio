@@ -1,0 +1,44 @@
+/* The NIC page's own additions to the shared asset-page styles (web/styles.css). */
+
+/* In the host: a note in the hint's place, whose link must stay clickable, on phones too. */
+.host-note {
+  pointer-events: auto;
+  width: max-content;
+  max-width: min(600px, calc(100vw - 32px));
+}
+
+.host-note a {
+  color: var(--accent);
+}
+
+.host-note[hidden] {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  /* Three modes and Reset do not fit a phone's width: the modes scroll, like the views above
+     them, and Reset camera stays in reach. */
+  .controls {
+    flex-wrap: nowrap;
+  }
+
+  .controls .segmented {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+  }
+
+  .controls .segmented button {
+    flex: 0 0 auto;
+  }
+
+  .controls #reset-camera {
+    flex: 0 0 auto;
+  }
+
+  .host-note {
+    display: block;
+    bottom: calc(var(--gap) + 116px);
+    font-size: 12px;
+  }
+}

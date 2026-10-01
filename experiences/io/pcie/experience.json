@@ -1,0 +1,6 @@
+{
+  "concept": "pcie",
+  "title": "PCI Express (PCIe)",
+  "summary": "An interactive 3D model of a PCIe x8 slot and its link: the contacts a card plugs into, the eight lanes of differential pairs, and the path to the CPU's root complex.",
+  "tags": ["PCIe", "Lanes", "Link", "Endpoint", "Root complex"]
+}

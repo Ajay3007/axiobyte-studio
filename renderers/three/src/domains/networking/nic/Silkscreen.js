@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { canvasTexture, CANVAS_FONT } from '../../../core/textures.js';
-import { CONTROLLER, FINGERS, MAGNETICS, MISC, PCB, TOP, VRM, ZONES } from './layout.js';
+import { CONTROLLER, FINGERS, MAGNETICS, MISC, PCB, TOP, VRM } from './layout.js';
 
 const PX = 170; // canvas pixels per cm
 const INK = 'rgba(234,236,226,0.88)';
@@ -10,7 +10,7 @@ const INK = 'rgba(234,236,226,0.88)';
  * ({ type, ... } in board coordinates) so part builders can contribute
  * designators without knowing anything about canvases.
  */
-export function layoutMarks({ queueZones = true } = {}) {
+export function layoutMarks() {
   const marks = [];
   const c = CONTROLLER;
   const half = c.size / 2 + c.leadLen + 0.08;
@@ -28,25 +28,6 @@ export function layoutMarks({ queueZones = true } = {}) {
   marks.push({ type: 'text', x: 10.65, z: 6.72, text: 'PCIe 3.0 x8', size: 0.17, weight: 600 });
   marks.push({ type: 'text', x: 12.25, z: 0.28, text: 'E318251   94V-0   2638', size: 0.12, weight: 500, align: 'left' });
   marks.push({ type: 'text', x: 15.25, z: 6.72, text: 'REV B1', size: 0.13, weight: 600 });
-
-  // Conceptual queue areas printed on the board (the film's view). Off when the rings
-  // are drawn where they live, in host memory.
-  for (const [key, label] of queueZones
-    ? [
-        ['rx', 'RX QUEUE'],
-        ['tx', 'TX QUEUE'],
-      ]
-    : []) {
-    const zn = ZONES[key];
-    marks.push({ type: 'dashed', x0: zn.x0, z0: zn.z0, x1: zn.x1, z1: zn.z1 });
-    marks.push({ type: 'text', x: zn.x0, z: zn.z0 - 0.14, text: label, size: 0.14, weight: 600, align: 'left', spacing: 1.5 });
-    const slotH = (zn.z1 - zn.z0 - 0.2) / 8;
-    for (let i = 0; i < 8; i++) {
-      const z0 = zn.z0 + 0.1 + i * slotH;
-      marks.push({ type: 'rect', x0: zn.x0 + 0.14, z0: z0 + 0.025, x1: zn.x1 - 0.3, z1: z0 + slotH - 0.025, thin: true });
-      marks.push({ type: 'text', x: zn.x1 - 0.16, z: z0 + slotH / 2, text: String(i), size: 0.1, weight: 500 });
-    }
-  }
 
   VRM.inductors.forEach((p, i) => {
     const s = VRM.inductorSize / 2 + 0.06;
@@ -132,9 +113,9 @@ function draw(ctx, marks) {
   }
 }
 
-export function createSilkscreen(kit, extraMarks = [], { queueZones = true } = {}) {
+export function createSilkscreen(kit, extraMarks = []) {
   const depth = FINGERS.tab.z;
-  const tex = kit.texture(canvasTexture(PCB.L * PX, depth * PX, (ctx) => draw(ctx, [...layoutMarks({ queueZones }), ...extraMarks])));
+  const tex = kit.texture(canvasTexture(PCB.L * PX, depth * PX, (ctx) => draw(ctx, [...layoutMarks(), ...extraMarks])));
   const mat = kit.own(
     new THREE.MeshStandardMaterial({
       map: tex,

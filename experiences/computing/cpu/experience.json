@@ -1,0 +1,6 @@
+{
+  "concept": "cpu",
+  "title": "Central Processing Unit (CPU)",
+  "summary": "An interactive 3D model of a processor package: lift the heat spreader to see the die and its cores, cache, memory controller and PCIe root complex, or turn it over to see where memory and PCIe connect.",
+  "tags": ["CPU", "Cores", "Cache", "Memory controller", "PCIe root complex"]
+}

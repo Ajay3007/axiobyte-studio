@@ -334,6 +334,83 @@ def draw_descriptor_ring(actor: Actor, box: Box, target: Target, theme: Theme) -
     return VGroup(panel, cells, _title_inside("descriptor ring", panel, target, role.hue))
 
 
+def draw_host_memory(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
+    """Host memory: one address space, with a descriptor ring and packet buffers allocated in it.
+
+    A logical view, drawn as a strip of regions along the address axis — never as the NIC's, and
+    never as a chip. The ring and the buffers sit among other memory, because that is where they
+    are: allocations in ordinary DRAM.
+    """
+    role = theme.role("memory")
+    idle = theme.role("idle")
+    panel = _panel(box, target, role.hue, role.surface)
+    title = _title_inside(str(actor.props.get("label", "host memory")), panel, target, role.hue)
+    width, height = size_of(box, target)
+    strip_h = height * 0.42
+    inner_w = width * 0.9
+    # Other memory · descriptor ring · packet buffers · free, low address to high.
+    shares = (0.26, 0.2, 0.36, 0.18)
+    gap = inner_w * 0.02
+    segments = VGroup()
+    for share, hue in zip(shares, (idle.hue, role.hue, role.hue, idle.hue), strict=True):
+        segments.add(
+            RoundedRectangle(
+                width=inner_w * share - gap,
+                height=strip_h,
+                corner_radius=units(6),
+                stroke_color=hue,
+                stroke_width=2,
+                fill_color=hue,
+                fill_opacity=0.12,
+            )
+        )
+    segments.arrange(RIGHT, buff=gap)
+    segments.move_to(center_of(box, target) + DOWN * height * 0.12)
+    ring, buffers = segments[1], segments[2]
+    slots = VGroup(
+        *[
+            RoundedRectangle(
+                width=ring.width * 0.7,
+                height=strip_h * 0.12,
+                corner_radius=units(3),
+                stroke_color=role.hue,
+                stroke_width=1.2,
+                fill_color=role.hue,
+                fill_opacity=0.5,
+            )
+            for _ in range(5)
+        ]
+    ).arrange(DOWN, buff=strip_h * 0.05)
+    slots.move_to(ring.get_center())
+    frames = VGroup(
+        *[
+            RoundedRectangle(
+                width=buffers.width * 0.26,
+                height=strip_h * 0.6,
+                corner_radius=units(4),
+                stroke_color=role.hue,
+                stroke_width=1.4,
+                fill_opacity=0,
+            )
+            for _ in range(3)
+        ]
+    ).arrange(RIGHT, buff=buffers.width * 0.06)
+    frames.move_to(buffers.get_center())
+    names = VGroup()
+    for segment, text, hue in zip(
+        segments,
+        ("other memory", "descriptor ring", "packet buffers", "free"),
+        (theme.ink["secondary"], role.hue, role.hue, theme.ink["secondary"]),
+        strict=True,
+    ):
+        name = _label(text, target, "mono_s", hue)
+        if name.width > segment.width * 0.94:
+            name.scale_to_fit_width(segment.width * 0.94)
+        name.next_to(segment, DOWN, buff=units(10))
+        names.add(name)
+    return VGroup(panel, title, segments, slots, frames, names)
+
+
 #: Concept to isometric renderer. A concept absent here has no Tier-1 3D form,
 #: which is the common case: a packet is a run of bytes, not a solid.
 ISO_RENDERERS: dict[str, Any] = {
@@ -360,6 +437,7 @@ RENDERERS: dict[str, Any] = {
     "magnetics": draw_magnetics,
     "pcie": draw_pcie,
     "descriptor_ring": draw_descriptor_ring,
+    "host_memory": draw_host_memory,
 }
 
 

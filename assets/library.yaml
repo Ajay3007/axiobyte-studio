@@ -1,0 +1,278 @@
+# THE ASSET LIBRARY REGISTRY
+#
+# One entry per reusable technical asset — a *thing* a viewer can point at (a NIC, a CPU, a
+# descriptor ring), independent of any episode or page. It ties together what the rest of the
+# repository keeps in separate places:
+#
+#   concept         the knowledge model     src/axiobyte_studio/concepts/library/
+#   visual grammar  role, silhouette, never src/axiobyte_studio/design/language.yaml
+#   renderers       Three.js / Manim / Blender implementations of the same asset
+#   route           its public page         /axiobyte/<route>/  (experiences/<route>/)
+#   episodes        the films that use it
+#
+# The standard this file follows: docs/asset-library/README.md. Only assets that exist are
+# listed; the roadmap lives in docs/asset-library/roadmap.md, not here.
+# tests/unit/test_asset_library.py holds every entry to the repository as it actually is.
+#
+# (ARCHITECTURE.md §6 "source assets" are files — models, fonts, baked plates. A library asset
+# may own such files; this registry indexes the asset, not the files.)
+version: 1
+
+assets:
+  - id: nic
+    title: Network interface card
+    summary: >
+      A dual-port 10GBASE-T PCIe network interface card: the boundary between the wire and
+      host memory.
+    # Release history: 1.0.0 shipped in experiences-v1.1.0. 1.1.0 adds pcie_connector's facing (for
+    # the nic_host composition) and ships in experiences-v1.2.0.
+    version: 1.1.0
+    status: released          # concept | prototype | production | released | deprecated
+    quality: hero             # hero | standard | micro
+    concept: nic
+    route: networking/nic     # → /axiobyte/networking/nic/
+    released_in: experiences-v1.2.0
+
+    # Semantic parts: the ids every renderer implementation must expose, and the keys of the
+    # part metadata (name, designator, category, summary, description, details, actions).
+    parts:
+      - rj45-1
+      - rj45-2
+      - magnetics-1
+      - magnetics-2
+      - phy
+      - nic-controller
+      - heatsink
+      - pcie-connector
+      - bracket
+
+    # Composition interfaces: where the asset structurally attaches to others, named
+    # semantically and resolved to a part anchor — never to coordinates. Data flow (packets, the
+    # DMA write) is not a port: it is an interaction the composition builds. `connects_to` names
+    # the counterpart once it exists as an asset or concept.
+    ports:
+      - id: network_port
+        at: [rj45-1.in, rj45-2.in]      # an Ethernet link plugs in here; no concept for it yet
+      - id: pcie_connector
+        at: [pcie-connector.out]
+        facing: +z                      # out of the card edge, in the card's frame
+        connects_to: pcie               # PCIe.endpoint — the DMA write leaves the card here
+
+    implementations:
+      three:
+        path: renderers/three/src/domains/networking/nic
+        entry: NIC.js                   # createNIC() → { root, components, … }
+        metadata: metadata.js           # NIC_METADATA, keyed by part id
+        presets: [overview, front, top, rear, pcie]
+        fidelity: live
+      manim:
+        path: src/axiobyte_studio/actors/library.py
+        actor: nic
+        fidelity: flat
+      blender:
+        path: src/axiobyte_studio/backends/blender/scripts/bake_plate.py
+        model: nic_board
+        plates: [nic_board__turntable@1.0.0]
+        fidelity: plate
+
+    experience: experiences/networking/nic
+    episodes: [s01e01-kernel-slow, s01e02-zero-copy, s01e03-what-is-a-nic]   # Manim actor; the Three.js film
+
+    known_limitations:
+      - The Blender `nic_board` is a simplified board, well below the Three.js model's fidelity.
+      - The page presents parts and camera presets; the asset-page sections for relationships,
+        usage in systems and asset metadata (docs/asset-library/web-page.md) are not built yet.
+
+  - id: pcie
+    title: PCI Express (PCIe)
+    summary: >
+      The host side of a PCIe link: an x8 slot on a section of system board, with its contacts, its
+      eight lanes of differential pairs and the vias that take them to the CPU's root complex.
+    version: 1.0.0
+    status: released
+    quality: hero
+    concept: pcie
+    route: io/pcie            # → /axiobyte/io/pcie/
+    released_in: experiences-v1.2.0
+
+    # Physical parts (slot, sideband, lanes) and one logical part (link), which the page draws as
+    # an overlay only while it is inspected. The system board itself is detail.
+    parts:
+      - slot
+      - sideband
+      - lane-0
+      - lane-1
+      - lane-2
+      - lane-3
+      - lane-4
+      - lane-5
+      - lane-6
+      - lane-7
+      - link
+
+    # Structural attachments only. `endpoint` takes any add-in card's edge connector (the NIC's
+    # pcie_connector port names this asset from its side); `root_complex` is where the lanes leave
+    # the board for the CPU. The DMA transfer that runs across the link is an interaction, not a port.
+    ports:
+      - id: endpoint
+        at: [slot.card]
+        facing: +y                      # the slot opening faces up, off the board
+      - id: root_complex
+        at: [lane-0.host, lane-1.host, lane-2.host, lane-3.host, lane-4.host, lane-5.host, lane-6.host, lane-7.host]
+        connects_to: cpu
+
+    implementations:
+      three:
+        path: renderers/three/src/domains/io/pcie
+        entry: PCIe.js                  # createPCIe() → { root, components, … }
+        metadata: metadata.js           # PCIE_METADATA, keyed by part id
+        presets: [overview, top, slot, lanes, side]
+        fidelity: live
+      manim:
+        path: src/axiobyte_studio/actors/library.py
+        actor: pcie
+        fidelity: flat
+
+    experience: experiences/io/pcie
+    episodes: []
+
+    known_limitations:
+      - One configuration only — an x8 slot. The contact layout comes from a CEM table, so x1, x4 and
+        x16 slots are a layout addition, not a redesign; none is built.
+      - The model shows the board side of one link. The root complex belongs to the cpu asset (its
+        pcie_root_complex port); the two are composed in nic_host, where the lanes' way across the
+        board to the CPU is drawn as a schematic x8 link, since no board asset exists.
+      - Which connector side carries which direction is not drawn (sources differ on the naming
+        perspective), so the board's AC-coupling capacitors are omitted rather than guessed.
+      - No Blender representation. The Manim actor draws a labelled board ("PCIe x8"); it does not
+        draw the slot, the lanes or the link individually.
+      - The page's About content is written in the page; generating it from this registry and the
+        concept library is deferred (docs/asset-library/web-page.md).
+
+  - id: cpu
+    title: Central Processing Unit (CPU)
+    summary: >
+      A generic desktop land-grid-array processor package — heat spreader, substrate, silicon die and
+      the contact lands underneath — with an educational layout of its cores, shared cache, memory
+      controller and PCIe root complex.
+    version: 1.0.0
+    status: released
+    quality: hero
+    concept: cpu
+    route: computing/cpu      # → /axiobyte/computing/cpu/
+    released_in: experiences-v1.2.0
+
+    # Physical parts (ihs, substrate, lands, die) and four conceptual regions of the die, drawn as
+    # labelled tiles and shown only with the lid lifted. Cores and cache stay parts of this asset
+    # (docs/asset-library/README.md §2); the socket belongs to the motherboard, not the CPU.
+    parts:
+      - ihs
+      - substrate
+      - lands
+      - die
+      - cores
+      - cache
+      - memory-controller
+      - io
+
+    # Structural attachments only: the two groups of lands where the CPU's interfaces leave the
+    # package. Execution, cache access and DMA are behaviour, not ports.
+    ports:
+      - id: pcie_root_complex
+        at: [lands.pcie]
+        connects_to: pcie               # the pcie asset's root_complex port, from this side
+      - id: memory_interface
+        at: [lands.memory]
+        connects_to: host_memory        # the host_memory asset's memory_interface, from this side
+
+    implementations:
+      three:
+        path: renderers/three/src/domains/computing/cpu
+        entry: CPU.js                   # createCPU() → { root, components, setOpen, setFlip, … }
+        metadata: metadata.js           # CPU_METADATA, keyed by part id
+        presets: [overview, top, side, die]
+        fidelity: live
+      manim:
+        path: src/axiobyte_studio/actors/library.py
+        actor: cpu                      # drawn flat (draw_cpu) and isometric (draw_cpu_iso)
+        fidelity: iso
+
+    experience: experiences/computing/cpu
+    episodes: [s01e01-kernel-slow]      # through its Manim actor; no episode uses the Three.js model yet
+
+    known_limitations:
+      - One generic package with one die. Core count, cache size, the region layout and the land
+        fields are illustrative; no claim is made about any real processor's floorplan, pinout or
+        specifications.
+      - The die regions are drawn on the die's back for teaching; in a flip-chip package the circuits
+        face the substrate.
+      - No socket and no motherboard: those belong to a future board asset.
+      - pcie_root_complex and memory_interface are composed with the pcie and host_memory assets in
+        nic_host; the board between them is not modelled, and the links are drawn schematically.
+      - The Manim actor draws a labelled package and die ("CPU x4"), flat or isometric; it does not
+        draw the cores, cache, memory controller or root complex individually. Extending it would
+        change s01e01's visuals and goldens, so it is left for a Manim task.
+      - No Blender representation.
+      - The page's About content is written in the page, not generated from this registry.
+
+  - id: host_memory
+    title: Host memory
+    summary: >
+      The computer's main memory: the DRAM modules the CPU's memory controller serves, and the
+      physical address space they provide, in which software allocates descriptor rings and packet
+      buffers.
+    version: 1.0.0
+    status: released
+    quality: hero
+    concept: host_memory
+    route: memory/host-memory # → /axiobyte/memory/host-memory/
+    released_in: experiences-v1.2.0
+
+    # Two layers, kept apart: physical parts (the modules) and logical parts (the address space and
+    # the regions allocated in it), drawn as a labelled map that is never mistaken for hardware.
+    # The descriptor ring and the packet buffers stay parts until they become assets of their own.
+    parts:
+      - dimm-0
+      - dimm-1
+      - address-space
+      - descriptor-region
+      - packet-buffer-region
+      - other-memory
+
+    # Structural attachments only: the modules' edge contacts, where the memory channels from the
+    # CPU arrive (through slots on a motherboard, which is not part of this asset). DMA, reads,
+    # writes and allocation are interactions, not ports; a future descriptor_ring or packet-buffer
+    # asset will be placed at the region anchors, and its port declared once it exists.
+    ports:
+      - id: memory_interface
+        at: [dimm-0.edge, dimm-1.edge]
+        connects_to: cpu                # the cpu asset's memory_interface, from this side
+
+    implementations:
+      three:
+        path: renderers/three/src/domains/memory/host-memory
+        entry: HostMemory.js            # createHostMemory() → { root, components, setMap, … }
+        metadata: metadata.js           # HOST_MEMORY_METADATA, keyed by part id
+        presets: [overview, modules, map]
+        fidelity: live
+      manim:
+        path: src/axiobyte_studio/actors/library.py
+        actor: host_memory              # drawn flat (draw_host_memory): an address strip of regions
+        fidelity: flat
+
+    experience: experiences/memory/host-memory
+    episodes: []
+
+    known_limitations:
+      - Two generic modules. Their count, capacity and DDR generation are not modelled; chip count and
+        placement are illustrative. No slots and no motherboard — those belong to a future board asset.
+      - The address map is a logical view, not to scale. Real systems interleave addresses across
+        channels and modules, scatter allocations through pages, hold rings of hundreds of
+        descriptors and thousands of buffers; memory-mapped device ranges are omitted.
+      - DRAM internals (banks, rows, refresh, ranks) are described in part metadata, not drawn.
+      - The descriptor ring and the packet buffers are parts of this asset for now; they become the
+        descriptor_ring and packet-buffer (mbuf, mempool) assets on the roadmap.
+      - memory_interface is composed with the cpu asset in nic_host, which also draws the DMA path from
+        a NIC; this asset's own page shows memory alone, without either.
+      - No Blender representation. The page's About content is written in the page, not generated
+        from this registry.

@@ -109,34 +109,6 @@ export const NIC_METADATA = {
       ['Contacts', '49 per side, keyed'],
     ],
   },
-  'rx-queue': {
-    name: 'RX Queue Area',
-    designator: 'RXQ',
-    category: 'Concept',
-    summary: 'Where received packets are lined up before software picks them up.',
-    description:
-      'Conceptual view. Each RX queue is a ring of descriptors in host memory plus a queue context inside the controller. ' +
-      'The controller fills buffers and marks descriptors done; a DPDK worker core calls rte_eth_rx_burst() to collect up to a burst of packets as mbufs. ' +
-      'RSS spreads flows across queues so each core owns its own queue with no locking.',
-    details: [
-      ['Software API', 'rte_eth_rx_burst()'],
-      ['Backing memory', 'Descriptor ring + mempool mbufs'],
-      ['Scaling', 'RSS: one queue per core'],
-    ],
-  },
-  'tx-queue': {
-    name: 'TX Queue Area',
-    designator: 'TXQ',
-    category: 'Concept',
-    summary: 'Where outgoing packets wait for the controller to fetch them.',
-    description:
-      'Conceptual view. Software writes descriptors that point at packet buffers and bumps the tail pointer with rte_eth_tx_burst(). ' +
-      'The controller DMA-reads the buffers, transmits them, and reports completion so the mbufs can return to the mempool.',
-    details: [
-      ['Software API', 'rte_eth_tx_burst()'],
-      ['Doorbell', 'Tail register write over PCIe'],
-    ],
-  },
   bracket: {
     name: 'Mounting Bracket',
     designator: 'BRK',

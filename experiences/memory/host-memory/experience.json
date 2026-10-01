@@ -1,0 +1,6 @@
+{
+  "concept": "host_memory",
+  "title": "Host memory",
+  "summary": "An interactive 3D model of host memory: the memory modules, and a map of the address space they provide — with a descriptor ring and packet buffers allocated in it, as a NIC uses them.",
+  "tags": ["Host memory", "DRAM", "DIMM", "Descriptor ring", "Packet buffers"]
+}

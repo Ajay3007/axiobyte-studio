@@ -207,4 +207,4 @@ Thanks for watching. If you want to explore the model yourself, the link's in th
 | Bracket | Rear preset | `bracket` |
 | RX walkthrough | Packet animation | `__AXIOBYTE__.demoRx()` |
 | TX walkthrough | Packet animation | `__AXIOBYTE__.demoTx()` |
-| RX/TX queue callouts | Zone highlight | `rx-queue`, `tx-queue` |
+| RX/TX queue callouts | Frame the board beside the controller; the rings are in host memory (*In the host*) | `nic-controller` |

@@ -11,12 +11,12 @@ import { UI } from './UI.js';
  * The video renderer builds the same world from ./scenes/nicWorld.js and puts
  * a timeline director on top of it instead of this UI. See src/video/.
  */
-export function createApp(container) {
+export function createApp(container, { onMode } = {}) {
   const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-  // The interactive page shows where the rings and buffers live: in host memory,
-  // across PCIe from the card (the film is still built card-only).
-  const world = createNicWorld({ container, reducedMotion, hostMemory: true });
+  // The card on its own. Its rings live in host memory, which the page's "In the host" mode shows
+  // through the nic_host composition (./host.js).
+  const world = createNicWorld({ container, reducedMotion });
   const { engine, registry, camera, scene, leds, highlighter, packets } = world;
 
   let selectedId = null;
@@ -37,6 +37,7 @@ export function createApp(container) {
     onClose: () => select(null),
     getActionState: (id) => scene.isActionActive(id),
     getPath: (id) => neighbors(id, RX_PATH),
+    onMode,
   });
 
   const interaction = new InteractionManager({

@@ -146,6 +146,16 @@ concepts:
     never:
       - holding the packet bytes     # a descriptor points at a buffer; it is not one
 
+  # Host memory as a whole: the modules, and the address space software allocates rings and
+  # buffers in. Memory's role, like everything allocated in it.
+  host_memory:
+    role: memory
+    silhouette: address_map          # regions laid out along an address axis
+    motion: none                     # memory does not travel
+    fidelity: [flat]
+    never:
+      - rings or buffers on the card # the v1.1 lesson: they are allocated here, in DRAM
+
   # dma      -> concepts/library/interaction/dma.yaml         (nic <-> memory_buffer)
   # copy     -> concepts/library/interaction/copy_based.yaml  (packet <-> memory_buffer)
   # Their ROLES remain in design/themes/, because a role is a value and an

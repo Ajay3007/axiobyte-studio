@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive 3D model of a PCI Express x8 slot and its link — contacts, lanes and the path to the CPU's root complex — by AxioByte." />
+    <meta name="theme-color" content="#14171b" />
+    <title>PCIe · AxioByte</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="app">
+      <div id="viewport" class="viewport"></div>
+
+      <header class="brand panel">
+        <p class="brand-kicker"><a href="../../" title="All AxioByte models">AxioByte</a> · I/O</p>
+        <h1 class="brand-title">PCIe</h1>
+        <p class="brand-sub">PCI Express x8 slot and link</p>
+        <button type="button" id="about-open" class="btn about-btn" aria-controls="info">About PCIe</button>
+      </header>
+
+      <nav class="views panel" aria-label="Camera views">
+        <span class="panel-label">View</span>
+        <div class="segmented" role="group">
+          <button type="button" data-preset="overview" aria-pressed="true">Overview</button>
+          <button type="button" data-preset="top" aria-pressed="false">Top</button>
+          <button type="button" data-preset="slot" aria-pressed="false">Slot</button>
+          <button type="button" data-preset="lanes" aria-pressed="false">Lanes</button>
+          <button type="button" data-preset="side" aria-pressed="false">Side</button>
+        </div>
+      </nav>
+
+      <div class="controls panel">
+        <button type="button" id="show-link" class="btn" aria-pressed="false">Show link</button>
+        <button type="button" id="reset-camera" class="btn">Reset camera</button>
+      </div>
+
+      <p class="hint" id="hint">Drag to orbit, right-drag to pan, scroll to zoom. Click the slot, a lane or the power pins to inspect them.</p>
+
+      <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+      <aside id="info" class="info panel" aria-live="polite" hidden>
+        <button type="button" class="info-close" id="info-close" aria-label="Close">×</button>
+
+        <div id="part" hidden>
+          <p class="info-kicker"><span id="info-designator"></span><span id="info-category"></span></p>
+          <h2 id="info-title"></h2>
+          <p class="info-summary" id="info-summary"></p>
+          <p class="info-desc" id="info-desc"></p>
+          <dl class="info-details" id="info-details"></dl>
+          <div class="info-path" id="info-path" hidden></div>
+        </div>
+
+        <div id="about" class="about" hidden>
+          <p class="info-kicker"><span>ASSET</span><span>I/O · pcie</span></p>
+          <h2>PCI Express</h2>
+          <p class="info-summary">
+            The point-to-point interconnect that joins add-in cards — network cards, GPUs, NVMe drives — to the CPU.
+          </p>
+          <p class="info-desc">
+            On the system board, PCIe is a slot and the wiring behind it: lanes that run from the slot's contacts to the
+            root complex inside the CPU. This model is that board side. The other half, the card's edge connector, belongs to
+            each card — the AxioByte NIC's x8 connector matches these contacts exactly.
+          </p>
+
+          <h3>Parts</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="slot">Slot</button> the x8 socket: 98 contacts and the key</li>
+            <li><button type="button" data-part="sideband">Power and sideband</button> contacts 1–11: power, reset, clock</li>
+            <li>
+              <span class="lane-buttons" role="group" aria-label="Lanes">
+                <button type="button" data-part="lane-0">0</button><button type="button" data-part="lane-1">1</button
+                ><button type="button" data-part="lane-2">2</button><button type="button" data-part="lane-3">3</button
+                ><button type="button" data-part="lane-4">4</button><button type="button" data-part="lane-5">5</button
+                ><button type="button" data-part="lane-6">6</button><button type="button" data-part="lane-7">7</button>
+              </span>
+              lanes: two differential pairs each
+            </li>
+            <li><button type="button" data-part="link">Link</button> the eight lanes as one x8 link (logical)</li>
+          </ul>
+
+          <h3>Lanes and the link</h3>
+          <p class="info-desc">
+            A lane is two differential pairs, one for each direction, so data flows both ways at once. A link bundles lanes —
+            x1, x4, x8, x16 — and stripes data across them byte by byte. This slot is x8: about 7.9 GB/s each way at PCIe 3.0,
+            15.8 GB/s at PCIe 4.0. When a card comes up, both ends train the link to the widest width and fastest rate they
+            share.
+          </p>
+
+          <h3>Endpoint and root complex</h3>
+          <p class="info-desc">
+            Every link has exactly two ends. Upstream is the root complex, built into the CPU, which turns PCIe transactions
+            into memory accesses. Downstream is the endpoint — the card in the slot. A card reaches memory by sending
+            memory-read and memory-write transactions up the link: that is how a NIC's DMA engine places packets in host RAM
+            without the CPU copying them. Where more devices are needed than the CPU has root ports, a PCIe switch fans one
+            link out into several.
+          </p>
+
+          <h3>Where AxioByte uses it</h3>
+          <p class="info-desc">
+            <a href="../../networking/nic/">The NIC</a> plugs into a slot like this one. PCIe is the link in the
+            <a href="../../networking/nic-host/">NIC to host memory</a> system: the NIC seated in this slot, the eight lanes
+            running as one x8 link to the <a href="../../computing/cpu/">CPU</a>'s root complex, and the DMA path from the NIC
+            through PCIe into host memory.
+          </p>
+
+          <h3>Asset</h3>
+          <dl class="info-details">
+            <dt>Id</dt><dd>pcie · version 1.0.0</dd>
+            <dt>Status</dt><dd>released in experiences v1.2.0 · hero</dd>
+            <dt>Concept</dt><dd>pcie (I/O)</dd>
+            <dt>Renderers</dt><dd>Three.js (live), Manim actor (flat)</dd>
+            <dt>Ports</dt><dd>endpoint — the slot opening; root_complex — the lanes' vias, toward the CPU</dd>
+          </dl>
+        </div>
+      </aside>
+
+      <div id="fallback" class="fallback" hidden>
+        <h2>3D view unavailable</h2>
+        <p>This page needs WebGL 2. Try a recent version of Chrome, Edge, Firefox or Safari, and make sure hardware acceleration is turned on.</p>
+      </div>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

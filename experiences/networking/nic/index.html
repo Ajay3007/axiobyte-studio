@@ -32,6 +32,7 @@
       <div class="controls panel">
         <div class="segmented" role="group" aria-label="Mode">
           <button type="button" data-mode="hardware" aria-pressed="true">Hardware mode</button>
+          <button type="button" data-mode="host" aria-pressed="false">In the host</button>
           <button type="button" data-mode="packets" aria-pressed="false" disabled title="Packet flow is coming soon">
             Packet flow <span class="soon">Soon</span>
           </button>
@@ -40,6 +41,10 @@
       </div>
 
       <p class="hint" id="hint">Drag to orbit, right-drag to pan, scroll to zoom. Click a part to inspect it.</p>
+      <p class="hint host-note" id="host-note" hidden>
+        The card in its slot, the CPU and host memory — where DMA writes each packet.
+        <a href="../nic-host/">Explore the whole system →</a>
+      </p>
 
       <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
 

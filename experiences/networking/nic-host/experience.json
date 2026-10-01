@@ -1,0 +1,6 @@
+{
+  "concept": "dma",
+  "title": "NIC to host memory",
+  "summary": "The first AxioByte system: the NIC in its PCIe slot, the lanes to the CPU, the memory channels to host memory — and DMA, the NIC writing each packet straight into a buffer in memory while no core copies it.",
+  "tags": ["System", "NIC", "PCIe", "CPU", "Host memory", "DMA"]
+}

@@ -203,6 +203,13 @@ DESCRIPTOR_RING = ActorDefinition(
     default_props={"slots": 8},
 )
 
+# Host memory as a whole: the DRAM the rings and buffers above are allocated in.
+HOST_MEMORY = ActorDefinition(
+    concept="host_memory",
+    anchors=("memory_interface", "descriptor_region", "packet_buffer_region"),
+    default_props={"label": "host memory"},
+)
+
 # NOTE: there is deliberately no DMA actor. DMA is an Interaction Concept
 # (nic <-> memory_buffer), and an interaction has no actor of its own — it is
 # staged through its participants. See concepts/library/interaction/dma.yaml.
@@ -226,5 +233,6 @@ LIBRARY: dict[str, ActorDefinition] = {
         MAGNETICS,
         PCIE,
         DESCRIPTOR_RING,
+        HOST_MEMORY,
     )
 }

@@ -18,10 +18,23 @@ src/domains/<domain>/   the visual library of a domain, used by BOTH targets
    networking/          dataplane.js (RX/TX stages, independent of any model)
                         nic/ (the NIC model, world, scene, animation lanes, signal paths,
                               video scene) · widgets/ (RSS, DMA, ring, DPDK, PHY, PAM-16 …)
+   io/pcie/             the PCIe asset: an x8 slot, its lanes and link (model, metadata, scene,
+                        world) — the page is experiences/io/pcie/
+   computing/cpu/       the CPU asset: a generic processor package — lid, substrate, die, lands,
+                        and the die's conceptual regions (model, metadata, scene with its three
+                        modes, world) — the page is experiences/computing/cpu/
+   memory/host-memory/  the Host Memory asset: two DIMMs, and a logical map of the address space
+                        with a descriptor region and packet buffers (model, metadata, scene with
+                        its two modes, world) — the page is experiences/memory/host-memory/
+
+src/compositions/<id>/  systems of assets (docs/asset-library/composition.md)
+   nic_host/            NIC + PCIe + CPU + host memory, with DMA drawn over them (contract copy,
+                        composition, metadata, world) — the page is experiences/networking/nic-host/
 ```
 
 Layering is one-directional: `core` imports nothing else here; `video` and `web` import `core`;
-a domain may import all three; nothing here imports an episode or an experience.
+a domain may import all three; a composition may import domains, and no domain imports a
+composition or another asset's domain; nothing here imports an episode or an experience.
 
 ## The two targets share one world
 

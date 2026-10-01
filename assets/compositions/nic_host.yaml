@@ -1,0 +1,45 @@
+# THE FIRST COMPOSITION — NIC + PCIe + CPU + host memory
+#
+# The declarative contract for one system of library assets (docs/asset-library/composition.md).
+# It names instances of registry assets, places each one explicitly, and says which ports connect
+# and how; it never edits an asset. The Three.js implementation reads the identical runtime copy in
+# renderers/three/src/compositions/nic_host/contract.json, and tests/unit/test_compositions.py
+# keeps the two identical and checks every name here against assets/library.yaml.
+#
+# Frame: centimetres, y up. The plane y = 0 is where the assets meet — the PCIe board's top, the
+# CPU's contact side and the host-memory map. Rotations are degrees, applied in Euler order YXZ.
+# Scale is always 1: every asset is built in centimetres, so mated parts meet at their real sizes.
+version: 1
+id: nic_host
+title: NIC to host memory
+route: networking/nic-host        # → /axiobyte/networking/nic-host/
+
+instances:                        # instance id → registry asset id
+  nic: nic
+  pcie: pcie
+  cpu: cpu
+  memory: host_memory
+
+placement:
+  # The PCIe board lies flat, turned so its lanes run toward the CPU (−x), centred on z = 0.
+  pcie: { position: [13.7, -0.16, -4.4], rotation: [0, -90, 0] }
+  # Seated in the slot: turned edge-down (x 90°) with the board (y −90°). In the PCIe frame the card
+  # sits at (−2.865, 8.145, 1.47): contact 1 (card x 4.485) on the slot's pin 1 (x 1.62), the tab
+  # edge (card z 7.68) on the slot floor (y 0.465), mid-thickness on the slot's centre line (z 1.55).
+  nic: { position: [12.23, 7.985, -7.265], rotation: [90, -90, 0] }
+  # PCIe lands (+x side of the package) toward the PCIe board, memory lands (−x) toward memory.
+  cpu: { position: [-2, 0, -2], rotation: [0, 0, 0] }
+  # Modules at the back, the address map in front, to the CPU's memory side.
+  memory: { position: [-18.8, 0, -2.6], rotation: [0, 0, 0] }
+
+connections:
+  # The card's edge in the slot. The two anchors sit 1.02 cm apart when seated: the slot's anchor
+  # is at the top of its opening (0.82 deep) and the card's is 0.2 beyond its tab edge.
+  - { kind: mate, a: nic.pcie_connector, b: pcie.endpoint, gap: 1.02 }
+  # Eight lane anchors meet the CPU's one PCIe land field: one x8 bundle.
+  - { kind: route, a: pcie.root_complex, b: cpu.pcie_root_complex, label: PCIe x8 }
+  # The CPU's memory land field fans out to both modules: one connection, two anchors.
+  - { kind: route, a: cpu.memory_interface, b: memory.memory_interface, label: memory channels }
+
+interactions:                     # concepts from concepts/library, never ports
+  - { concept: dma, from: nic, to: memory.packet-buffer-region, via: [pcie, cpu.io, cpu.memory-controller] }

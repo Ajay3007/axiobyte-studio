@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "id": "nic_host",
+  "title": "NIC to host memory",
+  "route": "networking/nic-host",
+  "instances": {
+    "nic": "nic",
+    "pcie": "pcie",
+    "cpu": "cpu",
+    "memory": "host_memory"
+  },
+  "placement": {
+    "pcie": {
+      "position": [
+        13.7,
+        -0.16,
+        -4.4
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ]
+    },
+    "nic": {
+      "position": [
+        12.23,
+        7.985,
+        -7.265
+      ],
+      "rotation": [
+        90,
+        -90,
+        0
+      ]
+    },
+    "cpu": {
+      "position": [
+        -2,
+        0,
+        -2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "memory": {
+      "position": [
+        -18.8,
+        0,
+        -2.6
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "connections": [
+    {
+      "kind": "mate",
+      "a": "nic.pcie_connector",
+      "b": "pcie.endpoint",
+      "gap": 1.02
+    },
+    {
+      "kind": "route",
+      "a": "pcie.root_complex",
+      "b": "cpu.pcie_root_complex",
+      "label": "PCIe x8"
+    },
+    {
+      "kind": "route",
+      "a": "cpu.memory_interface",
+      "b": "memory.memory_interface",
+      "label": "memory channels"
+    }
+  ],
+  "interactions": [
+    {
+      "concept": "dma",
+      "from": "nic",
+      "to": "memory.packet-buffer-region",
+      "via": [
+        "pcie",
+        "cpu.io",
+        "cpu.memory-controller"
+      ]
+    }
+  ],
+  "ports": {
+    "nic.pcie_connector": {
+      "at": [
+        "pcie-connector.out"
+      ],
+      "facing": "+z"
+    },
+    "pcie.endpoint": {
+      "at": [
+        "slot.card"
+      ],
+      "facing": "+y"
+    },
+    "pcie.root_complex": {
+      "at": [
+        "lane-0.host",
+        "lane-1.host",
+        "lane-2.host",
+        "lane-3.host",
+        "lane-4.host",
+        "lane-5.host",
+        "lane-6.host",
+        "lane-7.host"
+      ]
+    },
+    "cpu.pcie_root_complex": {
+      "at": [
+        "lands.pcie"
+      ]
+    },
+    "cpu.memory_interface": {
+      "at": [
+        "lands.memory"
+      ]
+    },
+    "host_memory.memory_interface": {
+      "at": [
+        "dimm-0.edge",
+        "dimm-1.edge"
+      ]
+    }
+  }
+}

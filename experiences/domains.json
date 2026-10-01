@@ -2,5 +2,17 @@
   "networking": {
     "title": "Networking",
     "summary": "How packets get from a wire into memory and out again: the NIC, Ethernet, PCIe, DMA, RSS and DPDK."
+  },
+  "io": {
+    "title": "I/O",
+    "summary": "How devices attach to the CPU and memory: PCIe slots, lanes and links, the interconnect every card depends on."
+  },
+  "computing": {
+    "title": "Computing",
+    "summary": "The processors that run the software: cores, caches, and the interfaces that tie them to memory and to devices."
+  },
+  "memory": {
+    "title": "Memory",
+    "summary": "Where software and devices keep their data: host memory, and the rings and buffers allocated in it."
   }
 }

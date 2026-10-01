@@ -68,6 +68,8 @@ export const HEATSINK = {
 
 export const CONTROLLER = { x: 10.4, z: 3.0, size: 2.1, h: 0.2, standoff: 0.03, leadLen: 0.2, leadsPerSide: 30, pitch: 0.058 };
 
+// Board areas beside the controller: the traces fan into rx and tx, and the film frames them.
+// (They held conceptual queue zones before v1.1; the rings are in host memory.)
 export const ZONES = {
   rx: { x0: 12.05, x1: 13.5, z0: 1.1, z1: 2.7 },
   tx: { x0: 12.05, x1: 13.5, z0: 3.3, z1: 4.9 },

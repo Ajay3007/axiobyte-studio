@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive 3D model of host memory — the memory modules, and a map of the address space they provide with a descriptor ring and packet buffers allocated in it — by AxioByte." />
+    <meta name="theme-color" content="#14171b" />
+    <title>Host memory · AxioByte</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="app">
+      <div id="viewport" class="viewport"></div>
+
+      <header class="brand panel">
+        <p class="brand-kicker"><a href="../../" title="All AxioByte models">AxioByte</a> · Memory</p>
+        <h1 class="brand-title">Host memory</h1>
+        <p class="brand-sub">The modules and their allocations</p>
+        <button type="button" id="about-open" class="btn about-btn" aria-controls="info">About host memory</button>
+      </header>
+
+      <nav class="views panel" aria-label="Camera views">
+        <span class="panel-label">View</span>
+        <div class="segmented" role="group">
+          <button type="button" data-preset="overview" aria-pressed="true">Overview</button>
+          <button type="button" data-preset="modules" aria-pressed="false">Modules</button>
+          <button type="button" data-preset="map" aria-pressed="false">Map</button>
+        </div>
+      </nav>
+
+      <div class="controls panel">
+        <div class="segmented" role="group" aria-label="What to show">
+          <button type="button" data-mode="physical" aria-pressed="false">Physical</button>
+          <button type="button" data-mode="allocation" aria-pressed="true">Allocation</button>
+        </div>
+        <button type="button" id="reset-camera" class="btn">Reset camera</button>
+      </div>
+
+      <p class="hint" id="hint">Drag to orbit, scroll to zoom. Click a module or a region to inspect it; <em>Physical</em> shows the modules alone.</p>
+
+      <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+      <aside id="info" class="info panel" aria-live="polite" hidden>
+        <button type="button" class="info-close" id="info-close" aria-label="Close">×</button>
+
+        <div id="part" hidden>
+          <p class="info-kicker"><span id="info-designator"></span><span id="info-category"></span></p>
+          <h2 id="info-title"></h2>
+          <p class="info-summary" id="info-summary"></p>
+          <p class="info-desc" id="info-desc"></p>
+          <dl class="info-details" id="info-details"></dl>
+          <div class="info-path" id="info-path" hidden></div>
+        </div>
+
+        <div id="about" class="about" hidden>
+          <p class="info-kicker"><span>ASSET</span><span>Memory · host_memory</span></p>
+          <h2>Host memory</h2>
+          <p class="info-summary">
+            The computer's main memory — the DRAM the CPU's memory controller serves. Cores reach it through their caches;
+            devices such as a NIC reach it directly, by DMA.
+          </p>
+          <p class="info-desc">
+            This page shows host memory on its own, in two layers kept apart on purpose. At the back, the physical memory:
+            modules of DRAM chips. In front, a logical map of the address space those modules provide, and what software has
+            allocated in it. The map is a diagram, not hardware, and it is not to scale.
+          </p>
+
+          <h3>Physical memory</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="dimm-0">Module 0</button> a DIMM: DRAM chips on a small board</li>
+            <li><button type="button" data-part="dimm-1">Module 1</button> a second module — memory is added in modules</li>
+          </ul>
+
+          <h3>Allocation</h3>
+          <p class="info-desc">
+            Software sees memory as one range of physical addresses, handed out in pages by the operating system. Rings and
+            buffers are not special hardware: they are allocations, in ordinary DRAM, among everything else memory holds.
+          </p>
+          <ul class="about-parts">
+            <li><button type="button" data-part="address-space">Address space</button> all of memory, addressed from 0 up</li>
+            <li><button type="button" data-part="descriptor-region">Descriptor region</button> a ring of buffer addresses for the NIC</li>
+            <li><button type="button" data-part="packet-buffer-region">Packet buffers</button> where the NIC writes packets</li>
+            <li><button type="button" data-part="other-memory">Other memory</button> kernel, applications, free pages</li>
+          </ul>
+
+          <h3>Descriptor rings and packet buffers</h3>
+          <p class="info-desc">
+            To receive, a driver allocates packet buffers and a descriptor ring, and writes a buffer's address into each
+            descriptor. The NIC reads the descriptors, writes each packet it receives into the buffer a descriptor names, and
+            marks the descriptor done; software finds the packet where it landed. A descriptor holds addresses and status —
+            never the packet bytes. That is why a NIC and a data plane such as DPDK live and die by host memory: every packet
+            arrives there.
+          </p>
+
+          <h3>Where it sits</h3>
+          <p class="info-desc">
+            Host memory hangs off the <a href="../../computing/cpu/">CPU</a>. The CPU's memory controller drives the memory
+            channels; each channel runs across the motherboard to DIMM slots. The modules' edge contacts are this asset's
+            <code>memory_interface</code>, the counterpart of the CPU's own <code>memory_interface</code>. The CPU is not in
+            this scene: this page shows the memory on its own.
+          </p>
+
+          <h3>PCIe and DMA</h3>
+          <p class="info-desc">
+            A <a href="../../networking/nic/">NIC</a> reaches host memory through <a href="../../io/pcie/">PCIe</a>: its reads
+            of descriptors and its writes of packets travel up the link to the CPU's root complex, which passes them to memory —
+            no core copies the bytes. That transfer is DMA, an interaction between the card and memory. It is not a part of
+            this asset, and this page does not draw it; the <a href="../../networking/nic-host/">NIC to host memory</a> system
+            does — NIC → PCIe → CPU → host memory, with this asset as the memory the packets land in.
+          </p>
+
+          <h3>Asset</h3>
+          <dl class="info-details">
+            <dt>Id</dt><dd>host_memory · version 1.0.0</dd>
+            <dt>Status</dt><dd>released in experiences v1.2.0 · hero</dd>
+            <dt>Concept</dt><dd>host_memory (memory)</dd>
+            <dt>Renderers</dt><dd>Three.js (live), Manim actor (flat)</dd>
+            <dt>Ports</dt><dd>memory_interface — the modules' edge contacts, toward the CPU</dd>
+          </dl>
+
+          <h3>What is simplified</h3>
+          <p class="info-desc">
+            Two generic modules; real systems have one or more per memory channel, and their count, size and generation vary.
+            The map shows what memory holds, not where bytes sit: the memory controller interleaves addresses across channels
+            and modules, so a region that looks contiguous here is spread across both. Real rings hold hundreds of descriptors
+            and real systems thousands of buffers, in pages scattered through memory; the regions are drawn large enough to
+            read. DRAM internals — banks, rows, refresh — and memory-mapped device addresses are left out.
+          </p>
+        </div>
+      </aside>
+
+      <div id="fallback" class="fallback" hidden>
+        <h2>3D view unavailable</h2>
+        <p>
+          This page needs WebGL 2. Try a recent version of Chrome, Edge, Firefox or Safari, and make sure hardware acceleration
+          is turned on. In short: host memory is the DRAM on the computer's memory modules, and software allocates descriptor
+          rings and packet buffers in it for the NIC to use.
+        </p>
+      </div>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

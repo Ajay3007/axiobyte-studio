@@ -717,6 +717,12 @@ build. It is Phase 1.
 
 ## 6. Asset architecture
 
+"Source assets" here are versioned **files** — models, fonts, baked plates. The reusable
+technical things built from them (the NIC, a CPU, a descriptor ring) form the **Asset
+Library**, whose standard and registry are [`docs/asset-library/`](docs/asset-library/README.md)
+and `assets/library.yaml`. A library asset may own source assets; the two are recorded
+separately.
+
 ### Two populations, governed differently
 
 | | **Source assets** | **Derived artifacts** |

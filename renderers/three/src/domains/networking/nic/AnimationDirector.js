@@ -26,7 +26,6 @@ export class AnimationDirector {
     this.signalPaths = signalPaths;
     this.highlights = [];
     this.heatsinkKeys = [{ t: 0, v: 0 }];
-    this.zoneCues = [];
     this.signalCues = [];
     this.flights = [];
     this._levels = {};
@@ -39,16 +38,15 @@ export class AnimationDirector {
     this.cableOut = this.cableIn.clone();
 
     // The same stop lists demoRx() / demoTx() use, wrapped so they can be seeked.
-    // Descriptor rings live in host memory: when the card carries no queue zones, a
-    // received packet leaves through the edge connector to a point just off the card
-    // (toward the host), and a transmitted one arrives from there. Same stop count, so
-    // a storyboard's stop times still line up.
+    // Descriptor rings live in host memory: a received packet leaves through the edge
+    // connector to a point just off the card (toward the host), and a transmitted one
+    // arrives from there.
     const rxStops = hardwareRoute(RX_PATH, { port: 1 });
     const txStops = hardwareRoute(TX_PATH, { port: 1 });
     this.hostPort = registry.anchorWorld('pcie-connector', 'out').clone().add(new THREE.Vector3(0, -0.45, 1.5));
     const onCard = (stops) => stops.filter((s) => registry.has(s.id));
-    const rx = registry.has('rx-queue') ? rxStops : [...onCard(rxStops), this.hostPort];
-    const tx = registry.has('tx-queue') ? txStops : [this.hostPort, ...onCard(txStops)];
+    const rx = [...onCard(rxStops), this.hostPort];
+    const tx = [this.hostPort, ...onCard(txStops)];
     this.routes = {
       rx: packets.buildRoute([this.cableIn, ...rx], { hopDuration: 700, color: 0x6ec1ff, trail: 7, scale: 1.7 }),
       tx: packets.buildRoute([...tx, this.cableOut], { hopDuration: 700, color: 0xffb454, trail: 7, scale: 1.7 }),
@@ -83,11 +81,6 @@ export class AnimationDirector {
 
   setHeatsink(keys) {
     this.heatsinkKeys = [{ t: 0, v: 0 }, ...keys].sort((a, b) => a.t - b.t);
-    return this;
-  }
-
-  setZones(cues) {
-    this.zoneCues = cues;
     return this;
   }
 
@@ -156,23 +149,6 @@ export class AnimationDirector {
       const state = f ? this.flightU(f, t) : null;
       if (!state || state.fade <= 0.01) this.routes[key].seek(0, { visible: false });
       else this.routes[key].seek(state.u, { visible: true });
-    }
-
-    // Descriptor slots filling and draining in the on-card queue zones.
-    for (const z of this.zoneCues) {
-      const zone = scene.nic.zones[z.zone];
-      if (!zone) continue;
-      const on = t >= z.from && t <= z.to;
-      for (let i = 0; i < zone.slots.length; i++) {
-        if (!on) {
-          zone.setSlot(i, 0);
-          continue;
-        }
-        const phase = (t - z.from) * (z.rate ?? 1.4) - i * 0.55;
-        const cycle = ((phase % zone.slots.length) + zone.slots.length) % zone.slots.length;
-        const lit = cycle < 2.4 ? Math.exp(-Math.pow((cycle - 0.7) / 1.1, 2)) : 0;
-        zone.setSlot(i, lit * (z.level ?? 0.9) * Math.min(1, ramp(t, z.from, z.from + 0.7), ramp(z.to - t, 0, 0.7)));
-      }
     }
 
     if (this.signalPaths) {

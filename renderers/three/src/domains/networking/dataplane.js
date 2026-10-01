@@ -11,16 +11,14 @@ export const STAGES = {
   controller: { name: 'MAC / controller', components: ['nic-controller'], summary: 'Frame checks, RSS hashing, queue selection.' },
   dma: { name: 'DMA engine', components: ['nic-controller'], anchor: 'dma', summary: 'Writes the packet into a host buffer with no CPU copy.' },
   pcie: { name: 'PCIe', components: ['pcie-connector'], summary: 'Memory-write TLPs to host RAM.' },
-  'rx-queue': { name: 'RX queue', components: ['rx-queue'], summary: 'Descriptor marked done; waiting for a poll.' },
-  'tx-queue': { name: 'TX queue', components: ['tx-queue'], summary: 'Descriptors posted by software, waiting for the NIC.' },
   'descriptor-ring': { name: 'Descriptor ring', host: true, components: [], summary: 'Circular array of buffer pointers shared with the NIC.' },
-  mempool: { name: 'DPDK mempool', host: true, components: ['host-mbufs'], summary: 'Pre-allocated mbufs in hugepage memory.' },
-  'worker-core': { name: 'Worker core', host: true, components: ['host-cpu'], summary: 'Polls with rte_eth_rx_burst(), no interrupts.' },
+  mempool: { name: 'DPDK mempool', host: true, components: [], summary: 'Pre-allocated mbufs in hugepage memory.' },
+  'worker-core': { name: 'Worker core', host: true, components: [], summary: 'Polls with rte_eth_rx_burst(), no interrupts.' },
   application: { name: 'Application', host: true, components: [], summary: 'Forwarding, filtering, or your packet logic.' },
 };
 
-export const RX_PATH = ['cable', 'rj45', 'magnetics', 'phy', 'controller', 'dma', 'pcie', 'rx-queue', 'descriptor-ring', 'mempool', 'worker-core', 'application'];
-export const TX_PATH = ['application', 'worker-core', 'mempool', 'descriptor-ring', 'tx-queue', 'pcie', 'dma', 'controller', 'phy', 'magnetics', 'rj45', 'cable'];
+export const RX_PATH = ['cable', 'rj45', 'magnetics', 'phy', 'controller', 'dma', 'pcie', 'descriptor-ring', 'mempool', 'worker-core', 'application'];
+export const TX_PATH = ['application', 'worker-core', 'mempool', 'descriptor-ring', 'pcie', 'dma', 'controller', 'phy', 'magnetics', 'rj45', 'cable'];
 
 export function stageForComponent(componentId) {
   for (const [key, s] of Object.entries(STAGES)) {

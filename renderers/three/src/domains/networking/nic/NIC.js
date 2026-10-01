@@ -9,7 +9,6 @@ import { createHeatsink } from './Heatsink.js';
 import { createController, createMagnetics, createPHY } from './Chips.js';
 import { createComponents } from './Components.js';
 import { createBracket } from './Bracket.js';
-import { createZone } from './Zones.js';
 import { NIC_METADATA } from './metadata.js';
 import { MAGNETICS, PORT, PORTS, TOP } from './layout.js';
 
@@ -18,12 +17,10 @@ import { MAGNETICS, PORT, PORTS, TOP } from './layout.js';
  * Returns plain data the scene layer can register: the model knows nothing
  * about raycasting, cameras or UI.
  *
- * `queuesOnCard` (the default, which the film is built with) draws the RX/TX queue
- * areas on the PCB as conceptual zones. With it off, the card carries no queue
- * zones or queue silkscreen — the rings are drawn in host memory instead (see
- * ../HostMemory.js), which is where they live.
+ * The card carries no queue zones: descriptor rings and packet buffers live in host
+ * memory (the host_memory asset, composed with this card in the nic_host composition).
  */
-export function createNIC({ queuesOnCard = true } = {}) {
+export function createNIC() {
   const kit = new Kit();
   const root = new THREE.Group();
   root.name = 'nic';
@@ -31,7 +28,7 @@ export function createNIC({ queuesOnCard = true } = {}) {
   const pcb = createPCB(kit);
   const traces = createTraces(kit);
   const parts = createComponents(kit);
-  const silk = createSilkscreen(kit, parts.marks, { queueZones: queuesOnCard });
+  const silk = createSilkscreen(kit, parts.marks);
   root.add(pcb.group, traces, silk, parts.group);
 
   const components = [];
@@ -69,13 +66,6 @@ export function createNIC({ queuesOnCard = true } = {}) {
   const bracket = createBracket(kit);
   add('bracket', bracket.group, { anchors: bracket.anchors });
 
-  const zones = {};
-  for (const key of queuesOnCard ? ['rx', 'tx'] : []) {
-    const z = createZone(kit, key);
-    zones[key] = z;
-    add(`${key}-queue`, z.group, { hitObjects: z.hitObjects, anchors: z.anchors, setHighlight: z.setHighlight });
-  }
-
   parts.boardLeds.forEach((l, i) => {
     l.material.userData.noHighlight = true;
     leds.push({ material: l.material, pattern: i === 0 ? 'steady' : 'heartbeat', phase: 0, peak: 1.6 });
@@ -89,7 +79,6 @@ export function createNIC({ queuesOnCard = true } = {}) {
     components,
     leds,
     heatsink,
-    zones,
     occluders: [pcb.board],
     stats: { passives: parts.group.userData.partCount },
     /** Ambient life: the copper under the mask breathes very slightly. */

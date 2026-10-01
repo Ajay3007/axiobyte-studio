@@ -17,7 +17,7 @@ import { createNicScene } from './scene.js';
  * and one packet system across both modes. Everything mode-specific
  * (OrbitControls, DOM UI, the video director) lives above it.
  */
-export function createNicWorld({ container, reducedMotion = false, engine: engineOptions = {}, highlight = {}, hostMemory = false, queuesOnCard = !hostMemory } = {}) {
+export function createNicWorld({ container, reducedMotion = false, engine: engineOptions = {}, highlight = {} } = {}) {
   const engine = new Engine(container, engineOptions);
   const lighting = createLighting();
   const stage = createStage();
@@ -25,7 +25,7 @@ export function createNicWorld({ container, reducedMotion = false, engine: engin
 
   const registry = new ComponentRegistry();
   const camera = new CameraManager(engine, { reducedMotion });
-  const scene = createNicScene({ engine, registry, camera, hostMemory, queuesOnCard });
+  const scene = createNicScene({ engine, registry, camera });
   lighting.fitShadow(scene.modelBox());
 
   // LEDs flag their materials as noHighlight, so they must be registered before highlight clones are made.

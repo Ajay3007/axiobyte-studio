@@ -12,8 +12,8 @@ lives in the Three.js backend's networking domain
 ([`renderers/three/src/domains/networking/nic/`](../../../renderers/three/src/domains/networking/nic/)),
 and the film [`s01e03-what-is-a-nic`](../../../episodes/s01e03-what-is-a-nic/) is rendered from the
 very same world. This folder is only the page: `index.html`, `main.js` (boot, WebGL check,
-fonts), `app.js` (picking, selection, camera, the console API) and `UI.js` (tooltip, info panel,
-controls).
+fonts, the two views), `app.js` (the card: picking, selection, camera, the console API), `host.js` (the
+card in the host, below), `UI.js` (tooltip, info panel, controls) and `nic.css`.
 
 ## Run it
 
@@ -36,9 +36,16 @@ Camera presets: Overview, Front, Top, Rear, PCIe. The heatsink's info panel has 
 action that reveals the PHY underneath. "AxioByte" in the top-left returns to the hub.
 
 The card carries only hardware: ports, magnetics, PHY, controller, heatsink, PCIe connector,
-bracket. The RX and TX descriptor rings and the packet buffers sit in a separate **HOST MEMORY**
-region beside it, joined to the card's edge connector by a PCIe · DMA link, with the polling CPU
-core just outside — structures in host RAM that the NIC reaches across PCIe, not parts of the card.
+bracket. The descriptor rings and packet buffers are not on it — they are in host memory.
+
+## In the host
+
+*Hardware mode* shows the card on its own, the NIC asset. *In the host* shows the same card seated in
+the system — PCIe slot and lanes, CPU, host memory — with DMA carrying each packet into a buffer in
+host memory. That view is the `nic_host` composition, built by the same function as its own page
+([`/axiobyte/networking/nic-host/`](../nic-host/), linked from the view); `host.js` only connects it to
+this page's panel. Switching modes disposes one world and builds the other. Until v1.1.0 this page drew
+its own host-memory panel beside the card (`networking/HostMemory.js`); that stand-in is retired.
 
 On phones held upright the info panel is a bottom sheet: the selected part is framed in the space
 above it, the sheet scrolls when its content is long, and choosing a camera preset closes it.
@@ -48,7 +55,7 @@ above it, the sheet scrolls when its content is long, and choosing a camera pres
 The foundation for the upcoming Packet flow mode. In the browser console:
 
 ```js
-__AXIOBYTE__.demoRx()                   // port 1 → magnetics → PHY → controller → DMA → PCIe → RX queue
+__AXIOBYTE__.demoRx()                   // port 1 → magnetics → PHY → controller → DMA → PCIe
 __AXIOBYTE__.demoTx(2)
 __AXIOBYTE__.animatePacket({ from: 'rj45-1', to: 'nic-controller', duration: 1200 })
 __AXIOBYTE__.focus('rj45')              // or 'controller', 'pcie', any component id
@@ -56,5 +63,5 @@ __AXIOBYTE__.stats()                    // draw calls, triangles, part count
 ```
 
 Host-side stages (descriptor ring, mempool, worker core, application) are defined in
-`@axiobyte/three/domains/networking/dataplane.js` with `host: true`; the page draws the rings,
-buffers and CPU core from `@axiobyte/three/domains/networking/HostMemory.js`.
+`@axiobyte/three/domains/networking/dataplane.js` with `host: true`; on the card a route ends (or starts)
+at the PCIe connector, and the host side is the *In the host* view.

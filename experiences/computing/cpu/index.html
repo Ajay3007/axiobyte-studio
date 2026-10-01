@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive 3D model of a processor package — heat spreader, die, cores and cache, the memory controller, the PCIe root complex and the contacts underneath — by AxioByte." />
+    <meta name="theme-color" content="#14171b" />
+    <title>CPU · AxioByte</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="app">
+      <div id="viewport" class="viewport"></div>
+
+      <header class="brand panel">
+        <p class="brand-kicker"><a href="../../" title="All AxioByte models">AxioByte</a> · Computing</p>
+        <h1 class="brand-title">CPU</h1>
+        <p class="brand-sub">Processor package: lid, die, contacts</p>
+        <button type="button" id="about-open" class="btn about-btn" aria-controls="info">About the CPU</button>
+      </header>
+
+      <nav class="views panel" aria-label="Camera views">
+        <span class="panel-label">View</span>
+        <div class="segmented" role="group">
+          <button type="button" data-preset="overview" aria-pressed="true">Overview</button>
+          <button type="button" data-preset="top" aria-pressed="false">Top</button>
+          <button type="button" data-preset="side" aria-pressed="false">Side</button>
+        </div>
+      </nav>
+
+      <div class="controls panel">
+        <div class="segmented" role="group" aria-label="What to show">
+          <button type="button" data-mode="package" aria-pressed="true">Package</button>
+          <button type="button" data-mode="inside" aria-pressed="false">Inside</button>
+          <button type="button" data-mode="underside" aria-pressed="false">Underside</button>
+        </div>
+        <button type="button" id="reset-camera" class="btn">Reset camera</button>
+      </div>
+
+      <p class="hint" id="hint">Drag to orbit, scroll to zoom. Click a part to inspect it; <em>Inside</em> lifts the lid, <em>Underside</em> turns the CPU over.</p>
+
+      <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+      <aside id="info" class="info panel" aria-live="polite" hidden>
+        <button type="button" class="info-close" id="info-close" aria-label="Close">×</button>
+
+        <div id="part" hidden>
+          <p class="info-kicker"><span id="info-designator"></span><span id="info-category"></span></p>
+          <h2 id="info-title"></h2>
+          <p class="info-summary" id="info-summary"></p>
+          <p class="info-desc" id="info-desc"></p>
+          <dl class="info-details" id="info-details"></dl>
+          <div class="info-path" id="info-path" hidden></div>
+        </div>
+
+        <div id="about" class="about" hidden>
+          <p class="info-kicker"><span>ASSET</span><span>Computing · cpu</span></p>
+          <h2>The CPU</h2>
+          <p class="info-summary">
+            The processor that runs a computer's software: a set of cores that execute instructions, with caches, a memory
+            controller and PCIe root ports on the same chip.
+          </p>
+          <p class="info-desc">
+            This model is a generic desktop processor package, not any vendor's part. The package is physical; the regions
+            drawn on the die when you look inside are an educational layout — no real CPU is laid out exactly like this.
+          </p>
+
+          <h3>Physical structure</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="ihs">Heat spreader</button> the metal lid the cooler presses on</li>
+            <li><button type="button" data-part="die">Die</button> the silicon, bonded face down</li>
+            <li><button type="button" data-part="substrate">Substrate</button> fans the die's bumps out to the lands</li>
+            <li><button type="button" data-part="lands">Contact lands</button> where every connection is made</li>
+          </ul>
+
+          <h3>Inside the CPU</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="cores">Cores</button> execute instructions</li>
+            <li><button type="button" data-part="cache">Shared cache</button> keeps recent memory on the die</li>
+            <li><button type="button" data-part="memory-controller">Memory controller</button> talks to DRAM</li>
+            <li><button type="button" data-part="io">PCIe root complex</button> the CPU's end of every PCIe link</li>
+          </ul>
+
+          <h3>A core</h3>
+          <p class="info-desc">
+            A core is a complete processor: it fetches, decodes and executes one stream of instructions (two, with
+            simultaneous multithreading), with its own private L1 and usually L2 caches. Several cores run several streams
+            truly at once. In a DPDK data plane a core is often dedicated to one job — polling one NIC queue.
+          </p>
+
+          <h3>Cache</h3>
+          <p class="info-desc">
+            Caches keep recently used memory close to the cores, in fixed-size cache lines — typically 64 bytes. A core looks
+            in its own L1 and L2, then the cache all cores share, and only then goes out to DRAM, far slower.
+          </p>
+
+          <h3>Memory interface</h3>
+          <p class="info-desc">
+            The memory controller turns cache misses into DRAM reads and writes over the memory channels. Those channels leave
+            the package through their own group of lands — this asset's <code>memory_interface</code> — and run to the DIMM
+            slots of <a href="../../memory/host-memory/">host memory</a>.
+          </p>
+
+          <h3>PCIe and I/O</h3>
+          <p class="info-desc">
+            The root complex is the CPU's end of every <a href="../../io/pcie/">PCIe</a> link. Its lanes leave through another
+            group of lands — the <code>pcie_root_complex</code> interface — and run across the motherboard to the slots. The
+            <a href="../../networking/nic-host/">NIC to host memory</a> system shows that chain: <a href="../../networking/nic/">NIC</a>
+            → PCIe → CPU → host memory, the eight lanes arriving as one x8 link. When the NIC writes a packet into memory by DMA,
+            the write comes up the link to the root complex, which passes it on to the memory controller — the cores do not copy
+            it.
+          </p>
+
+          <h3>Asset</h3>
+          <dl class="info-details">
+            <dt>Id</dt><dd>cpu · version 1.0.0</dd>
+            <dt>Status</dt><dd>released in experiences v1.2.0 · hero</dd>
+            <dt>Concept</dt><dd>cpu (compute)</dd>
+            <dt>Renderers</dt><dd>Three.js (live), Manim actor (flat, iso)</dd>
+            <dt>Ports</dt><dd>pcie_root_complex — the PCIe lands, to the PCIe asset; memory_interface — the memory lands, to host memory</dd>
+          </dl>
+
+          <h3>Technical notes and limitations</h3>
+          <p class="info-desc">
+            One generic package with one die. Core count, cache size, the region layout and the land fields are illustrative;
+            the model makes no claim about any real processor's floorplan, pinout or specifications. The socket belongs to the
+            motherboard and is not part of this asset.
+          </p>
+        </div>
+      </aside>
+
+      <div id="fallback" class="fallback" hidden>
+        <h2>3D view unavailable</h2>
+        <p>This page needs WebGL 2. Try a recent version of Chrome, Edge, Firefox or Safari, and make sure hardware acceleration is turned on.</p>
+      </div>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
