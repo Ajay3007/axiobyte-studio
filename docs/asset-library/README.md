@@ -67,7 +67,7 @@ Something becomes an asset only when **all three** hold; otherwise it is a part:
 
 1. **It exists on its own.** In real systems it is a separate thing — manufactured, plugged,
    allocated, created or moved independently — not a piece of something else. *A PCIe slot, a
-   DIMM, an mbuf that leaves its pool: yes. A PHY soldered to a card, a slot inside a ring: no.*
+   DIMM, an mbuf its pool hands out: yes. A PHY soldered to a card, a slot inside a ring: no.*
 2. **It relates to more than its parent.** It connects to, or moves between, at least two other
    assets or compositions, so it needs ports of its own. *A packet crosses NIC, rings and buffers;
    a heatsink only ever relates to its card.*
@@ -77,8 +77,9 @@ Something becomes an asset only when **all three** hold; otherwise it is a part:
 Two tie-breakers:
 
 - **Contained things that move are assets; contained things that are structure are parts.**
-  mbufs leave their mempool, so they are assets placed in the pool; a ring's descriptor slots never
-  leave, so they are parts of the ring.
+  An mbuf is handed out by its mempool, passed along and returned — it changes hands, though its
+  memory never leaves the pool — so it is an asset residing in the pool; a ring's descriptor slots
+  are never handed out, so they are parts of the ring.
 - **When in doubt, start as a part.** A part *graduates* when real content meets criterion 3: the
   new asset gets its own registry entry and page, and the parent keeps the part and its id, so
   nothing public breaks.
@@ -181,6 +182,8 @@ Every asset in `assets/library.yaml` declares, and `tests/unit/test_asset_librar
 | `route`, `experience` | for published assets: the public page (§7). A released asset without a page is not released. |
 | `episodes` | the episodes that use it — the reverse index ARCHITECTURE.md's asset rules need. |
 | `known_limitations` | stated honestly; a limitation not written down is a defect. |
+| `resides_in` | *optional* — the assets an instance of this one may reside in (`[host_memory]`): an allowed parent for a composition's `residence`, not a requirement ([`composition.md`](composition.md#residence)). |
+| `refers_to` | *optional* — the assets this one's parts may hold references to (`[host_memory]`): an allowed target for a composition's `references`, not a requirement ([`composition.md`](composition.md#references)). |
 
 Every **renderer implementation** meets the contract the Three.js backend already defines in
 `core/ComponentRegistry.js`, generalised:
@@ -266,8 +269,10 @@ registry already records each asset's ports so that later work — a declarative
 Shot IR driving Three.js — has a contract to build on. **No composition engine is built now.**
 
 **Ports are structure, not data flow.** A port is where an asset physically or logically
-*attaches* to another asset — a card's edge connector into a slot, a cable into a jack, a ring
-into a memory region. What *moves* between assets (a packet, a DMA write, a poll) is not a port:
+*attaches* to another asset — a card's edge connector into a slot, a cable into a jack. Where an
+asset instance *lives* — a ring in a host-memory region — is not a port either: it is
+**residence**; what a part holds the address of — a ring's descriptors naming packet buffers — is
+a **reference**. A composition declares both ([`composition.md`](composition.md#residence)). What *moves* between assets (a packet, a DMA write, a poll) is not a port:
 it is an interaction or a composition's path, defined in the concept library (`dma`, `polling`)
 and built by the composition. So the NIC has no "DMA port": its DMA engine is inside the
 controller part (anchor `nic-controller.dma`), and the DMA write leaves the card through
@@ -306,13 +311,19 @@ Concept ──► Prototype ──► Production ──► Released ──► De
 | Status | Means | To enter it |
 | --- | --- | --- |
 | **concept** | an agreed idea, possibly with a registry entry | an atomic concept exists; id and navigation domain chosen |
-| **prototype** | geometry exists; may be rough; not on the public site | parts and ports declared; one implementation renders |
+| **prototype** | geometry exists; may be rough; no page of its own on the public site (it may appear, disclosed, inside a released composition — below) | parts and ports declared; one implementation renders |
 | **production** | meets the standard; its page is built | the whole QA checklist passes, including the dedicated page |
 | **released** | shipped in a tagged experiences release and served on the site | a release (`experiences-vX.Y.Z`) contains it and the website pin serves it |
 | **deprecated** | superseded; still served for existing links | a successor exists; the route redirects or the page says what replaced it |
 
 The dedicated webpage is an **acceptance criterion**, not an afterthought: an asset without its
 page cannot be production.
+
+**A prototype inside a released composition.** A prototype gets no page and no route of its own,
+but it may take part in a released composition when that composition discloses it: the composition's
+page and README name it as a prototype, and nothing presents it as a released or production asset.
+Its registry status stays `prototype` — shipping inside a composition does not release the asset.
+The `mempool` in `nic_host` is the case this allows.
 
 ## 9. The registry
 
@@ -322,7 +333,8 @@ episodes, and where their pages are*. It is plain YAML in the repository — no 
 `tests/unit/test_asset_library.py` checks every entry against the code: the concept exists, the
 route follows §7 and its domain is declared, every implementation path exists, every part has
 metadata, every port points at a declared part and a real anchor, published assets have a page,
-episodes exist. An entry that drifts from the code fails CI.
+episodes exist. An entry that drifts from the code fails CI, and so does a field the standard
+does not define — a misspelt optional field is an error, not silently ignored.
 
 Only assets that exist are registered; planned ones live in [`roadmap.md`](roadmap.md) until work
 on them starts.

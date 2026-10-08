@@ -6,6 +6,8 @@ import { createNIC } from '../../domains/networking/nic/NIC.js';
 import { createPCIe } from '../../domains/io/pcie/PCIe.js';
 import { createCPU } from '../../domains/computing/cpu/CPU.js';
 import { createHostMemory } from '../../domains/memory/host-memory/HostMemory.js';
+import { createDescriptorRing } from '../../domains/memory/descriptor-ring/DescriptorRing.js';
+import { createMempool } from '../../domains/memory/mempool/Mempool.js';
 import CONTRACT from './contract.json';
 import { INSTANCE_METADATA, LINK_METADATA } from './metadata.js';
 
@@ -17,19 +19,34 @@ import { INSTANCE_METADATA, LINK_METADATA } from './metadata.js';
  * Composition-owned only: instances and their transforms, the two routes, the DMA flow and the
  * labels. Each asset is built from its own model entry exactly as on its page — nothing here edits
  * an asset — and its part ids are namespaced by instance (`cpu.die`, `memory.dimm-0`).
+ *
+ * The contract's `residence` and `references` are semantic and drawn as nothing: no connector, no
+ * nesting. They change one thing here: a host-memory instance is built without its illustrative
+ * ring where a descriptor_ring resides in its descriptor region, and without its illustrative
+ * buffers where a mempool resides in its packet-buffer region — so the system shows each once, as
+ * the real asset.
  */
 
-/** Model entry per registry asset id. The NIC is built without its legacy on-card queue zones. */
+/** Model entry per registry asset id, given the instance and the contract. */
 const FACTORIES = {
   nic: () => createNIC(),
   pcie: () => createPCIe(),
   cpu: () => createCPU(),
-  host_memory: () => {
-    const m = createHostMemory();
+  host_memory: (inst, contract) => {
+    const m = createHostMemory({
+      illustrativeRing: !resides('descriptor_ring', `${inst}.descriptor-region`, contract),
+      illustrativeBuffers: !resides('mempool', `${inst}.packet-buffer-region`, contract),
+    });
     m.setMap(1); // the map shows where the DMA lands
     return m;
   },
+  descriptor_ring: () => createDescriptorRing(),
+  mempool: () => createMempool(),
 };
+
+/** Whether the contract places an instance of `assetId` in the part `where` (`instance.part`). */
+const resides = (assetId, where, { instances, residence = {} }) =>
+  Object.entries(residence).some(([child, parent]) => instances[child] === assetId && parent === where);
 
 /** Parts drawn only inside their own page's modes; present here but hidden, so never pickable. */
 const HIDDEN_PARTS = new Set(['cpu.cores', 'cpu.cache', 'cpu.memory-controller', 'cpu.io', 'pcie.link']);
@@ -60,7 +77,7 @@ export function createNicHostComposition({ contract = CONTRACT } = {}) {
   const instances = {};
   const components = [];
   for (const [inst, assetId] of Object.entries(contract.instances)) {
-    const asset = FACTORIES[assetId]();
+    const asset = FACTORIES[assetId](inst, contract);
     const { position, rotation } = contract.placement[inst];
     const group = new THREE.Group();
     group.name = `instance:${inst}`;
@@ -135,10 +152,15 @@ export function createNicHostComposition({ contract = CONTRACT } = {}) {
   // ---------------------------------------------------------------------- DMA
   // Drawn over the structure, never as structure: from the NIC's DMA engine, out through its edge
   // connector and the slot, along the lanes and the PCIe x8 route, under the package from the root
-  // complex side to the memory controller side, along the memory channels, and into a posted
-  // buffer. It passes under the package, not over the cores: no core touches the bytes.
+  // complex side to the memory controller side, along the memory channels, and into host
+  // memory's packet-buffer region — the interaction's target (see the end anchor below). It
+  // passes under the package, not over the cores: no core touches the bytes.
   const [interaction] = contract.interactions;
   const target = interaction.to.split('.');
+  // The drawn path ends in the interaction's target region: on its first drawn buffer while host
+  // memory draws illustrative buffers, at the region's centre when a resident mempool replaces them.
+  // Always host memory — never the pool, which the contract does not make a DMA target.
+  const endAnchor = part(target[0], target[1])?.anchors?.buffer ? 'buffer' : 'center';
   const dmaPath = [
     anchor('nic', 'nic-controller.dma'),
     anchor('nic', 'pcie-connector.in'),
@@ -154,7 +176,7 @@ export function createNicHostComposition({ contract = CONTRACT } = {}) {
     new THREE.Vector3(fan.x - 0.8, 0, dimms[0].z),
     new THREE.Vector3(dimms[0].x, 0, dimms[0].z),
     dimms[0],
-    anchor(target[0], `${target[1]}.buffer`),
+    anchor(target[0], `${target[1]}.${endAnchor}`),
   ].map((p, i, all) => (i > 2 && i < all.length - 2 ? p.clone().setY(Math.max(p.y, 0) + 0.12) : p));
   const dma = dmaFlow(kit, dmaPath);
   const dmaLabel = label(kit, ['DMA  ·  NIC → host memory', 'root complex → memory controller · no core copies the bytes'], HUE.dma, 7.2, 1.0);
@@ -187,11 +209,20 @@ export function createNicHostComposition({ contract = CONTRACT } = {}) {
     pickable: true,
   });
 
-  // Asset names on the plane, in front of each asset; picking one selects the asset as a whole.
-  const NAMES = { nic: ['NIC', 12.4, 10.4], pcie: ['PCIe', 9.6, 5.4], cpu: ['CPU', 0.2, 3.0], memory: ['HOST MEMORY', -12.1, 5.2] };
-  for (const [inst, [text, x, z]] of Object.entries(NAMES)) {
+  // Asset names on the plane, in front of each asset; picking one selects the asset as a whole. The
+  // ring's name says where it lives, since nothing is drawn between it and its region.
+  const NAMES = {
+    nic: [['NIC'], 12.4, 10.4],
+    pcie: [['PCIe'], 9.6, 5.4],
+    cpu: [['CPU'], 0.2, 3.0],
+    memory: [['HOST MEMORY'], -12.1, 5.2],
+    rx_ring: [['RX DESCRIPTOR RING', 'resides in host memory · descriptor region'], -2.55, 10.2, 6.0, 1.0],
+    pool: [['MEMPOOL', 'resides in host memory · packet-buffer region'], -20.6, 6.35, 6.0, 1.0],
+  };
+  for (const [inst, [lines, x, z, w = lines[0].length > 4 ? 4.2 : 1.8, h = 0.62]] of Object.entries(NAMES)) {
+    if (!instances[inst]) continue;
     const meta = INSTANCE_METADATA[inst];
-    const mesh = label(kit, [text], HUE.label, text.length > 4 ? 4.2 : 1.8, 0.62);
+    const mesh = label(kit, lines, HUE.label, w, h);
     mesh.position.set(x, LIFT, z);
     root.add(mesh);
     components.push({

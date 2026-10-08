@@ -1,5 +1,6 @@
 import { InteractionManager } from '@axiobyte/three/web/InteractionManager.js';
 import { createNicHostWorld } from '@axiobyte/three/compositions/nic_host/world.js';
+import { createReceiveWalkthrough } from '@axiobyte/three/compositions/nic_host/walkthrough.js';
 import { UI } from './UI.js';
 
 /**
@@ -16,6 +17,28 @@ export function createApp(container) {
   const { engine, registry, camera, system, highlighter } = world;
   const ASSETS = new Set(Object.keys(system.instances));
 
+  // Presentation over the composition: it reads the system and leaves the contract untouched.
+  const walk = createReceiveWalkthrough(system, { camera, highlighter, reducedMotion });
+  const showStep = () => {
+    ui.showWalk(walk.step, walk.index, walk.steps.length);
+    applyWalkShift();
+  };
+  function endWalk() {
+    if (!walk.active) return;
+    walk.exit();
+    ui.showWalk(null);
+    engine.setViewShift(0, 0);
+  }
+  // Keep the framed step clear of the walkthrough bar, the way the image slides clear of the info
+  // panel: lift it above the bar, or — on a short landscape screen, where the bar sits top right —
+  // slide it left of the bar.
+  function applyWalkShift() {
+    if (!walk.active) return;
+    const bar = ui.walk;
+    if (container.clientHeight <= 500 && container.clientWidth > container.clientHeight) engine.setViewShift(Math.min(240, bar.offsetWidth / 2), 0);
+    else engine.setViewShift(0, Math.min(container.clientHeight / 4, bar.offsetHeight / 2 + 12));
+  }
+
   let selectedId = null;
   let hoverId = null;
   const ui = new UI({
@@ -29,6 +52,7 @@ export function createApp(container) {
     },
     onDma: (on) => setDma(on),
     onReset: () => {
+      endWalk();
       closePanel();
       setDma(true);
       camera.focus('system');
@@ -43,6 +67,25 @@ export function createApp(container) {
       updateScrollCue();
     },
     onClose: () => closePanel(),
+    onWalk: {
+      start: () => {
+        if (walk.active) return endWalk();
+        closePanel();
+        ui.fadeHint();
+        ui.setActivePreset(null);
+        walk.start();
+        showStep();
+      },
+      next: () => {
+        walk.next();
+        showStep();
+      },
+      back: () => {
+        walk.back();
+        showStep();
+      },
+      exit: () => endWalk(),
+    },
   });
 
   function setDma(on) {
@@ -96,12 +139,15 @@ export function createApp(container) {
   }
   const onResize = () => {
     applyViewShift();
+    applyWalkShift();
     updateScrollCue();
   };
   window.addEventListener('resize', onResize);
   ui.info.addEventListener('scroll', updateScrollCue, { passive: true });
 
   function select(id, { refocus = true } = {}) {
+    // Picking something returns to exploring: the walkthrough ends.
+    if (id) endWalk();
     if (id === 'interaction.dma') setDma(true);
     selectedId = id;
     highlighter.setSelected(ASSETS.has(id) ? null : id);
@@ -152,6 +198,7 @@ export function createApp(container) {
       highlighter.setLevels(levels);
     } else highlighter.update(dt);
     world.update(dt, elapsed);
+    walk.update(dt);
   });
 
   camera.intro('system');
@@ -167,6 +214,13 @@ export function createApp(container) {
     select: (id) => select(id),
     focus: (name) => camera.focus(name),
     setDma: (on) => setDma(on),
+    walk: {
+      start: () => (walk.active ? walk.step : (walk.start(), showStep(), walk.step)),
+      next: () => (walk.next(), showStep(), walk.step),
+      back: () => (walk.back(), showStep(), walk.step),
+      exit: () => endWalk(),
+      state: () => ({ active: walk.active, index: walk.index, outlines: walk.outlines.map((o) => o.name) }),
+    },
     stats: () => ({ ...system.stats, calls: engine.renderer.info.render.calls, triangles: engine.renderer.info.render.triangles }),
   };
   window.__AXIOBYTE__ = api;
@@ -174,6 +228,7 @@ export function createApp(container) {
   return {
     api,
     dispose() {
+      endWalk();
       window.removeEventListener('resize', onResize);
       ui.info.removeEventListener('scroll', updateScrollCue);
       interaction.dispose();

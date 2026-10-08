@@ -63,7 +63,8 @@ realisation of these capabilities, not the required one:
 The asset standard adds content every production page must eventually carry. The NIC page will
 gain it in a future experiences release; nothing here changes the released page. The PCIe page
 (`experiences/io/pcie/`) was the first to carry them, then the CPU page (`experiences/computing/cpu/`)
-and the Host Memory page (`experiences/memory/host-memory/`), each in an *About* panel that shares the inspect panel's place — written in each page
+the Host Memory page (`experiences/memory/host-memory/`) and the Descriptor Ring page
+(`experiences/memory/descriptor-ring/`), each in an *About* panel that shares the inspect panel's place — written in each page
 for now; generating them waits until several production pages have proved the pattern.
 
 | Section | Content | Source of truth |

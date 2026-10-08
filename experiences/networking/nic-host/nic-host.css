@@ -98,3 +98,102 @@
 .inline-part:hover {
   border-color: var(--accent);
 }
+
+/* The receive-path walkthrough bar: above the bottom row of views and controls, centred. */
+.walk {
+  left: 50%;
+  bottom: calc(var(--gap) + 62px);
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 2 * var(--gap)));
+  padding: 12px 14px;
+}
+
+.walk-meta {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.walk-caption {
+  margin: 0 0 4px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.walk-note {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* The note's compact form, shown only where the bar is compact. */
+.walk-note-short {
+  display: none;
+}
+
+.walk-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.walk-buttons .btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+@media (max-width: 760px) {
+  .walk {
+    left: var(--gap);
+    right: var(--gap);
+    width: auto;
+    transform: none;
+    bottom: calc(var(--gap) + 116px);
+  }
+}
+
+@media (max-width: 359px) {
+  .walk {
+    bottom: calc(var(--gap) + 158px);
+  }
+}
+
+/* A short landscape screen (a phone on its side) has no room above the bottom row: the bar moves to
+   the top right, compact, and the image slides left of it (app.js). */
+@media (max-height: 500px) and (orientation: landscape) {
+  .walk {
+    top: var(--gap);
+    bottom: auto;
+    left: auto;
+    right: var(--gap);
+    transform: none;
+    width: min(400px, 48%);
+    padding: 8px 10px;
+  }
+
+  .walk-caption {
+    font-size: 13px;
+  }
+
+  .walk-note {
+    margin-bottom: 6px;
+    font-size: 11px;
+  }
+
+  .walk-note-full {
+    display: none;
+  }
+
+  .walk-note-short {
+    display: inline;
+  }
+
+  .walk-buttons .btn {
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+}

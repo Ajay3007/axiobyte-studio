@@ -30,6 +30,7 @@
       </nav>
 
       <div class="controls panel">
+        <button type="button" id="walk-start" class="btn" aria-pressed="false">Receive path</button>
         <button type="button" id="dma-toggle" class="btn" aria-pressed="true">DMA flow</button>
         <button type="button" id="reset-camera" class="btn">Reset camera</button>
       </div>
@@ -37,6 +38,17 @@
       <p class="hint" id="hint">Drag to orbit, scroll to zoom. Click a part, a connection, an asset's name or the DMA label to inspect it.</p>
 
       <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+      <section id="walk" class="walk panel" aria-label="Receive path walkthrough" hidden>
+        <p class="walk-meta"><span id="walk-step"></span><span id="walk-objective"></span></p>
+        <p class="walk-caption" id="walk-caption" aria-live="polite"></p>
+        <p class="walk-note"><span class="walk-note-full">Illustrative: one descriptor and one pool element, chosen to explain — not a fixed pairing.</span><span class="walk-note-short">Illustrative — not a fixed pairing.</span></p>
+        <div class="walk-buttons">
+          <button type="button" id="walk-back" class="btn">Back</button>
+          <button type="button" id="walk-next" class="btn">Next</button>
+          <button type="button" id="walk-exit" class="btn">Exit</button>
+        </div>
+      </section>
 
       <aside id="info" class="info panel" aria-live="polite" hidden>
         <button type="button" class="info-close" id="info-close" aria-label="Close">×</button>
@@ -59,8 +71,8 @@
             host memory, connected as one system.
           </p>
           <p class="info-desc">
-            This is a composition: four assets from the AxioByte library, each the same model as on its own page, placed and
-            connected. Nothing here is a new piece of hardware. The board they would all sit on is not modelled — the links
+            This is a composition: six assets from the AxioByte library, each the same model as on its own page, placed and
+            related. Nothing here is a new piece of hardware. The board they would all sit on is not modelled — the links
             between the assets are drawn schematically, not as copper.
           </p>
 
@@ -70,6 +82,8 @@
             <li><button type="button" data-part="pcie">PCIe</button> the slot and its eight lanes — <a href="../../io/pcie/">its page</a></li>
             <li><button type="button" data-part="cpu">CPU</button> root complex and memory controller — <a href="../../computing/cpu/">its page</a></li>
             <li><button type="button" data-part="memory">Host memory</button> the modules and their allocations — <a href="../../memory/host-memory/">its page</a></li>
+            <li><button type="button" data-part="rx_ring">RX descriptor ring</button> in host memory, referring to its buffers — <a href="../../memory/descriptor-ring/">its page</a></li>
+            <li><button type="button" data-part="pool">Mempool</button> in host memory: the pool the packet buffers come from, each with its mbuf — a prototype asset, with no page of its own yet</li>
           </ul>
 
           <h3>How they connect</h3>
@@ -81,6 +95,18 @@
           <p class="info-desc">
             The card touches the slot; the other two are links across a motherboard that is not drawn. The eight lanes arrive
             at the CPU as one x8 link, and the memory channels leave it as one connection that reaches both modules.
+          </p>
+          <p class="info-desc">
+            The descriptor ring is not connected to anything: it is memory, not a device. It resides in host memory's
+            descriptor region, and its descriptors refer to buffers in the packet-buffer region — they hold the buffers'
+            addresses. Neither is drawn as a link, and neither moves any data. The ring is drawn at its own size in front of
+            the memory map, where it is easy to inspect, rather than shrunk into its region.
+          </p>
+          <p class="info-desc">
+            The mempool is not connected either. It resides in host memory's packet-buffer region: the packet buffers come
+            from it, each paired with an mbuf — the small record of metadata that holds its buffer's address. It too is drawn
+            beside the map rather than inside it, so host memory no longer draws buffers of its own here. The descriptors
+            still refer to the region, and the DMA still writes into the region: neither ends on the pool.
           </p>
 
           <h3>DMA</h3>
@@ -95,8 +121,10 @@
           <h3>Composition</h3>
           <dl class="info-details">
             <dt>Id</dt><dd>nic_host</dd>
-            <dt>Instances</dt><dd>nic · pcie · cpu · host_memory, each at scale 1</dd>
+            <dt>Instances</dt><dd>nic · pcie · cpu · host_memory · descriptor_ring (rx_ring) · mempool (pool, a prototype), each at scale 1</dd>
             <dt>Connections</dt><dd>card ↔ slot (mate); PCIe x8 and memory channels (routes)</dd>
+            <dt>Residence</dt><dd>rx_ring — in host memory's descriptor region; pool — in its packet-buffer region</dd>
+            <dt>References</dt><dd>rx_ring's descriptors → the packet-buffer region</dd>
             <dt>Interaction</dt><dd>dma — from the NIC to the packet-buffer region</dd>
             <dt>Contract</dt><dd>assets/compositions/nic_host.yaml</dd>
           </dl>

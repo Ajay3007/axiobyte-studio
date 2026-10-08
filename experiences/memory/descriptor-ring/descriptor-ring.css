@@ -1,0 +1,72 @@
+/* The Descriptor Ring page's own additions to the shared asset-page styles (web/styles.css). */
+
+/* The brand block ignores the pointer so the model behind it stays draggable; its About
+   button, like its hub link, must not. */
+.about-btn {
+  pointer-events: auto;
+  margin-top: 10px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.about h3 {
+  margin: 18px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.about a {
+  color: var(--accent);
+}
+
+.about code {
+  font-size: 0.9em;
+  color: var(--accent);
+  background: rgba(110, 193, 255, 0.08);
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.about-parts {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #c2c7cc;
+}
+
+.about-parts li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+}
+
+.about-parts button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(236, 232, 218, 0.04);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.about-parts button:hover {
+  border-color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .about-btn {
+    margin-top: 6px;
+  }
+}

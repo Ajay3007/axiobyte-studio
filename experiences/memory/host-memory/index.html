@@ -88,7 +88,8 @@
             To receive, a driver allocates packet buffers and a descriptor ring, and writes a buffer's address into each
             descriptor. The NIC reads the descriptors, writes each packet it receives into the buffer a descriptor names, and
             marks the descriptor done; software finds the packet where it landed. A descriptor holds addresses and status —
-            never the packet bytes. That is why a NIC and a data plane such as DPDK live and die by host memory: every packet
+            never the packet bytes. Its address is a reference to a buffer, not a transfer: the bytes arrive separately, by
+            DMA. That is why a NIC and a data plane such as DPDK live and die by host memory: every packet
             arrives there.
           </p>
 

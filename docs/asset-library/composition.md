@@ -75,7 +75,7 @@ composition is the first real test of their ports and should ship with them.
 | Layer | Owns |
 | --- | --- |
 | **Asset** | identity, geometry, parts, anchors, ports (and their facing, below), local interaction, local camera presets, part metadata, its renderer implementations |
-| **Composition** | asset instances and their transforms, the connections between ports (including many-to-one resolution), grounding context, the system camera, system-level interaction, cross-asset interactions (DMA; descriptor → buffer relationships across assets) |
+| **Composition** | asset instances and their transforms, the connections between ports (including many-to-one resolution), where instances reside, what their parts refer to, grounding context, the system camera, system-level interaction, cross-asset interactions (DMA; descriptor → buffer relationships across assets) |
 | **Episode** | story, beats, shots, narration, voiceover, timeline, sequencing |
 
 A composition never edits an asset: it instantiates the asset's model, transforms it and draws
@@ -154,11 +154,83 @@ its facing. Route connections need none.
 
 DMA is an interaction concept (`concepts/library/interaction/dma.yaml`), not a port, an asset, a
 connector or a tube. A composition declares it by concept, with its endpoints and the path it
-passes; it may be drawn as a labelled relationship or animated, but it adds no structure. The
-descriptor → buffer relationship is logical too: inside host memory it is part of the asset (the
-pointers in its map); when the descriptor ring and packet buffers become assets of their own
-(roadmap), it becomes a composition-level interaction between them. Neither asset is created for
-the first composition.
+passes; it may be drawn as a labelled relationship or animated, but it adds no structure.
+
+The descriptor → buffer relationship is **not** an interaction: nothing happens in it. It is a
+static reference — a descriptor holds a buffer's address — declared under References below. Inside
+host memory it is still part of the asset (the pointers in its map). The NIC's DMA write into a
+packet buffer is a separate thing: data movement, the `dma` interaction above. How the NIC's own
+descriptor fetch and status write-back are expressed (`dma`, or a concept of their own) is
+undecided.
+
+### Residence
+
+Where an asset instance **lives**: a descriptor ring in a host-memory region, later an mbuf in a
+mempool. It is not a connection — nothing attaches, there is no facing or gap — so it has its own
+optional section, never a connection kind:
+
+```yaml
+residence:                         # child instance → the instance.part it resides in
+  rx_ring: memory.descriptor-region
+```
+
+| | Is | Declared by |
+| --- | --- | --- |
+| Part-of | intrinsic structure of one asset | the asset (`parts`) |
+| Connection | structural attachment between ports | the composition (`connections`) |
+| **Residence** | where an asset instance lives | the composition (`residence`), allowed by the child asset's `resides_in` |
+| **Reference** | what a part holds the address of | the composition (`references`), allowed by the source asset's `refers_to` |
+| Interaction | something happening between them | the composition (`interactions`), by concept |
+| Placement | where a renderer draws it | the composition (`placement`) |
+
+- The parent is a **part** of another instance (a region), never a port and never an anchor; an
+  instance cannot reside in itself, and the two are not also joined by a connection.
+- The child's asset must list the parent's asset in its registry `resides_in` (an allowed parent,
+  not a requirement): an asset page has no residence, and a composition declares one only where
+  it models the instance as living somewhere.
+- Residence is **semantic only**. It places nothing — every instance keeps its explicit
+  `placement`, and a renderer may draw the child inside its region or apart from it — and it says
+  nothing of capacity, addresses, allocation, ownership, queue association, DMA or pointers.
+- It is part of schema `version: 1`: optional, so compositions without it are unchanged, and a
+  renderer that ignores it misses no structure. The runtime copy carries it as written.
+
+`nic_host` declares the first residence: `rx_ring: memory.descriptor-region`, a `descriptor_ring`
+instance (`resides_in: [host_memory]`). The ring is drawn at its own size in front of the memory map,
+not nested in it, and host memory is built without its illustrative ring there, so one ring shows.
+The second is `pool: memory.packet-buffer-region`, a `mempool` instance, handled the same way: drawn
+beside the map, with host memory built without its illustrative buffers.
+`tests/unit/test_compositions.py` holds the rules against test-only fixtures and every composition;
+`tests/unit/test_descriptor_ring.py` against the real ring in `nic_host`.
+
+### References
+
+What a part **refers to**: a ring's descriptors each hold the address of a packet buffer. Another
+optional section, never a connection, a residence or an interaction:
+
+```yaml
+references:                        # a part of one instance → what a part of another represents
+  - from: rx_ring.descriptors
+    to: memory.packet-buffer-region
+```
+
+Read it as: *the descriptors of `rx_ring` refer to buffers represented by
+`memory.packet-buffer-region`.* It is **static and aggregate** — true of the configuration the
+composition shows, and of all the descriptors together.
+
+- `from` and `to` are each an `instance.part` (never a port or an anchor) of two different
+  instances; the source asset's registry `refers_to` must list the target's asset (allowed
+  targets: it creates no reference and requires none). An entry is `from` and `to`, nothing else.
+- It is **not** ownership, allocation, lifetime, residence, attachment, DMA or data flow, queue
+  association, an mbuf relationship or a drawn link. A ring resides in one region and refers to
+  another; neither implies the other.
+- **Deferred:** which descriptor names which buffer (runtime slot bindings), concrete addresses
+  (virtual, physical, IOVA), head and tail, ordering, ownership, allocation and lifetime.
+- It is part of schema `version: 1`, and the runtime copy carries it as written. A validation that
+  a `dma` target lies within a reference's target is a later possibility, not a rule today.
+
+`nic_host` declares the first reference: `rx_ring.descriptors → memory.packet-buffer-region`. It is
+drawn as nothing — no arrow joins the ring to the buffers — and the `dma` interaction to the same
+region is unchanged and separate.
 
 ## Where a composition lives
 
@@ -177,4 +249,8 @@ the first composition.
   instances; transforms are deterministic.
 - **Semantics** — DMA and every other interaction is declared as a concept, never as a port;
   composing does not mutate any asset's definition or registry entry.
+- **Residence** — each names a real part of another instance whose asset the child's `resides_in`
+  allows; never a port, never itself, never also a connection; unknown sections are errors.
+- **References** — each joins real parts of two different instances, allowed by the source's
+  `refers_to`; only `from` and `to`; never a port, a connection, a residence or an interaction.
 - **Regression** — every asset's own page, tests and measurements are unchanged.

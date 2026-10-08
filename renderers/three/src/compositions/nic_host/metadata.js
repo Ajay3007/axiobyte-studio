@@ -1,5 +1,5 @@
 /**
- * What the composition says about itself: the four asset instances as wholes, its two routes and
+ * What the composition says about itself: the asset instances as wholes, its two routes and
  * its DMA interaction — in the same shape as part metadata (name, designator, category, summary,
  * description, details), so the page shows them like any part. Part metadata stays the assets' own.
  */
@@ -54,12 +54,49 @@ export const INSTANCE_METADATA = {
     summary: 'The computer’s main memory: the modules, and the map of what software has allocated in them.',
     description:
       'The driver allocated the descriptor ring and the packet buffers here, in ordinary DRAM. Every packet the NIC receives ' +
-      'ends in one of these buffers. The map in front of the modules is a logical view, not to scale.',
+      'ends in one of these buffers. The map in front of the modules is a logical view, not to scale; the ring that resides ' +
+      'in its descriptor region and the mempool that resides in its packet-buffer region are drawn as their own models, in ' +
+      'front of the map.',
     details: [
       ['Connects by', 'memory_interface ↔ the CPU (route)'],
       ['Page', '/axiobyte/memory/host-memory/'],
     ],
     page: '../../memory/host-memory/',
+  },
+  rx_ring: {
+    name: 'RX descriptor ring',
+    designator: 'Asset · descriptor_ring',
+    category: 'In host memory',
+    summary: 'The receive ring the driver allocated for the NIC: descriptors holding the addresses of packet buffers, never the bytes.',
+    description:
+      'The same descriptor-ring asset as its own page. It resides in host memory’s descriptor region, and its descriptors refer ' +
+      'to buffers in the packet-buffer region — both declared by the composition, neither drawn as a link. It is drawn at its ' +
+      'own size in front of the memory map, not inside the region: residence says where it lives, not where it is drawn. The ' +
+      'DMA path does not pass through it; how the NIC reads descriptors and writes status back is not drawn.',
+    details: [
+      ['Resides in', 'memory.descriptor-region (residence)'],
+      ['Refers to', 'memory.packet-buffer-region (reference)'],
+      ['Page', '/axiobyte/memory/descriptor-ring/'],
+    ],
+    page: '../../memory/descriptor-ring/',
+  },
+  pool: {
+    name: 'Mempool',
+    designator: 'Asset · mempool · prototype',
+    category: 'In host memory',
+    summary: 'The pool the packet buffers come from: identical elements allocated once, up front, each an mbuf with its buffer.',
+    description:
+      'A prototype asset: the mempool’s Three.js model, which has no page of its own yet. It resides in host memory’s ' +
+      'packet-buffer region — declared by the composition, not drawn as a link — and is drawn at its own size beside the ' +
+      'map, not inside the region. Each element ' +
+      'pairs an mbuf, the metadata whose buf_addr holds its buffer’s address, with the buffer that holds the packet bytes. ' +
+      'The descriptors refer to the buffers in that region and the NIC’s DMA writes into it; neither ends on the pool. No ' +
+      'individual mbuf or buffer is picked out, and which elements are free or in use is not shown.',
+    details: [
+      ['Resides in', 'memory.packet-buffer-region (residence)'],
+      ['Elements drawn', '12, each an mbuf and its buffer'],
+      ['Status', 'prototype — shown in this system, not released as an asset'],
+    ],
   },
 };
 

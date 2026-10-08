@@ -7,7 +7,9 @@
     "nic": "nic",
     "pcie": "pcie",
     "cpu": "cpu",
-    "memory": "host_memory"
+    "memory": "host_memory",
+    "rx_ring": "descriptor_ring",
+    "pool": "mempool"
   },
   "placement": {
     "pcie": {
@@ -57,6 +59,30 @@
         0,
         0
       ]
+    },
+    "rx_ring": {
+      "position": [
+        -10.5,
+        0,
+        10.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "pool": {
+      "position": [
+        -20.6,
+        0,
+        10.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
     }
   },
   "connections": [
@@ -77,6 +103,16 @@
       "a": "cpu.memory_interface",
       "b": "memory.memory_interface",
       "label": "memory channels"
+    }
+  ],
+  "residence": {
+    "rx_ring": "memory.descriptor-region",
+    "pool": "memory.packet-buffer-region"
+  },
+  "references": [
+    {
+      "from": "rx_ring.descriptors",
+      "to": "memory.packet-buffer-region"
     }
   ],
   "interactions": [

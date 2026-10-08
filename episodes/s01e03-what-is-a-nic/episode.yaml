@@ -13,7 +13,7 @@ theme: systems
 renderer: three
 
 # What the audience is declared to already know.
-assumed: [packet, cpu, memory_buffer, worker_core, interrupt_driven]
+assumed: [packet, cpu, memory_buffer, worker_core, interrupt_driven, mbuf]
 
 # THE ONE RULE: every beat is a word start in this transcript.
 voiceover: "timeline/words.json"

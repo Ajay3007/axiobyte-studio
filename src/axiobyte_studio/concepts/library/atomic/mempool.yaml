@@ -6,7 +6,7 @@ title: "Mempool"
 pedagogy:
   objectives:
     - id: POOL-1
-      statement: "A mempool is a set of identical buffers allocated once, up front, so no allocation happens on the fast path."
+      statement: "A mempool is a set of identical elements allocated once, up front, so no allocation happens on the fast path. Each element is an mbuf together with the buffer it describes: two separate things — the mbuf holds metadata and buf_addr, the reference to its buffer; the buffer holds the packet bytes — handed out and returned as one. Whether an element is free or in use is runtime state, not part of the pool."
 anchors: [first_slot, last_slot]
 relations:
-  requires: [memory_buffer]
+  requires: [memory_buffer, mbuf]

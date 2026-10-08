@@ -7,6 +7,11 @@ The **interactive representations** of AxioByte concepts: the web target of the 
 | Page | Source | Scene |
 |---|---|---|
 | [`/axiobyte/networking/nic/`](https://ajay3007.github.io/axiobyte/networking/nic/) | `networking/nic/` | `@axiobyte/three/domains/networking/nic/world.js` — the same world the film `s01e03-what-is-a-nic` is rendered from |
+| [`/axiobyte/networking/nic-host/`](https://ajay3007.github.io/axiobyte/networking/nic-host/) | `networking/nic-host/` | `@axiobyte/three/compositions/nic_host/world.js` — the `nic_host` composition (NIC, PCIe, CPU, host memory, RX descriptor ring, mempool prototype), which is also the NIC page's *In the host* view; the page adds its receive-path walkthrough (`@axiobyte/three/compositions/nic_host/walkthrough.js`) |
+| [`/axiobyte/io/pcie/`](https://ajay3007.github.io/axiobyte/io/pcie/) | `io/pcie/` | `@axiobyte/three/domains/io/pcie/world.js` |
+| [`/axiobyte/computing/cpu/`](https://ajay3007.github.io/axiobyte/computing/cpu/) | `computing/cpu/` | `@axiobyte/three/domains/computing/cpu/world.js` |
+| [`/axiobyte/memory/host-memory/`](https://ajay3007.github.io/axiobyte/memory/host-memory/) | `memory/host-memory/` | `@axiobyte/three/domains/memory/host-memory/world.js` |
+| [`/axiobyte/memory/descriptor-ring/`](https://ajay3007.github.io/axiobyte/memory/descriptor-ring/) | `memory/descriptor-ring/` | `@axiobyte/three/domains/memory/descriptor-ring/world.js` |
 
 An experience is a thin entry — HTML, a boot script, its UI — over a domain's world. The model,
 its metadata and its camera presets live in the domain, so the page and the video can never drift

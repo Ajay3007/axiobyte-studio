@@ -8,6 +8,7 @@ The standard these rules come from is ``docs/asset-library/README.md``.
 from __future__ import annotations
 
 import ast
+import copy
 import json
 import re
 from pathlib import Path
@@ -33,6 +34,10 @@ REQUIRED = {
     "parts", "ports", "implementations", "episodes", "known_limitations",
 }  # fmt: skip
 REQUIRED_PUBLISHED = {"route", "experience"}
+#: Every field an entry may carry: the required ones and the optional ones. Anything else is a
+#: misspelling, which would otherwise be ignored silently.
+KNOWN = REQUIRED | REQUIRED_PUBLISHED | {"released_in", "resides_in", "refers_to"}
+PORT_FIELDS = {"id", "at", "facing", "connects_to"}
 #: A port's facing (docs/asset-library/composition.md): a signed axis of the asset's own frame.
 AXES = {"+x", "-x", "+y", "-y", "+z", "-z"}
 #: An asset with a public page, and therefore a route, a domain and an experience.
@@ -97,6 +102,44 @@ def _three_episodes(asset: dict[str, Any]) -> set[str]:
     }
 
 
+def field_errors(asset: dict[str, Any]) -> list[str]:
+    """Fields the standard does not define, on the entry or on its ports."""
+    errors = [f"unknown field {f!r}" for f in sorted(set(asset) - KNOWN)]
+    for port in asset.get("ports", []):
+        errors += [
+            f"port {port.get('id')!r}: unknown field {f!r}" for f in sorted(set(port) - PORT_FIELDS)
+        ]
+    return errors
+
+
+def _allowed_assets_errors(asset: dict[str, Any], field: str, asset_ids: set[str]) -> list[str]:
+    """An optional list of registry asset ids: non-empty, known, each named once."""
+    if field not in asset:
+        return []
+    allowed = asset[field]
+    if not isinstance(allowed, list) or not allowed or not all(isinstance(a, str) for a in allowed):
+        return [f"{field} is a non-empty list of asset ids"]
+    errors = [
+        f"{field} names {a!r}, which is not a registry asset" for a in allowed if a not in asset_ids
+    ]
+    if len(allowed) != len(set(allowed)):
+        errors.append(f"{field} names an asset twice")
+    return errors
+
+
+def resides_in_errors(asset: dict[str, Any], asset_ids: set[str]) -> list[str]:
+    """``resides_in``, when declared: the registry assets an instance of this asset may reside in
+    (docs/asset-library/composition.md, Residence) — allowed parents, not a requirement."""
+    return _allowed_assets_errors(asset, "resides_in", asset_ids)
+
+
+def refers_to_errors(asset: dict[str, Any], asset_ids: set[str]) -> list[str]:
+    """``refers_to``, when declared: the registry assets this asset's parts may hold references
+    to (docs/asset-library/composition.md, References) — allowed targets; it creates no reference
+    and requires none."""
+    return _allowed_assets_errors(asset, "refers_to", asset_ids)
+
+
 @pytest.fixture(scope="module")
 def concepts() -> set[str]:
     return set(ConceptRegistry.load().ids)
@@ -115,6 +158,15 @@ class TestEveryAsset:
         required = REQUIRED | (REQUIRED_PUBLISHED if asset["status"] in PUBLISHED else set())
         assert not required - set(asset), f"missing: {sorted(required - set(asset))}"
         assert asset["parts"] and asset["known_limitations"]
+
+    def test_it_declares_no_field_the_standard_does_not_define(self, asset):
+        assert field_errors(asset) == []
+
+    def test_its_allowed_parents_are_registry_assets(self, asset):
+        assert resides_in_errors(asset, {a["id"] for a in ASSETS}) == []
+
+    def test_its_allowed_reference_targets_are_registry_assets(self, asset):
+        assert refers_to_errors(asset, {a["id"] for a in ASSETS}) == []
 
     def test_its_parts_and_ports_are_well_formed(self, asset):
         parts = asset["parts"]
@@ -156,6 +208,37 @@ class TestEveryAsset:
         page = REPO / asset["experience"]
         assert asset["experience"] == f"experiences/{asset['route']}"
         assert (page / "index.html").is_file() and (page / "experience.json").is_file()
+
+    def test_an_unpublished_asset_has_no_page_of_its_own(self, asset):
+        # A prototype may appear inside a released composition, disclosed there, but it is never
+        # given a route or a page of its own (docs/asset-library/README.md §8).
+        if asset["status"] in PUBLISHED:
+            return
+        assert not {"route", "experience", "released_in"} & set(asset)
+        slug = _slug(asset["id"])
+        assert not list((REPO / "experiences").glob(f"*/{slug}/index.html"))
+
+    def test_its_page_states_the_status_the_registry_records(self, asset):
+        if asset["status"] not in PUBLISHED:
+            return
+        html = (REPO / asset["experience"] / "index.html").read_text(encoding="utf-8")
+        stated = re.search(r"<dt>Status</dt><dd>([^<]*)</dd>", html)
+        if stated is None:
+            return  # the page has no asset block (the NIC's)
+        if asset["status"] == "released":
+            version = asset["released_in"].removeprefix("experiences-v")
+            expected = f"released in experiences v{version} · {asset['quality']}"
+        else:
+            expected = f"{asset['status']} · {asset['quality']}"
+        assert stated.group(1) == expected
+
+    def test_it_was_released_no_later_than_the_experiences_package(self, asset):
+        if "released_in" not in asset:
+            return
+        package = json.loads((REPO / "experiences" / "package.json").read_text(encoding="utf-8"))
+        shipped = asset["released_in"].removeprefix("experiences-v")
+        as_tuple = lambda v: tuple(int(n) for n in v.split("."))  # noqa: E731
+        assert as_tuple(shipped) <= as_tuple(package["version"])
 
     def test_every_implementation_exists_and_declares_a_known_fidelity(self, asset):
         for renderer, impl in asset["implementations"].items():
@@ -233,3 +316,63 @@ class TestEveryAsset:
     def test_it_lists_exactly_the_episodes_that_render_it(self, asset):
         # The reverse index ARCHITECTURE.md's asset rules need: complete, and nothing more.
         assert set(asset["episodes"]) == _episodes_using(asset)
+
+
+# ------------------------------------------------------------------ the field rules, mutated
+# In-memory copies of a real entry, changed one way each; nothing here is written to the registry.
+
+
+def _entry(**changes: Any) -> dict[str, Any]:
+    asset = copy.deepcopy(next(a for a in ASSETS if a["id"] == "nic"))
+    asset.update(changes)
+    return asset
+
+
+def test_a_valid_resides_in_is_accepted():
+    asset = _entry(resides_in=["host_memory"])
+    assert field_errors(asset) == []
+    assert resides_in_errors(asset, {a["id"] for a in ASSETS}) == []
+
+
+def test_a_misspelt_resides_in_is_rejected_not_ignored():
+    assert field_errors(_entry(reside_in=["host_memory"])) == ["unknown field 'reside_in'"]
+
+
+def test_a_misspelt_port_field_is_rejected():
+    asset = _entry()
+    asset["ports"][1]["facng"] = asset["ports"][1].pop("facing")
+    assert field_errors(asset) == ["port 'pcie_connector': unknown field 'facng'"]
+
+
+@pytest.mark.parametrize(
+    "parents",
+    [[], "host_memory", [None], ["no_such_asset"], ["host_memory", "host_memory"]],
+    ids=["empty", "not-a-list", "not-an-id", "unknown-asset", "duplicate"],
+)
+def test_a_malformed_resides_in_is_rejected(parents):
+    assert resides_in_errors(_entry(resides_in=parents), {a["id"] for a in ASSETS})
+
+
+def test_a_valid_refers_to_is_accepted_and_absent_is_fine():
+    ids = {a["id"] for a in ASSETS}
+    asset = _entry(refers_to=["host_memory"])
+    assert field_errors(asset) == [] and refers_to_errors(asset, ids) == []
+    assert refers_to_errors(_entry(), ids) == []
+
+
+def test_a_misspelt_refers_to_is_rejected_not_ignored():
+    assert field_errors(_entry(refer_to=["host_memory"])) == ["unknown field 'refer_to'"]
+
+
+@pytest.mark.parametrize(
+    ("targets", "error"),
+    [
+        ([], "refers_to is a non-empty list of asset ids"),
+        ("host_memory", "refers_to is a non-empty list of asset ids"),
+        (["no_such_asset"], "refers_to names 'no_such_asset', which is not a registry asset"),
+        (["host_memory", "host_memory"], "refers_to names an asset twice"),
+    ],
+    ids=["empty", "not-a-list", "unknown-asset", "duplicate"],
+)
+def test_a_malformed_refers_to_is_rejected(targets, error):
+    assert refers_to_errors(_entry(refers_to=targets), {a["id"] for a in ASSETS}) == [error]

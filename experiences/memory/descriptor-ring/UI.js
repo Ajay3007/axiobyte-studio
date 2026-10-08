@@ -1,29 +1,22 @@
 const $ = (id) => document.getElementById(id);
 
 /**
- * Where a selection sits in the system, shown under its description: the chain from the card to
- * memory, with the selected asset, connection or interaction marked.
+ * Where each selection sits, shown under its description. The descriptors live in host memory —
+ * the ring's residence when it is composed; head and tail are positions on the ring itself.
  */
-const SYSTEM = ['NIC', 'PCIe', 'CPU', 'Host memory'];
-const ASSET_NAME = { nic: 'NIC', pcie: 'PCIe', cpu: 'CPU', memory: 'Host memory' };
-function placeOf(id) {
-  if (id === 'route.pcie') return { path: ['NIC', 'PCIe', 'PCIe x8', 'CPU', 'Host memory'], current: 'PCIe x8' };
-  if (id === 'route.memory') return { path: ['NIC', 'PCIe', 'CPU', 'memory channels', 'Host memory'], current: 'memory channels' };
-  if (id === 'interaction.dma') return { path: ['NIC DMA engine', 'PCIe', 'root complex', 'memory controller', 'packet buffer'], current: null };
-  // The ring is not on the card-to-memory chain: it lives in host memory (its residence).
-  if (id.split('.')[0] === 'rx_ring') return { path: ['Host memory', 'descriptor region', 'RX descriptor ring'], current: 'RX descriptor ring' };
-  // The pool is not on the chain either: it lives in host memory's packet-buffer region.
-  if (id.split('.')[0] === 'pool') return { path: ['Host memory', 'packet-buffer region', 'Mempool'], current: 'Mempool' };
-  return { path: SYSTEM, current: ASSET_NAME[id.split('.')[0]] };
-}
+const PLACE = {
+  descriptors: { path: ['Host memory', 'Descriptor region', 'Descriptor ring', 'Descriptors'], current: 'Descriptors' },
+  head: { path: ['Descriptor ring', 'Head: the next descriptor the NIC fills'], current: 'Head: the next descriptor the NIC fills' },
+  tail: { path: ['Descriptor ring', 'Tail: how far software has refilled'], current: 'Tail: how far software has refilled' },
+};
 
 /**
- * Explanation/UI layer. Pure DOM: it receives part metadata and emits intents (preset, DMA,
- * reset, part, about, close) through callbacks. One panel shows either a part or the About page,
+ * Explanation/UI layer. Pure DOM: it receives part metadata and emits intents (preset, reset,
+ * part, about, close) through callbacks. One panel shows either a part or the About page,
  * so on a phone both use the same bottom sheet.
  */
 export class UI {
-  constructor({ onPreset, onDma, onReset, onPart, onAbout, onClose, onWalk = {} }) {
+  constructor({ onPreset, onReset, onPart, onAbout, onClose }) {
     this.tooltip = $('tooltip');
     this.info = $('info');
     this.part = $('part');
@@ -35,40 +28,15 @@ export class UI {
       this.cleanups.push(() => el.removeEventListener(type, fn));
     };
     this.presetButtons = [...document.querySelectorAll('[data-preset]')];
-    this.dmaButton = $('dma-toggle');
     this.presetButtons.forEach((b) => on(b, 'click', () => onPreset(b.dataset.preset)));
-    on(this.dmaButton, 'click', () => onDma(this.dmaButton.getAttribute('aria-pressed') !== 'true'));
     document.querySelectorAll('[data-part]').forEach((b) => on(b, 'click', () => onPart(b.dataset.part)));
     on($('reset-camera'), 'click', onReset);
     on($('about-open'), 'click', onAbout);
     on($('info-close'), 'click', onClose);
-    // The receive-path walkthrough: this page only starts, steps and ends it, and shows its caption.
-    this.walk = $('walk');
-    this.walkButton = $('walk-start');
-    on(this.walkButton, 'click', () => onWalk.start?.());
-    on($('walk-next'), 'click', () => onWalk.next?.());
-    on($('walk-back'), 'click', () => onWalk.back?.());
-    on($('walk-exit'), 'click', () => onWalk.exit?.());
-  }
-
-  /** Show a walkthrough step (`index` of `count`), or hide the walkthrough bar (null). */
-  showWalk(step, index = 0, count = 0) {
-    this.walk.hidden = !step;
-    this.walkButton.setAttribute('aria-pressed', String(Boolean(step)));
-    if (!step) return;
-    $('walk-step').textContent = `Step ${index + 1} of ${count}`;
-    $('walk-objective').textContent = step.objective ?? '';
-    $('walk-caption').textContent = step.caption;
-    $('walk-back').disabled = index === 0;
-    $('walk-next').disabled = index === count - 1;
   }
 
   setActivePreset(name) {
     this.presetButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.preset === name)));
-  }
-
-  setDma(on) {
-    this.dmaButton.setAttribute('aria-pressed', String(on));
   }
 
   fadeHint() {
@@ -109,8 +77,7 @@ export class UI {
       return;
     }
     this.about.hidden = true;
-    // A part of an asset says which asset it belongs to; the asset keeps its own designator.
-    $('info-designator').textContent = [meta.asset, meta.designator].filter(Boolean).join(' · ');
+    $('info-designator').textContent = meta.designator ?? '';
     $('info-category').textContent = meta.category ?? '';
     $('info-title').textContent = meta.name;
     $('info-summary').textContent = meta.summary ?? '';
@@ -124,10 +91,7 @@ export class UI {
       dd.textContent = v;
       dl.append(dt, dd);
     });
-    const page = $('info-page');
-    page.hidden = !meta.page;
-    if (meta.page) page.href = meta.page;
-    const place = placeOf(id);
+    const place = PLACE[id];
     const pathEl = $('info-path');
     pathEl.innerHTML = '';
     if (place) {
@@ -138,7 +102,7 @@ export class UI {
       place.path.forEach((stage, i) => {
         if (i) pathEl.append(Object.assign(document.createElement('span'), { textContent: '→', ariaHidden: 'true' }));
         const s = document.createElement('span');
-        s.className = 'stage' + (stage === place.current || place.current === null ? ' is-current' : '');
+        s.className = 'stage' + (stage === place.current ? ' is-current' : '');
         s.textContent = stage;
         pathEl.append(s);
       });

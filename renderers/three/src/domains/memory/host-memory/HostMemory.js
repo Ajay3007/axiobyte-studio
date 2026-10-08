@@ -4,7 +4,7 @@ import { PartBatch } from '../../../core/hardware/parts/index.js';
 import { canvasTexture, CANVAS_FONT } from '../../../core/textures.js';
 import { boxAt, extrudeAlongY, mergeAll, roundedRect } from '../../../core/geometry.js';
 import { BUFFERS, DIMM, MAP, MODULES, POINTER_LANDING, POSTED, REGIONS, RING, STRIPS, TILE, bufferRect, center, keyNotch, slotRect } from './layout.js';
-import { HOST_MEMORY_METADATA } from './metadata.js';
+import { DESCRIPTOR_REGION_WITH_RESIDENT_RING, HOST_MEMORY_METADATA, PACKET_BUFFER_REGION_WITH_RESIDENT_POOL } from './metadata.js';
 
 /** Role hues from the visual language: memory for what software allocates, idle for the rest. */
 const HUE = { memory: '#b79cf0', pointer: '#f5d14f', idle: '#65728a', ink: '#e7e3d6' };
@@ -16,8 +16,16 @@ const HUE = { memory: '#b79cf0', pointer: '#f5d14f', idle: '#65728a', ink: '#e7e
  * `packet-buffer-region`, `other-memory`). The model knows nothing about raycasting, cameras or
  * UI; it exposes one motion — the map unfolding in front of the modules — as a function of 0..1,
  * so a page tweens it and a film can set it per frame.
+ *
+ * `illustrativeRing` (default true) draws a descriptor ring, and its pointers to the buffers, inside
+ * `descriptor-region`. A composition that places a real descriptor_ring asset in the region turns
+ * it off, so the system never shows two rings; the region stays the same part either way.
+ *
+ * `illustrativeBuffers` (default true) does the same for the packet buffers drawn inside
+ * `packet-buffer-region`: a composition that places a real mempool in the region turns it off. The
+ * ring's pointers land on those buffers, so they are drawn only when both are.
  */
-export function createHostMemory() {
+export function createHostMemory({ illustrativeRing = true, illustrativeBuffers = true } = {}) {
   const kit = new Kit();
   const root = new THREE.Group();
   root.name = 'host-memory';
@@ -49,7 +57,7 @@ export function createHostMemory() {
 
   const regions = {};
   for (const id of ['other-memory', 'descriptor-region', 'packet-buffer-region']) {
-    const region = createRegion(kit, id);
+    const region = createRegion(kit, id, { ring: illustrativeRing, buffers: illustrativeBuffers });
     regions[id] = region;
     fold.add(region.group);
     components.push({
@@ -57,7 +65,12 @@ export function createHostMemory() {
       object: region.group,
       boundsObject: region.bounds,
       hitObjects: region.hitObjects,
-      meta: HOST_MEMORY_METADATA[id],
+      meta:
+        id === 'descriptor-region' && !illustrativeRing
+          ? DESCRIPTOR_REGION_WITH_RESIDENT_RING
+          : id === 'packet-buffer-region' && !illustrativeBuffers
+            ? PACKET_BUFFER_REGION_WITH_RESIDENT_POOL
+            : HOST_MEMORY_METADATA[id],
       anchors: region.anchors,
       setHighlight: region.setHighlight,
     });
@@ -349,11 +362,15 @@ const TITLES = {
     ['OTHER MEMORY', 'free pages'],
   ],
   'descriptor-region': [['DESCRIPTOR RING', 'addresses, not bytes']],
+  // The region when a real descriptor_ring asset resides in it and is drawn on its own.
+  'descriptor-region:resident': [['DESCRIPTOR REGION', 'a descriptor ring resides here']],
+  // The region when a real mempool resides in it and is drawn on its own.
+  'packet-buffer-region:resident': [['PACKET BUFFER REGION', 'a mempool resides here']],
   'packet-buffer-region': [['PACKET BUFFERS', 'fixed size · filled by the NIC']],
 };
 const PX = 170; // canvas pixels per centimetre of tile
 
-function createRegion(kit, id) {
+function createRegion(kit, id, { ring = true, buffers = true } = {}) {
   const group = new THREE.Group();
   group.name = `host-memory-${id}`;
   const hue = id === 'other-memory' ? HUE.idle : HUE.memory;
@@ -364,7 +381,7 @@ function createRegion(kit, id) {
   REGIONS[id].forEach((r, index) => {
     const w = r.x1 - r.x0;
     const d = r.z1 - r.z0;
-    const tex = kit.texture(canvasTexture(Math.round(w * PX), Math.round(d * PX), (ctx, W, H) => drawTile(ctx, W, H, id, index, r, hue)));
+    const tex = kit.texture(canvasTexture(Math.round(w * PX), Math.round(d * PX), (ctx, W, H) => drawTile(ctx, W, H, id, index, r, hue, ring, buffers)));
     const top = kit.own(new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
     tops.push(top);
     const geo = kit.geometry(`map-tile:${id}:${index}`, () => new THREE.BoxGeometry(w, MAP.tile, d));
@@ -379,7 +396,7 @@ function createRegion(kit, id) {
   // Each descriptor holds a buffer's address: a pointer from its slot to that buffer. Straight, in
   // the pointer's own colour — an address, not a journey.
   let pointers = null;
-  if (id === 'descriptor-region') {
+  if (id === 'descriptor-region' && ring && buffers) {
     pointers = new THREE.Mesh(
       kit.geometry('map-pointers', pointerGeometry),
       kit.own(new THREE.MeshBasicMaterial({ color: HUE.pointer, transparent: true, opacity: 0.8, depthWrite: false, toneMapped: false })),
@@ -396,11 +413,11 @@ function createRegion(kit, id) {
   const firstBuffer = bufferRect(POSTED[0]);
   const y = MAP.tile;
   const anchors = { center: new THREE.Vector3(cx, y, cz) };
-  if (id === 'descriptor-region') {
+  if (id === 'descriptor-region' && ring) {
     anchors.head = new THREE.Vector3(...center3(head, y));
     anchors.tail = new THREE.Vector3(...center3(tail, y));
   }
-  if (id === 'packet-buffer-region') anchors.buffer = new THREE.Vector3(...center3(firstBuffer, y));
+  if (id === 'packet-buffer-region' && buffers) anchors.buffer = new THREE.Vector3(...center3(firstBuffer, y));
 
   return {
     group,
@@ -455,7 +472,7 @@ function pointerGeometry() {
 }
 
 // Tile artwork: title band, then the region's content, drawn in its role's hue.
-function drawTile(ctx, W, H, id, index, r, hue) {
+function drawTile(ctx, W, H, id, index, r, hue, ring = true, buffers = true) {
   const cm = (v) => v * PX;
   const local = (rect) => ({ x: cm(rect.x0 - r.x0), y: cm(rect.z0 - r.z0), w: cm(rect.x1 - rect.x0), h: cm(rect.z1 - rect.z0) });
   ctx.fillStyle = '#10141b';
@@ -466,7 +483,8 @@ function drawTile(ctx, W, H, id, index, r, hue) {
   ctx.lineWidth = 5;
   ctx.strokeRect(2.5, 2.5, W - 5, H - 5);
 
-  const [title, sub] = TITLES[id][index];
+  const resident = (id === 'descriptor-region' && !ring) || (id === 'packet-buffer-region' && !buffers);
+  const [title, sub] = TITLES[resident ? `${id}:resident` : id][index];
   const pad = cm(TILE.pad);
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
@@ -478,8 +496,8 @@ function drawTile(ctx, W, H, id, index, r, hue) {
   ctx.font = `600 ${Math.round(titleSize * 0.66)}px ${CANVAS_FONT}`;
   ctx.fillText(sub, pad, cm(0.14) + titleSize * 1.75, W - 2 * pad);
 
-  if (id === 'descriptor-region') drawRing(ctx, local, hue);
-  if (id === 'packet-buffer-region') drawBuffers(ctx, local, hue);
+  if (id === 'descriptor-region' && ring) drawRing(ctx, local, hue);
+  if (id === 'packet-buffer-region' && buffers) drawBuffers(ctx, local, hue);
   if (id === 'other-memory') drawOther(ctx, W, H, index, hue);
 }
 

@@ -1,4 +1,4 @@
-# THE FIRST COMPOSITION — NIC + PCIe + CPU + host memory
+# THE FIRST COMPOSITION — NIC + PCIe + CPU + host memory, and the RX descriptor ring and mempool in it
 #
 # The declarative contract for one system of library assets (docs/asset-library/composition.md).
 # It names instances of registry assets, places each one explicitly, and says which ports connect
@@ -19,6 +19,8 @@ instances:                        # instance id → registry asset id
   pcie: pcie
   cpu: cpu
   memory: host_memory
+  rx_ring: descriptor_ring
+  pool: mempool
 
 placement:
   # The PCIe board lies flat, turned so its lanes run toward the CPU (−x), centred on z = 0.
@@ -31,6 +33,14 @@ placement:
   cpu: { position: [-2, 0, -2], rotation: [0, 0, 0] }
   # Modules at the back, the address map in front, to the CPU's memory side.
   memory: { position: [-18.8, 0, -2.6], rotation: [0, 0, 0] }
+  # The RX ring lies flat on the plane in front of host memory — over the descriptor region's column,
+  # clear of the HOST MEMORY label — where the system camera keeps it clear of the page's panels:
+  # drawn at its own size beside the map, not inside the region. Residence below says where it
+  # lives, not where it is drawn.
+  rx_ring: { position: [-10.5, 0, 10.2], rotation: [0, 0, 0] }
+  # The mempool lies flat beside the ring, in front of host memory's left end and level with the
+  # ring: drawn at its own size, not inside the packet-buffer region it resides in.
+  pool: { position: [-20.6, 0, 10.2], rotation: [0, 0, 0] }
 
 connections:
   # The card's edge in the slot. The two anchors sit 1.02 cm apart when seated: the slot's anchor
@@ -40,6 +50,13 @@ connections:
   - { kind: route, a: pcie.root_complex, b: cpu.pcie_root_complex, label: PCIe x8 }
   # The CPU's memory land field fans out to both modules: one connection, two anchors.
   - { kind: route, a: cpu.memory_interface, b: memory.memory_interface, label: memory channels }
+
+residence:                        # where an instance lives — semantic, places nothing
+  rx_ring: memory.descriptor-region
+  pool: memory.packet-buffer-region
+
+references:                       # what a part holds the address of — semantic, never drawn as a link
+  - { from: rx_ring.descriptors, to: memory.packet-buffer-region }
 
 interactions:                     # concepts from concepts/library, never ports
   - { concept: dma, from: nic, to: memory.packet-buffer-region, via: [pcie, cpu.io, cpu.memory-controller] }

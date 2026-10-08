@@ -67,7 +67,7 @@ export const HOST_MEMORY_METADATA = {
       ['Descriptor size', 'typically 16 or 32 bytes'],
       ['Holds', 'buffer addresses and status, not packet bytes'],
       ['Head / tail', 'the NIC works from the head; software refills up to the tail'],
-      ['Later', 'the descriptor ring becomes an asset of its own, placed here'],
+      ['Asset', 'in a composed system a descriptor_ring asset resides here; on this page the ring is drawn as part of the region'],
     ],
     actions: [],
   },
@@ -76,9 +76,12 @@ export const HOST_MEMORY_METADATA = {
     name: 'Packet buffer region',
     designator: 'Allocated region',
     category: 'Logical · packet buffers',
-    summary: 'Memory set aside for packet data: many fixed-size buffers, allocated in advance, waiting for the NIC to fill them.',
+    summary:
+      'Memory set aside for packets: many fixed-size buffers, allocated in advance, waiting for the NIC to fill them — and, when they come from a mempool, the pool that provides them.',
     description:
-      'Software allocates the buffers up front — often as a pool of identical buffers — and posts their addresses into ' +
+      'Software allocates the buffers up front, often as a mempool: a pool of identical elements, each a buffer together with ' +
+      'an mbuf, a small record of metadata that holds the buffer’s address. The pool and its mbufs belong to this region ' +
+      'along with the buffers; the packet bytes are only ever in the buffers. Software posts the buffers’ addresses into ' +
       'descriptors. When a packet arrives, the NIC writes its bytes straight into one of these buffers by DMA, without the ' +
       'CPU copying anything; software then reads the packet where it landed. Buffers a descriptor points at are marked ' +
       'posted; the rest are free for the next refill.',
@@ -86,7 +89,7 @@ export const HOST_MEMORY_METADATA = {
       ['Buffers drawn', '12, of which 8 are posted'],
       ['Typical size', 'about 2 KB — room for a full Ethernet frame'],
       ['Filled by', 'the NIC, by DMA (an interaction, not drawn here)'],
-      ['Later', 'packet buffers (mbufs) and their pool become assets of their own'],
+      ['mbufs', 'when a mempool provides the buffers, each comes with an mbuf, kept in the pool in this region; the map draws only the buffers'],
     ],
     actions: [],
   },
@@ -106,4 +109,36 @@ export const HOST_MEMORY_METADATA = {
     ],
     actions: [],
   },
+};
+
+/**
+ * The descriptor region when a real descriptor_ring asset resides in it (createHostMemory with
+ * `illustrativeRing: false`): the same part, with no ring drawn inside it — the ring is drawn as its
+ * own asset — so its details stop describing the illustrative one.
+ */
+export const DESCRIPTOR_REGION_WITH_RESIDENT_RING = {
+  ...HOST_MEMORY_METADATA['descriptor-region'],
+  details: [
+    ['Descriptor size', 'typically 16 or 32 bytes'],
+    ['Holds', 'buffer addresses and status, not packet bytes'],
+    ['Resident ring', 'a descriptor_ring asset resides here — drawn as its own model, not inside the map'],
+  ],
+};
+
+/**
+ * The packet-buffer region when a real mempool resides in it (createHostMemory with
+ * `illustrativeBuffers: false`): the same part, with no buffers drawn inside it — the pool is drawn
+ * as its own asset — so its text stops describing the illustrative buffers and their posted state.
+ */
+export const PACKET_BUFFER_REGION_WITH_RESIDENT_POOL = {
+  ...HOST_MEMORY_METADATA['packet-buffer-region'],
+  description: HOST_MEMORY_METADATA['packet-buffer-region'].description.replace(
+    ' Buffers a descriptor points at are marked posted; the rest are free for the next refill.',
+    '',
+  ),
+  details: [
+    ['Typical size', 'about 2 KB — room for a full Ethernet frame'],
+    ['Filled by', 'the NIC, by DMA (an interaction, not drawn here)'],
+    ['Resident pool', 'a mempool asset resides here — drawn as its own model, not inside the map'],
+  ],
 };

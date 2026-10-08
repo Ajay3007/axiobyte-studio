@@ -12,6 +12,7 @@ Drawn as one undivided block, the zero-copy argument has nothing to make.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from manim import (
@@ -327,11 +328,56 @@ def draw_pcie(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
 
 
 def draw_descriptor_ring(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
-    """Slots in host memory, each pointing at a free buffer for the NIC to fill."""
+    """Descriptor slots arranged in a ring, with head and tail marked — the asset's flat form.
+
+    A descriptor holds a buffer's address and a status, never the packet bytes, so the slots are
+    drawn as empty entries, not as ``byte_cells``. Head and tail are positions on the ring, not
+    pieces of it: labels inside the ring pointing at their slots. Slot 0 is at the top and the
+    slots run clockwise, as in the Three.js model; head and tail default to a quarter and three
+    quarters of the way round.
+    """
     role = theme.role("memory")
+    ink = theme.ink["secondary"]
     panel = _panel(box, target, role.hue, role.surface)
-    cells = byte_cells(box, target, role.hue, count=min(int(actor.props.get("slots", 8)), 10))
-    return VGroup(panel, cells, _title_inside("descriptor ring", panel, target, role.hue))
+    title = _title_inside("descriptor ring", panel, target, role.hue)
+    count = max(4, min(int(actor.props.get("slots", 8)), 16))
+    head = int(actor.props.get("head", count // 4)) % count
+    tail = int(actor.props.get("tail", 3 * count // 4)) % count
+
+    width, _ = size_of(box, target)
+    top = title.get_bottom()[1] - units(6)
+    bottom = panel.get_bottom()[1] + units(6)
+    centre = panel.get_center() * [1, 0, 1] + UP * (top + bottom) / 2
+    radius = min(width / 2, (top - bottom) / 2) * 0.72
+
+    def at(index: int, r: float) -> Any:
+        angle = 2 * math.pi * index / count
+        return centre + RIGHT * r * math.sin(angle) + UP * r * math.cos(angle)
+
+    slot_w = 2 * math.pi * radius / count * 0.78
+    slot_h = radius * 0.34
+    slots = VGroup()
+    for i in range(count):
+        slot = RoundedRectangle(
+            width=slot_w,
+            height=slot_h,
+            corner_radius=min(units(3), slot_h / 4),
+            stroke_color=role.hue,
+            stroke_width=1.6,
+            fill_color=role.hue,
+            fill_opacity=0.22,
+        )
+        slots.add(slot.rotate(-2 * math.pi * i / count).move_to(at(i, radius)))
+
+    marks = VGroup()
+    for index, name in ((head, "head"), (tail, "tail")):
+        label = _label(name, target, "mono_s", ink)
+        if label.width > radius * 0.6:
+            label.scale_to_fit_width(radius * 0.6)
+        label.move_to(at(index, radius * 0.42))
+        pointer = Line(at(index, radius * 0.62), at(index, radius - slot_h * 0.6), color=ink)
+        marks.add(label, pointer)
+    return VGroup(panel, slots, marks, title)
 
 
 def draw_host_memory(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:

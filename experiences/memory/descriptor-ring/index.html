@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive 3D model of a descriptor ring — the circular array of descriptors a driver allocates in host memory for a NIC queue, with its head and tail — by AxioByte." />
+    <meta name="theme-color" content="#14171b" />
+    <title>Descriptor ring · AxioByte</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="app">
+      <div id="viewport" class="viewport"></div>
+
+      <header class="brand panel">
+        <p class="brand-kicker"><a href="../../" title="All AxioByte models">AxioByte</a> · Memory</p>
+        <h1 class="brand-title">Descriptor ring</h1>
+        <p class="brand-sub">Descriptors, used in a circle</p>
+        <button type="button" id="about-open" class="btn about-btn" aria-controls="info">About the descriptor ring</button>
+      </header>
+
+      <nav class="views panel" aria-label="Camera views">
+        <span class="panel-label">View</span>
+        <div class="segmented" role="group">
+          <button type="button" data-preset="overview" aria-pressed="true">Overview</button>
+          <button type="button" data-preset="ring" aria-pressed="false">Ring</button>
+          <button type="button" data-preset="descriptor" aria-pressed="false">Descriptor</button>
+        </div>
+      </nav>
+
+      <div class="controls panel">
+        <button type="button" id="reset-camera" class="btn">Reset camera</button>
+      </div>
+
+      <p class="hint" id="hint">Drag to orbit, scroll to zoom. Click the descriptors, or the head and tail marks, to inspect them.</p>
+
+      <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+      <aside id="info" class="info panel" aria-live="polite" hidden>
+        <button type="button" class="info-close" id="info-close" aria-label="Close">×</button>
+
+        <div id="part" hidden>
+          <p class="info-kicker"><span id="info-designator"></span><span id="info-category"></span></p>
+          <h2 id="info-title"></h2>
+          <p class="info-summary" id="info-summary"></p>
+          <p class="info-desc" id="info-desc"></p>
+          <dl class="info-details" id="info-details"></dl>
+          <div class="info-path" id="info-path" hidden></div>
+        </div>
+
+        <div id="about" class="about" hidden>
+          <p class="info-kicker"><span>ASSET</span><span>Memory · descriptor_ring</span></p>
+          <h2>Descriptor ring</h2>
+          <p class="info-summary">
+            A circular array of descriptors that a driver allocates in host memory for one NIC queue. Each descriptor holds a
+            buffer's address and a status — never the packet bytes.
+          </p>
+          <p class="info-desc">
+            Software and the NIC share the ring. Software fills descriptors with the addresses of empty packet buffers; the NIC
+            takes them in order, writes each packet it receives into the buffer a descriptor names, and marks the descriptor
+            done. The ring is circular only in how it is used: in memory it is an ordinary contiguous array, and after the
+            last descriptor comes the first again.
+          </p>
+
+          <h3>Part</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="descriptors">Descriptors</button> the ring's storage — eight here</li>
+          </ul>
+
+          <h3>Anchors</h3>
+          <ul class="about-parts">
+            <li><button type="button" data-part="head">Head</button> where the NIC works next</li>
+            <li><button type="button" data-part="tail">Tail</button> how far software has refilled</li>
+          </ul>
+
+          <h3>What a descriptor holds</h3>
+          <p class="info-desc">
+            A buffer address, a length and a status — a few bytes, typically 16 or 32. The fields drawn are a schematic layout,
+            not any real NIC's format, and no values are shown: the ring's structure is the same whatever it holds at a given
+            moment. A single descriptor is a slot of the ring, never a separate thing: descriptors are reused around the ring
+            and never leave it.
+          </p>
+
+          <h3>Head and tail</h3>
+          <p class="info-desc">
+            The head is the next descriptor the NIC will fill; the tail is how far software has refilled the ring. Between
+            them are the descriptors ready for the NIC; behind the head are those it has marked done, waiting for software to
+            collect them. Head and tail are indices — kept in registers on the card and in the driver — not pieces of the
+            ring, so they are anchors here, not parts, shown at fixed, illustrative positions.
+          </p>
+
+          <h3>Where it lives</h3>
+          <p class="info-desc">
+            In <a href="../host-memory/">host memory</a>. A ring is an ordinary allocation in DRAM, not memory on the NIC; it may
+            reside in host memory's descriptor region, where the Host Memory page draws one in its address map. This page shows
+            the ring on its own.
+          </p>
+
+          <h3>What it refers to</h3>
+          <p class="info-desc">
+            Each descriptor refers to a packet buffer: storage in host memory's packet-buffer region, which is a part of host
+            memory, not a separate model here. The reference is an address — it names the buffer, it is not the buffer, and it
+            moves no data. The packet bytes reach the buffer separately, by DMA: the NIC writing memory over PCIe, which the
+            <a href="../../networking/nic-host/">NIC to host memory</a> system shows. An mbuf, the DPDK structure that also holds
+            a buffer's address, is a different thing again and is not modelled here.
+          </p>
+
+          <h3>Technical concept</h3>
+          <p class="info-desc">
+            <code>descriptor_ring</code> — “A descriptor ring is a circular array, prepared by software in host memory, where each
+            slot points at a free buffer for the NIC to fill.” Its visual rule: a ring is never drawn holding the packet bytes.
+          </p>
+
+          <h3>Asset</h3>
+          <dl class="info-details">
+            <dt>Id</dt><dd>descriptor_ring · version 1.0.0</dd>
+            <dt>Status</dt><dd>released in experiences v1.3.0 · standard</dd>
+            <dt>Concept</dt><dd>descriptor_ring (memory)</dd>
+            <dt>Renderers</dt><dd>Three.js (live), Manim actor (flat)</dd>
+            <dt>Ports</dt><dd>none — nothing attaches to a ring</dd>
+            <dt>Resides in</dt><dd>host_memory (allowed)</dd>
+            <dt>Refers to</dt><dd>host_memory (allowed)</dd>
+            <dt>Used in</dt><dd><a href="../../networking/nic-host/">NIC to host memory</a> — as rx_ring</dd>
+          </dl>
+
+          <h3>Scope</h3>
+          <p class="info-desc">
+            This page shows what a descriptor ring is. It deliberately leaves out what happens to one at run time and what other
+            parts of a system own: which descriptor points at which buffer at a given moment, concrete addresses, head and tail
+            moving, which NIC queue a ring serves, who owns and allocates it, how the NIC fetches descriptors and writes them
+            back, and mbufs and mempools. Real rings hold hundreds to thousands of descriptors; eight are drawn here.
+          </p>
+        </div>
+      </aside>
+
+      <div id="fallback" class="fallback" hidden>
+        <h2>3D view unavailable</h2>
+        <p>
+          This page needs WebGL 2. Try a recent version of Chrome, Edge, Firefox or Safari, and make sure hardware acceleration
+          is turned on. In short: a descriptor ring is a circular array of descriptors in host memory; each holds the address of
+          a packet buffer and a status, never the packet bytes.
+        </p>
+      </div>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

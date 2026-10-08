@@ -1,0 +1,6 @@
+{
+  "concept": "descriptor_ring",
+  "title": "Descriptor ring",
+  "summary": "An interactive 3D model of a descriptor ring: the circular array of descriptors a driver allocates in host memory for a NIC queue — each holding a buffer's address and a status, never the packet bytes — with its head and tail.",
+  "tags": ["Descriptor ring", "Descriptors", "Head and tail", "Host memory", "NIC queues"]
+}

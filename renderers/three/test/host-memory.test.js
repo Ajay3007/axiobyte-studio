@@ -143,6 +143,33 @@ describe('host-memory — the built model', () => {
     expect(fingerprint()).toBe(fingerprint());
   });
 
+  it('can leave out its illustrative ring for a real one, keeping every part and tile', () => {
+    const shown = createHostMemory();
+    const hidden = createHostMemory({ illustrativeRing: false });
+    expect(hidden.components.map((c) => c.id)).toEqual(shown.components.map((c) => c.id));
+    expect(shown.root.getObjectByName('host-memory-descriptor-pointers')).toBeDefined();
+    expect(hidden.root.getObjectByName('host-memory-descriptor-pointers')).toBeUndefined();
+    const tiles = (m) => m.components.find((c) => c.id === 'descriptor-region').hitObjects.map((o) => o.geometry);
+    expect(tiles(hidden)).toHaveLength(tiles(shown).length);
+    const region = hidden.components.find((c) => c.id === 'descriptor-region');
+    expect(Object.keys(region.anchors)).toEqual(['center']); // no head or tail on a ring it does not draw
+    expect(region.meta.name).toBe(HOST_MEMORY_METADATA['descriptor-region'].name);
+  });
+
+  it('can leave out its illustrative buffers for a real pool, keeping every part and the region', () => {
+    const shown = createHostMemory();
+    const hidden = createHostMemory({ illustrativeBuffers: false });
+    expect(hidden.components.map((c) => c.id)).toEqual(shown.components.map((c) => c.id));
+    const region = (m) => m.components.find((c) => c.id === 'packet-buffer-region');
+    expect(region(hidden).hitObjects).toHaveLength(region(shown).hitObjects.length);
+    expect(Object.keys(region(hidden).anchors)).toEqual(['center']);
+    expect(Object.keys(region(shown).anchors).sort()).toEqual(['buffer', 'center']);
+    expect(region(hidden).meta.name).toBe(HOST_MEMORY_METADATA['packet-buffer-region'].name);
+    // The ring's pointers land on those buffers, so they go with them.
+    expect(shown.root.getObjectByName('host-memory-descriptor-pointers')).toBeDefined();
+    expect(hidden.root.getObjectByName('host-memory-descriptor-pointers')).toBeUndefined();
+  });
+
   it('owns every geometry through its kit, so dispose() releases all of it', () => {
     const { root, kit } = createHostMemory();
     const owned = new Set(kit.geometries.values());

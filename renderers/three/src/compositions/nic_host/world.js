@@ -43,12 +43,19 @@ export function createNicHostWorld({ container, reducedMotion = false, engine: e
     return b;
   };
   const group = (inst) => system.instances[inst].group;
-  const systemBox = () => boxOf(...['nic', 'pcie', 'cpu', 'memory'].map(group));
-  camera.definePreset('system', () =>
-    engine.aspect < 1
-      ? { box: systemBox(), direction: new THREE.Vector3(-0.12, 1.5, 0.75), padding: 1.04 }
-      : { box: systemBox(), direction: new THREE.Vector3(-0.32, 0.85, 1), padding: 1.04 },
-  );
+  const systemBox = () => boxOf(...Object.keys(system.instances).map(group));
+  // A short landscape screen (a phone on its side: 500 px tall or less, the pages' own threshold for
+  // that layout) keeps the views and controls along its bottom edge, over the front of the system.
+  // There the framed box reaches further toward the viewer, so the system sits higher in the frame,
+  // clear of them.
+  const shortLandscape = () => engine.aspect >= 1 && container.clientHeight <= 500;
+  const SHORT_FRONT = 9.5; // cm of empty floor framed in front of the system
+  camera.definePreset('system', () => {
+    if (engine.aspect < 1) return { box: systemBox(), direction: new THREE.Vector3(-0.12, 1.5, 0.75), padding: 1.04 };
+    const box = systemBox();
+    if (shortLandscape()) box.max.z += SHORT_FRONT;
+    return { box, direction: new THREE.Vector3(-0.32, 0.85, 1), padding: 1.04 };
+  });
   camera.definePreset('pcie-path', () => ({ box: boxOf(group('nic'), group('pcie'), group('cpu'), 'route.pcie'), direction: new THREE.Vector3(-0.75, 0.7, 0.85), padding: 1.06 }));
   camera.definePreset('memory-path', () => ({ box: boxOf(group('cpu'), group('memory'), 'route.memory'), direction: new THREE.Vector3(0.3, 0.9, 1), padding: 1.06 }));
   camera.definePreset('dma', () => {

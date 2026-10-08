@@ -230,7 +230,9 @@ assets:
 
     # Two layers, kept apart: physical parts (the modules) and logical parts (the address space and
     # the regions allocated in it), drawn as a labelled map that is never mistaken for hardware.
-    # The descriptor ring and the packet buffers stay parts until they become assets of their own.
+    # descriptor-region is the range a ring resides in; the ring itself is now the descriptor_ring
+    # asset, and the region still draws an illustrative one. Whether the packet buffers ever become
+    # an asset is undecided.
     parts:
       - dimm-0
       - dimm-1
@@ -241,8 +243,9 @@ assets:
 
     # Structural attachments only: the modules' edge contacts, where the memory channels from the
     # CPU arrive (through slots on a motherboard, which is not part of this asset). DMA, reads,
-    # writes and allocation are interactions, not ports; a future descriptor_ring or packet-buffer
-    # asset will be placed at the region anchors, and its port declared once it exists.
+    # writes and allocation are interactions, not ports. The descriptor_ring asset does not attach
+    # through a port either: an instance resides in descriptor-region and its descriptors refer to
+    # packet-buffer-region (`residence`, `references`, docs/asset-library/composition.md).
     ports:
       - id: memory_interface
         at: [dimm-0.edge, dimm-1.edge]
@@ -270,9 +273,163 @@ assets:
         channels and modules, scatter allocations through pages, hold rings of hundreds of
         descriptors and thousands of buffers; memory-mapped device ranges are omitted.
       - DRAM internals (banks, rows, refresh, ranks) are described in part metadata, not drawn.
-      - The descriptor ring and the packet buffers are parts of this asset for now; they become the
-        descriptor_ring and packet-buffer (mbuf, mempool) assets on the roadmap.
+      - descriptor-region draws an illustrative ring on this asset's own page. Where a composition
+        places a real descriptor_ring in the region (nic_host), the model is built without it
+        (createHostMemory's illustrativeRing option), so one ring shows. Packet buffers remain a part, packet-buffer-region,
+        which also holds the mempool that provides them, with its mbufs; the map draws only the
+        buffers. Buffers are not mbufs (an mbuf holds a buffer's address), and whether they become an
+        asset is undecided.
       - memory_interface is composed with the cpu asset in nic_host, which also draws the DMA path from
         a NIC; this asset's own page shows memory alone, without either.
       - No Blender representation. The page's About content is written in the page, not generated
         from this registry.
+
+  - id: descriptor_ring
+    title: Descriptor ring
+    summary: >
+      The circular array of fixed-size descriptors a driver allocates in host memory for one NIC
+      queue: each descriptor holds the address of a packet buffer and a status, never the packet
+      bytes, and head and tail mark where the NIC and software are.
+    version: 1.0.0
+    status: released
+    quality: standard
+    concept: descriptor_ring
+    route: memory/descriptor-ring # → /axiobyte/memory/descriptor-ring/
+    released_in: experiences-v1.3.0
+
+    # One semantic part: the descriptors, every slot of the ring. A single descriptor is a slot of
+    # that part, never a part or an asset of its own (docs/asset-library/roadmap.md). Head and tail
+    # are anchors on it — positions, kept in NIC registers and driver variables — not parts.
+    parts:
+      - descriptors
+
+    # Nothing attaches to a ring. Where it lives and what it refers to are not ports: an instance may
+    # reside in host memory (its descriptor-region) and its descriptors may refer to host memory (its
+    # packet-buffer-region) — allowed here, declared by a composition. DMA, descriptor fetch and
+    # write-back, and queue association are not ports either.
+    ports: []
+    resides_in: [host_memory]
+    refers_to: [host_memory]
+
+    implementations:
+      three:
+        path: renderers/three/src/domains/memory/descriptor-ring
+        entry: DescriptorRing.js        # createDescriptorRing() → { root, components, marks, … }
+        metadata: metadata.js           # DESCRIPTOR_RING_METADATA, keyed by part id; ANCHOR_METADATA
+        presets: [overview, ring, descriptor]
+        fidelity: live
+      manim:
+        path: src/axiobyte_studio/actors/library.py
+        actor: descriptor_ring          # drawn flat (draw_descriptor_ring): slots in a ring, head, tail
+        fidelity: flat
+
+    experience: experiences/memory/descriptor-ring
+    episodes: []                        # s01e03 draws its own ring widget, not this asset
+
+    known_limitations:
+      - Eight descriptors, a fixed illustrative capacity; real rings hold hundreds to thousands, and
+        capacity is not an instance parameter.
+      - The descriptor fields (buffer address, length · status) are a schematic layout with no values,
+        not any real NIC's format; no concrete addresses are modelled.
+      - Head and tail sit at fixed, illustrative positions. They are anchors, not runtime state, and
+        nothing moves.
+      - nic_host composes one instance, rx_ring, residing in host memory's descriptor-region and
+        referring to its packet-buffer-region. Both are semantic and drawn as nothing; the ring sits at
+        its own size in front of the memory map, and no link joins them.
+      - Which descriptor points at which buffer, queue association (which NIC queue a ring serves),
+        ownership, allocation, descriptor fetch and write-back, mbufs and mempools are not modelled.
+      - The Manim actor's anchors use the concept's vocabulary (head, tail, slot); the Three.js part is
+        descriptors, with head, tail and slot anchors on it. slot is a representative descriptor
+        entry, a location to frame and point at, not a slot's identity or state. No Blender
+        representation.
+      - The page's About content is written in the page, not generated from this registry.
+
+  - id: mbuf
+    title: mbuf
+    summary: >
+      The metadata a packet is handled by: bookkeeping fields and buf_addr, the reference to the
+      buffer that holds the packet's bytes. Never the bytes themselves.
+    version: 1.0.0
+    status: prototype         # a Manim actor, no page yet; production needs its page (README §8)
+    quality: micro
+    concept: mbuf
+
+    # One semantic part: the mbuf's fields, as one record. The concept's anchors — buf_addr,
+    # data_len, refcount, next — and center are anchors on it, never parts; buf_addr is the
+    # endpoint of the mbuf's reference to its buffer.
+    parts:
+      - fields
+
+    # Nothing attaches to an mbuf. Its buffer is a host-memory part (packet-buffer-region), so the
+    # mbuf may refer to host memory. It resides in its mempool (resides_in: [mempool]), not directly
+    # in host memory; where the pool lies in host memory is chosen by the composition that places it.
+    ports: []
+    resides_in: [mempool]
+    refers_to: [host_memory]
+
+    implementations:
+      manim:
+        path: src/axiobyte_studio/actors/library.py
+        actor: mbuf                     # drawn flat (draw_mbuf): one card of fields, buf_addr in the pointer's colour
+        fidelity: flat
+
+    episodes: [s01e02-zero-copy]        # through its Manim actor
+
+    known_limitations:
+      - A Manim actor only, with no Three.js model and no page, so it stays a prototype.
+      - The Manim drawing shows data_len, refcount and buf_addr. next is an anchor of the concept and
+        the actor but is not drawn, and mbuf chaining is not modelled.
+      - The mbuf resides in its mempool (its resides_in is [mempool]) and declares no residence in
+        host memory; the pool's host-memory part is chosen by the composition that places it.
+      - refers_to names host_memory as a whole asset; the buffer it refers to is in host memory's
+        packet-buffer-region, which a composition names as the reference's target.
+      - Ownership, allocation and the pooled, attached and freed states are runtime, not modelled;
+        the actor's release ends in freed rather than returning the mbuf to its pool.
+
+  - id: mempool
+    title: Mempool
+    summary: >
+      A pool of identical allocation elements, allocated once, up front, each consisting of an mbuf
+      together with the buffer it describes.
+    version: 1.0.0
+    status: prototype         # a Manim actor, no page yet; production needs its page (README §8)
+    quality: standard
+    concept: mempool
+
+    # One semantic part: the pool's identical elements, each an mbuf with its buffer (the mempool
+    # concept, POOL-1). The concept's anchors — first_slot, last_slot — and center are anchors on
+    # it. An element is not a part of its own; mbufs, assets, reside in the pool, and a buffer is
+    # the storage half of its element.
+    parts:
+      - elements
+
+    # Nothing attaches to a pool, and it refers to nothing: its elements are its own content. It may
+    # reside in host memory; which part of host memory is chosen by a composition that places one.
+    ports: []
+    resides_in: [host_memory]
+
+    implementations:
+      three:
+        path: renderers/three/src/domains/memory/mempool
+        entry: Mempool.js               # createMempool() → { root, components, … }
+        metadata: metadata.js           # MEMPOOL_METADATA, keyed by part id
+        presets: [overview, top, element]
+        fidelity: live
+      manim:
+        path: src/axiobyte_studio/actors/library.py
+        actor: mempool                  # drawn flat (draw_mempool): one panel of identical slots
+        fidelity: flat
+
+    episodes: [s01e02-zero-copy]        # through its Manim actor
+
+    known_limitations:
+      - A Manim actor and a Three.js model, but no page of its own, so it stays a prototype. It
+        appears inside the released nic_host composition, disclosed there as a prototype
+        (docs/asset-library/README.md §8); that does not release it.
+      - The Manim drawing shows identical slots, not each element's mbuf and buffer apart, and its
+        description still calls them buffers.
+      - Allocation, free and in-use state, and ownership of what the pool has handed out, are runtime
+        and not modelled.
+      - Elements have no individual identity, so which mbuf goes with which buffer is not named.
+      - Which host-memory part a pool resides in is chosen by the composition that places it, not
+        by this asset; nic_host places its pool in host memory's packet-buffer-region.
