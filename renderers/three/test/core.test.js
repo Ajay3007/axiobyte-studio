@@ -54,7 +54,7 @@ describe('TimelineParser — the voiceover is the master clock', () => {
   });
 
   it('reads the real NIC transcript, which is the same schema the Python engine reads', () => {
-    const path = fileURLToPath(new URL('../../../episodes/s01e03-what-is-a-nic/timeline/words.json', import.meta.url));
+    const path = fileURLToPath(new URL('../../../episodes/s01e03-what-is-a-nic/timeline/timeline.json', import.meta.url));
     const nic = new TimelineParser(JSON.parse(fs.readFileSync(path, 'utf8')));
     expect(nic.duration).toBeCloseTo(717.99, 2);
     expect(nic.sentenceStart(64)).toBeGreaterThan(380);

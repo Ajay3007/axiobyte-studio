@@ -21,9 +21,9 @@ Output: 1920×1080, 30 fps, H.264 High, AAC-LC 48 kHz; **21,585 frames, 11:59.5*
   Headful (the default) uses the GPU and a window per shot; `--headless` renders at ~24 fps on
   software GL — about 15 minutes for the whole film. Change one shot, re-render one shot:
   `abs render … --shot 0110`.
-- `abs compose` needs the voiceover at `audio/voiceover.mpeg`. It is **not in git**: copy it in.
-  It must be the recording `timeline/words.json` was transcribed from — its sha256 is pinned in
-  `episode.yaml`, and anything else is refused.
+- `abs compose` needs the voiceover at `audio/voiceover.mp3`. It is **not in git**: copy it in.
+  It must be the canonical recording whose timing `timeline/timeline.json` is — its sha256 is
+  pinned in `episode.yaml`, and anything else is refused.
 
 ## What is in this folder
 
@@ -33,7 +33,7 @@ Output: 1920×1080, 30 fps, H.264 High, AAC-LC 48 kHz; **21,585 frames, 11:59.5*
 | `picture.md` | THE ONE PICTURE — the thesis, the counter-picture, the payoff frame, and the prohibitions `abs plan` checks |
 | `storyboard/beats.yaml` | 17 acts, 35 beats, each landing on a spoken word, naming the concept it teaches |
 | `storyboard/shots.yaml` | 18 shots — one per chapter, the receive path in four — and the renderer of each |
-| `timeline/` | `words.json` (WhisperX word + sentence timings — the master clock), `analysis.json`, `captions.srt` |
+| `timeline/` | `timeline.json` (WhisperX word + sentence timings — the master clock, kept as supplied), `analysis.json`, `captions.srt` |
 | `three/` | the Three.js score: `storyboard.js` (every camera move, highlight, packet flight and overlay cue), `video.html` + `video-main.js` (the video target's page), `determinism.baseline` |
 | `script.md`, `script.txt` | the narration as written (its timings were estimates; the take is the clock) |
 | `notes/` | the prompts the film was made from |
@@ -68,7 +68,7 @@ Every shot is `three` today. Re-staging one in Manim is a one-word change in `sh
 
 ## How the voiceover drives the visuals
 
-**The audio and `words.json` are the only sources of timing.** Every cue in `three/storyboard.js`
+**The audio and `timeline.json` are the only sources of timing.** Every cue in `three/storyboard.js`
 resolves through `TimelineParser`, and fails loudly if the phrase is not spoken:
 
 ```js

@@ -15,16 +15,19 @@ renderer: three
 # What the audience is declared to already know.
 assumed: [packet, cpu, memory_buffer, worker_core, interrupt_driven, mbuf]
 
-# THE ONE RULE: every beat is a word start in this transcript.
-voiceover: "timeline/words.json"
+# THE ONE RULE: every beat is a word start in this transcript. timeline.json is the
+# creator-supplied timing for the canonical recording below, kept byte-for-byte as delivered.
+voiceover: "timeline/timeline.json"
 
 # The recording itself is a local input and is never committed (.gitignore):
-# timing comes from words.json above. Only `abs compose` needs the audio, and it
-# refuses a file whose hash is not the one words.json was transcribed from.
+# timing comes from timeline.json above. Only `abs compose` needs the audio, and it
+# refuses a file whose hash is not this one. The timeline was transcribed from an
+# earlier encode of the same take (its meta names voiceover.mpeg); this mp3 runs a
+# constant 12 ms ahead of it — accepted by the creator as within tolerance.
 audio:
-  path: "audio/voiceover.mpeg"
-  sha256: a40965eeac236fac3c85f2a3611c5dd736f79787fcf0248b2e398ed62b2f77ef
-  duration: 717.99
+  path: "audio/voiceover.mp3"
+  sha256: 4d829597c5e2af7184b7eed19ccbf1ba910f92a5e9c4312642178eba8c1da8d3
+  duration: 718.00
 
 # Seconds of picture after the last word, so the end card is not cut mid-word.
 tail: 1.5

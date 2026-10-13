@@ -222,12 +222,12 @@ class TestTheVoiceoverIsPinned:
 
     def test_a_different_recording_is_refused(self, tmp_path: Path, nic: Episode):
         (tmp_path / "audio").mkdir()
-        (tmp_path / "audio" / "voiceover.mpeg").write_bytes(b"a re-recorded take")
+        (tmp_path / "audio" / "voiceover.mp3").write_bytes(b"a re-recorded take")
         with pytest.raises(StudioError, match="not the recording"):
             verify_audio(replace(nic, root=tmp_path))
 
     def test_the_pinned_recording_is_accepted(self, tmp_path: Path, nic: Episode):
-        take = tmp_path / "audio" / "voiceover.mpeg"
+        take = tmp_path / "audio" / "voiceover.mp3"
         take.parent.mkdir()
         take.write_bytes(b"the take")
         pinned = {**nic.audio, "sha256": hashlib.sha256(b"the take").hexdigest()}

@@ -1,6 +1,6 @@
 import '@axiobyte/three/web/styles.css';
 import '@axiobyte/three/video/video.css';
-import timelineData from '../timeline/words.json';
+import timelineData from '../timeline/timeline.json';
 import { createVideoApp } from '@axiobyte/three/video/VideoApp.js';
 import { createDebugOverlay } from '@axiobyte/three/video/DebugOverlay.js';
 import { createNicVideoScene } from '@axiobyte/three/domains/networking/nic/video.js';
