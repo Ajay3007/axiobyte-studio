@@ -3,7 +3,7 @@ import '@axiobyte/three/video/video.css';
 import timelineData from '../timeline/timeline.json';
 import { createVideoApp } from '@axiobyte/three/video/VideoApp.js';
 import { createDebugOverlay } from '@axiobyte/three/video/DebugOverlay.js';
-import { createNicVideoScene } from '@axiobyte/three/domains/networking/nic/video.js';
+import { createEpisodeScene } from './scene.js';
 import { buildStoryboard } from './storyboard.js';
 
 const params = new URLSearchParams(location.search);
@@ -45,7 +45,7 @@ async function boot() {
   const app = createVideoApp({
     container: document.getElementById('render-host'),
     timelineData,
-    createScene: createNicVideoScene,
+    createScene: createEpisodeScene,
     buildStoryboard,
     fps: num('fps', 30),
     supersample: num('ss', RENDER ? 2 : 1),
