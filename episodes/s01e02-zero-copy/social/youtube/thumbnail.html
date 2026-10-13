@@ -1,0 +1,192 @@
+<!doctype html>
+<!--
+  E02 Zero Copy: the YouTube thumbnail (1280×720). A publishing asset, not part of the film.
+
+  The idea in one picture: the packet's bytes (blue) land once in ONE buffer (violet) and stay there; only
+  the handle (yellow) moves from stage to stage, and every stage's handle points back at that same buffer.
+  The colours are the episode's semantic roles from design/themes/systems.yaml (passed in by thumbnail.mjs):
+  blue = bytes / DMA, violet = the buffer, yellow = the handle / pointer. No red: nothing is copied.
+
+  Rendered by thumbnail.mjs in headless Chrome; deterministic (no time, no randomness).
+-->
+<meta charset="utf-8" />
+<link rel="stylesheet" href="./fonts.css" />
+<script type="module">
+  const W = 1280;
+  const H = 720;
+  const FAMILY = "'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif";
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function arrow(ctx, x0, y0, x1, y1, color, width, head) {
+    const a = Math.atan2(y1 - y0, x1 - x0);
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1 - Math.cos(a) * head * 0.8, y1 - Math.sin(a) * head * 0.8);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x1 - Math.cos(a - 0.5) * head, y1 - Math.sin(a - 0.5) * head);
+    ctx.lineTo(x1 - Math.cos(a + 0.5) * head, y1 - Math.sin(a + 0.5) * head);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function glow(ctx, color, blur, draw) {
+    ctx.save();
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur;
+    draw();
+    ctx.restore();
+  }
+
+  window.__render__ = (C) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Ground: the brand background, a quiet grid, a vignette.
+    ctx.fillStyle = C.bg;
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= W; x += 48) {
+      ctx.beginPath();
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, H);
+      ctx.stroke();
+    }
+    for (let y = 24; y <= H; y += 48) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+      ctx.stroke();
+    }
+    const v = ctx.createRadialGradient(W / 2, H * 0.55, 140, W / 2, H * 0.55, W * 0.7);
+    v.addColorStop(0, 'rgba(0,0,0,0)');
+    v.addColorStop(1, 'rgba(0,0,0,0.7)');
+    ctx.fillStyle = v;
+    ctx.fillRect(0, 0, W, H);
+
+    // The title: two words, as large as the frame allows.
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'center';
+    ctx.font = `700 176px ${FAMILY}`;
+    ctx.letterSpacing = '6px';
+    ctx.fillStyle = C.ink;
+    ctx.fillText('ZERO COPY', W / 2 + 3, 188);
+    // The one supporting line, in the pointer's yellow: what moves instead of the bytes.
+    ctx.font = `700 50px ${FAMILY}`;
+    ctx.letterSpacing = '5px';
+    ctx.fillStyle = C.pointer;
+    ctx.fillText('ONLY THE POINTER MOVES', W / 2 + 2.5, 262);
+    ctx.letterSpacing = '0px';
+
+    // ---- the picture -------------------------------------------------------------------
+    // ONE BUFFER (violet), holding the packet's bytes (blue).
+    const B = { x: 80, y: 400, w: 410, h: 132 };
+    glow(ctx, C.memory, 28, () => {
+      roundRect(ctx, B.x, B.y, B.w, B.h, 16);
+      ctx.fillStyle = C.memorySurface;
+      ctx.fill();
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = C.memory;
+      ctx.stroke();
+    });
+    const cells = 9;
+    const pad = 20;
+    const gap = 8;
+    const cw = (B.w - 2 * pad - (cells - 1) * gap) / cells;
+    for (let i = 0; i < cells; i++) {
+      const x = B.x + pad + i * (cw + gap);
+      glow(ctx, C.packet, 14, () => {
+        roundRect(ctx, x, B.y + 26, cw, B.h - 52, 6);
+        ctx.fillStyle = C.packet;
+        ctx.fill();
+      });
+      ctx.fillStyle = 'rgba(255,255,255,0.22)';
+      ctx.fillRect(x + 4, B.y + 30, cw - 8, 8);
+    }
+    ctx.font = `700 30px ${FAMILY}`;
+    ctx.letterSpacing = '3px';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = C.memory;
+    ctx.fillText('ONE BUFFER', B.x + B.w / 2, B.y + B.h + 44);
+    // BYTES arrive once, by DMA (blue), from above.
+    arrow(ctx, B.x + B.w / 2, 318, B.x + B.w / 2, B.y - 14, C.packet, 8, 26);
+    ctx.textAlign = 'right';
+    ctx.font = `700 30px ${FAMILY}`;
+    ctx.fillStyle = C.packet;
+    ctx.fillText('BYTES', B.x + B.w / 2 - 22, 352);
+
+    // The stages: the handle (yellow) moves through them; each one points back at the same buffer.
+    const stages = ['PARSER', 'CLASSIFIER', 'FIREWALL', 'ROUTING'];
+    const sw = 140;
+    const sg = 20;
+    const sx0 = 570;
+    const sy = 400;
+    const sh = 132;
+    const chip = { w: 64, h: 30 };
+    const anchors = [];
+    stages.forEach((label, i) => {
+      const x = sx0 + i * (sw + sg);
+      roundRect(ctx, x, sy, sw, sh, 12);
+      ctx.fillStyle = C.surface;
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = C.border;
+      ctx.stroke();
+      ctx.font = `700 24px ${FAMILY}`;
+      ctx.letterSpacing = '2px';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = C.inkSecondary;
+      ctx.fillText(label, x + sw / 2, sy + sh - 22);
+      const cx = x + sw / 2 - chip.w / 2;
+      const cy = sy + 30;
+      glow(ctx, C.pointer, 22, () => {
+        roundRect(ctx, cx, cy, chip.w, chip.h, 6);
+        ctx.fillStyle = C.pointer;
+        ctx.fill();
+      });
+      anchors.push({ x: x + sw / 2, y: cy + chip.h });
+    });
+    // The handle passes from stage to stage (yellow arrows) — it is all that moves.
+    arrow(ctx, B.x + B.w + 14, sy + 45, sx0 - 10, sy + 45, C.pointer, 6, 20);
+    for (let i = 0; i < stages.length - 1; i++) {
+      const x = sx0 + i * (sw + sg) + sw;
+      arrow(ctx, x + 2, sy + 45, x + sg - 2, sy + 45, C.pointer, 5, 14);
+    }
+    // Every stage's handle points back at the SAME buffer (thin yellow references).
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = C.pointer;
+    ctx.setLineDash([10, 9]);
+    anchors.forEach((a, i) => {
+      const tx = B.x + B.w - 40 - i * 20;
+      const ty = B.y + B.h;
+      const depth = 600 + i * 22;
+      ctx.beginPath();
+      ctx.moveTo(a.x, sy + sh);
+      ctx.bezierCurveTo(a.x, depth, tx + 60, depth, tx, ty + 6);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    return canvas;
+  };
+  window.__ready__ = true;
+</script>

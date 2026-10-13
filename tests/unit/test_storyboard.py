@@ -104,7 +104,17 @@ class TestBeatMap:
         assert episode.beatmap.beat("zerocopy.instead").act == "zerocopy"
 
     def test_teaching_order_is_first_taught_and_deduplicated(self, episode: Episode):
-        assert episode.concepts == ["copy_based", "zero_copy"]
+        # zero_copy is taught by many beats and listed once, where it is first taught; dma
+        # (sentence 5, the NIC's own write) comes before it, in act one.
+        assert episode.concepts == [
+            "copy_based",
+            "dma",
+            "zero_copy",
+            "mbuf",
+            "memory_buffer",
+            "mempool",
+            "pointer",
+        ]
 
     def test_cues_form_the_episode_cue_table(self, episode: Episode):
         assert episode.beatmap is not None

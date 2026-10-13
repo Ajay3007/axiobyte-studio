@@ -24,6 +24,10 @@ media/
 # Without them an episode that uses a plate cannot render at all.
 !assets/plates/**/*.png
 
+# The brand's rendering asset IS committed: derived from assets/axiobyte-logo by
+# renderers/three/src/brand/assets/extract_logo.py, but loaded by the end card at runtime.
+!renderers/three/src/brand/assets/*.png
+
 # Python
 __pycache__/
 *.py[cod]

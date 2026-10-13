@@ -25,10 +25,12 @@ from manim import (
     MovingCameraScene,
     Text,
     VGroup,
+    Wait,
+    config,
 )
 
 from axiobyte_studio.actions.scene import Scene as StudioSceneModel
-from axiobyte_studio.backends.manim import space
+from axiobyte_studio.backends.manim import space, timing
 from axiobyte_studio.backends.manim.shapes import draw
 from axiobyte_studio.chrome.pinned import ChromeSlot, caption_bar, keyword_bar, stage_box
 from axiobyte_studio.core.errors import ConceptError, StudioError
@@ -81,6 +83,20 @@ class _Pinned:
         self.mob = mob
 
 
+def _require_positive(seconds: float, method: str, name: str) -> None:
+    """Refuse a non-positive duration, as Manim does — without its one-frame minimum.
+
+    Manim's ``validate_run_time`` also raises anything under a frame to a whole frame.
+    Applied to the intended clock, that would add time no one asked for; the frame
+    grid already gives every animation at least one frame.
+    """
+    if seconds <= 0:
+        raise ValueError(
+            f"{method} has a {name} of {seconds:g} <= 0 seconds which Manim cannot render. "
+            f"The {name} must be a positive number."
+        )
+
+
 class StudioScene(MovingCameraScene):
     """Base scene for every Studio render.
 
@@ -103,7 +119,10 @@ class StudioScene(MovingCameraScene):
         space.configure(self.target)
         self.theme: Theme = theme(self.theme_name)
         self.cues: CueTable | None = None
+        # Two clocks (see ``timing``): the intended timeline in exact seconds, and the
+        # frames actually rendered — kept on the grid of the first, never drifting.
         self._clock = 0.0
+        self._frames = 0
         self._keyword: _Pinned | None = None
         self._caption: _Pinned | None = None
         super().__init__(**kwargs)
@@ -116,8 +135,13 @@ class StudioScene(MovingCameraScene):
 
     @property
     def clock(self) -> float:
-        """Seconds elapsed in the render, tracked against the voiceover."""
+        """Seconds elapsed on the intended timeline, tracked against the voiceover."""
         return self._clock
+
+    @property
+    def frames(self) -> int:
+        """Frames rendered so far: always the intended timeline's place on the frame grid."""
+        return self._frames
 
     def at(self, cue: str) -> None:
         """Wait until a named moment in the narration.
@@ -187,14 +211,42 @@ class StudioScene(MovingCameraScene):
         return max(minimum, self.window(cue))
 
     def play(self, *args: Any, **kwargs: Any) -> None:
-        """Play animations, advancing the scene clock.
+        """Play animations, advancing the scene clock — on the frame grid.
+
+        The intended timeline advances by the play's run time, exactly. The play is
+        then given precisely the frames that bring the picture to that moment's place
+        on the frame grid, so Manim's per-play rounding can never accumulate into
+        drift against the voiceover. Several animations in one play keep their
+        relative timing; only the whole is fitted to the grid.
 
         Args:
             *args: Animations.
             **kwargs: Passed through to Manim, including ``run_time``.
         """
-        super().play(*args, **kwargs)
-        self._clock += float(kwargs.get("run_time", 1.0))
+        subtitles = {
+            key: kwargs.pop(key)
+            for key in ("subcaption", "subcaption_duration", "subcaption_offset")
+            if key in kwargs
+        }
+        animations = self.compile_animations(*args, **kwargs)
+        if not animations:
+            super().play(*args, **subtitles, **kwargs)
+            return
+        requested = max(animation.run_time for animation in animations)
+        _require_positive(requested, f"{type(self).__name__}.play()", "run_time")
+        static = self._is_static_wait(animations)
+        fps = int(config.frame_rate)
+        count = timing.frames_to_emit(
+            self._clock + requested, self._frames, fps, minimum=0 if static else 1
+        )
+        self._clock += requested
+        if count == 0:
+            return  # a wait the picture is already on the mark for
+        fitted = timing.manim_run_time(count, fps, static=static)
+        for animation in animations:
+            animation.run_time = animation.run_time * fitted / requested
+        super().play(*animations, **subtitles)
+        self._frames += count
 
     def wait(
         self,
@@ -202,15 +254,54 @@ class StudioScene(MovingCameraScene):
         stop_condition: Any = None,
         frozen_frame: Any = None,
     ) -> None:
-        """Hold, advancing the scene clock.
+        """Hold, advancing the scene clock once, on the frame grid.
+
+        Manim's own ``wait`` re-enters :meth:`play`, which would count the hold a
+        second time; so the wait is played here directly, and counted there alone.
+        A hold shorter than a frame advances the clock by exactly its duration —
+        never by the whole frame Manim would round it up to.
 
         Args:
             duration: Seconds to hold.
-            stop_condition: Passed through to Manim.
+            stop_condition: Passed through to Manim. A hold cut short by it still
+                advances the clock its full duration.
             frozen_frame: Passed through to Manim.
         """
-        super().wait(duration, stop_condition=stop_condition, frozen_frame=frozen_frame)
-        self._clock += duration
+        _require_positive(duration, f"{type(self).__name__}.wait()", "duration")
+        self.play(Wait(run_time=duration, stop_condition=stop_condition, frozen_frame=frozen_frame))
+
+    def hold_until(self, seconds: float) -> None:
+        """Hold the last picture until a moment on the intended timeline.
+
+        Used to carry the final frame to the end of the voiceover, so the picture is
+        exactly as long as the film it is composed into.
+
+        Args:
+            seconds: The moment to hold until. Nothing happens if it has passed.
+        """
+        if seconds > self._clock:
+            self.wait(seconds - self._clock)
+
+    def _is_static_wait(self, animations: list[Any]) -> bool:
+        """Whether Manim will freeze the frame for this play — decided here, once.
+
+        The same test Manim applies (``Scene.should_update_mobjects``), settled on
+        the Wait itself before playing, so the frame count is computed for the path
+        Manim actually takes.
+        """
+        if len(animations) != 1 or not isinstance(animations[0], Wait):
+            return False
+        wait = animations[0]
+        # Typed bool in Manim, but None until decided — exactly what Manim itself tests.
+        decided: Any = wait.is_static_wait
+        if decided is None:
+            wait.is_static_wait = not (
+                self.always_update_mobjects
+                or self.updaters
+                or wait.stop_condition is not None
+                or any(mob.has_time_based_updater() for mob in self.get_mobject_family_members())
+            )
+        return bool(wait.is_static_wait)
 
     # -- staging ------------------------------------------------------------
 

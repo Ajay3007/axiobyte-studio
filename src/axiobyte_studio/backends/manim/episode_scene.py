@@ -118,6 +118,10 @@ def _make_class(
             takes_model = len(inspect.signature(act).parameters) > 1
             act(self, model) if takes_model else act(self)
 
+        # The last picture holds through the end of the voiceover: the scene is exactly
+        # as long as the film it is composed into, frame for frame.
+        self.hold_until(episode.film_duration)
+
     platform = _platform_for(root, target)
     return type(
         scene_class_name(target),

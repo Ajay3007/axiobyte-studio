@@ -134,29 +134,95 @@ def draw_memory_buffer(actor: Actor, box: Box, target: Target, theme: Theme) -> 
     return group
 
 
+#: An element's two halves, as fractions of its width: the mbuf (metadata) and the buffer.
+_MBUF_SHARE, _BUFFER_SHARE = 0.32, 0.64
+_ELEMENT_ASPECT = 2.4  # an element's width over its height
+
+
 def draw_mempool(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:
-    """A pool of preallocated buffers. Must read as plural at a glance."""
-    role = theme.role("memory")
-    panel = _panel(box, target, role.hue, role.surface)
-    width, height = size_of(box, target)
-    slots = max(4, min(int(actor.props.get("slots", 8)), 12))
-    slot_w = width / (slots * 1.25)
-    cells = VGroup(
-        *[
-            RoundedRectangle(
-                width=slot_w,
-                height=height * 0.42,
-                corner_radius=units(6),
-                stroke_color=role.hue,
-                stroke_width=1.6,
-                fill_color=role.surface or role.hue,
-                fill_opacity=0.6,
+    """A pool of identical elements, each an mbuf with the buffer it describes.
+
+    The mempool's element model (the mempool concept, POOL-1): every element is two separate
+    things handed out and returned as one — the mbuf, metadata whose ``buf_addr`` holds the
+    buffer's address, and the buffer, which holds the packet bytes. So each element is drawn
+    split, the mbuf half in the mbuf's colour and the buffer half in memory's, and a legend
+    names both. The pool is neither one nor the other: it is the set. No element is
+    numbered, none shows a state, and no address is written — nothing moves.
+
+    Returns ``VGroup(panel, elements, legend, title)``; each element is
+    ``VGroup(mbuf_half, buffer_half)``, each half its rectangle and any label inside it.
+    """
+    memory, mbuf = theme.role("memory"), theme.role("mbuf")
+    pointer = theme.role("pointer").hue
+    panel = _panel(box, target, memory.hue, memory.surface)
+    title = _title_inside("mempool", panel, target, memory.hue)
+    count = max(4, min(int(actor.props.get("slots", 8)), 12))
+    width, _ = size_of(box, target)
+    inner = width * 0.9
+
+    # What the two halves are, once for the whole pool.
+    legend = VGroup(
+        VGroup(
+            _label("mbuf", target, "mono_s", mbuf.hue),
+            _label("·", target, "mono_s", mbuf.hue),
+            _label("buf_addr", target, "mono_s", pointer),
+        ).arrange(RIGHT, buff=units(10)),
+        _label("buffer · packet bytes", target, "mono_s", memory.hue),
+    ).arrange(RIGHT, buff=units(28))
+    if legend.width > inner:
+        legend.arrange(DOWN, buff=units(6), aligned_edge=LEFT)
+    if legend.width > inner:
+        legend.scale_to_fit_width(inner)
+    legend.move_to(panel.get_bottom() + UP * (legend.height / 2 + units(12)))
+
+    # The grid that gives the elements the most room in what is left.
+    top = title.get_bottom()[1] - units(10)
+    bottom = legend.get_top()[1] + units(16)
+    area = max(top - bottom, units(10))
+
+    def element_width(rows: int) -> float:
+        cols = math.ceil(count / rows)
+        return float(
+            min(
+                inner / (cols + (cols - 1) * 0.12),
+                area / (rows + (rows - 1) * 0.3) * _ELEMENT_ASPECT,
             )
-            for _ in range(slots)
-        ]
-    ).arrange(RIGHT, buff=slot_w * 0.25)
-    cells.move_to(center_of(box, target))
-    return VGroup(panel, cells, _title_inside("mempool", panel, target, role.hue))
+        )
+
+    # Full rows when they cost little room: a ragged last row reads as missing elements.
+    best = max(element_width(r) for r in range(1, count + 1))
+    full = [r for r in range(1, count + 1) if count % r == 0 and element_width(r) >= best * 0.85]
+    rows = max(full, key=element_width) if full else max(range(1, count + 1), key=element_width)
+    cols = math.ceil(count / rows)
+    element_w = element_width(rows)
+    element_h = element_w / _ELEMENT_ASPECT
+
+    def half(share: float, hue: str, fill: float, text: str) -> VGroup:
+        rect = RoundedRectangle(
+            width=element_w * share,
+            height=element_h,
+            corner_radius=min(units(4), element_h / 5),
+            stroke_color=hue,
+            stroke_width=1.6,
+            fill_color=hue,
+            fill_opacity=fill,
+        )
+        label = _label(text, target, "mono_s", hue)
+        # A label at its own size or not at all: the legend names the halves either way.
+        if label.width <= rect.width * 0.86 and label.height <= rect.height * 0.6:
+            return VGroup(rect, label.move_to(rect.get_center()))
+        return VGroup(rect)
+
+    elements = VGroup()
+    for _ in range(count):
+        element = VGroup(
+            half(_MBUF_SHARE, mbuf.hue, 0.3, "MBUF"),
+            half(_BUFFER_SHARE, memory.hue, 0.22, "BUFFER"),
+        ).arrange(RIGHT, buff=element_w * (1 - _MBUF_SHARE - _BUFFER_SHARE))
+        elements.add(element)
+    elements.arrange_in_grid(rows=rows, cols=cols, buff=(element_w * 0.12, element_h * 0.3))
+    elements.move_to(panel.get_center() * [1, 0, 1] + UP * (top + bottom) / 2)
+    return VGroup(panel, elements, legend, title)
 
 
 def draw_mbuf(actor: Actor, box: Box, target: Target, theme: Theme) -> VGroup:

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="data:," />
+    <title>Zero Copy · AxioByte</title>
+  </head>
+  <body class="video-body">
+    <!-- 1920x1080 composition. The WebGL canvas renders into #render-host and
+         is composited into #out; only #out is ever captured. -->
+    <div id="viewport-wrap">
+      <div id="stage">
+        <div id="render-host"></div>
+        <div id="out-host"></div>
+      </div>
+    </div>
+    <!-- The voiceover is the episode's voiceover.mp3; the preview plays a copy from out/ (gitignored).
+         The offline renderer never loads it: it is given the audio file directly. -->
+    <audio id="voiceover" data-src="../out/voiceover.mp3" preload="auto"></audio>
+    <div id="hud-root"></div>
+    <div id="video-fallback" hidden>
+      <h2>WebGL 2 required</h2>
+      <p>This page renders the 3D film. Enable hardware acceleration and reload.</p>
+    </div>
+    <script type="module" src="./video-main.js"></script>
+  </body>
+</html>

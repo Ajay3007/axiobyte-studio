@@ -1,0 +1,90 @@
+==================================================
+AXIOBYTE — E02 SOCIAL CAPTION
+==================================================
+
+Episode: s01e02-zero-copy — "Zero-copy — a packet is just a pointer"
+
+
+TITLE:
+
+Zero Copy Explained: Why a Packet Is Just a Pointer (DPDK mbuf & mempool)
+
+
+SHORT DESCRIPTION:
+
+Zero copy in one picture: the NIC writes a packet into a buffer by DMA, and from then on the bytes stay put. Only a small handle — the mbuf, with the buffer's address — moves through the pipeline.
+
+
+==================================================
+INSTAGRAM CAPTION (@axiobyte)
+==================================================
+
+What if a packet never had to move?
+
+In the traditional path, the NIC writes a packet into a buffer by DMA. Then the CPU copies those bytes into another buffer, and often copies them again. Every copy costs CPU cycles, memory bandwidth and cache.
+
+Zero copy stops moving the bytes.
+
+→ A mempool is set up before any packet arrives: a collection of mbuf + buffer elements.
+→ The NIC writes the incoming bytes straight into a buffer by DMA. No CPU, no allocation, no copy.
+→ The mbuf is small metadata: the packet length, protocol details and, most importantly, buf_addr, the address of the buffer. It is not the packet bytes.
+→ Parser, classifier, firewall, routing: every stage gets a handle to the same buffer. The buffer never moves. Even a header edit happens in place.
+→ The NIC transmits from that same buffer.
+
+A pointer is typically 8 bytes on a 64-bit system. A payload is hundreds to thousands of bytes. Multiply that by millions of packets a second.
+
+The bytes stay in the buffer. Only the pointer moves.
+
+#ZeroCopy #DPDK #Networking #SystemsProgramming #HighPerformanceNetworking #PacketProcessing #CPlusPlus #ComputerSystems #AxioByte
+
+
+==================================================
+YOUTUBE DESCRIPTION (@theaxiobytes / AxioByte)
+==================================================
+
+A packet is often best thought of not as a collection of bytes, but as a pointer to those bytes. This episode shows why, one step at a time.
+
+THE COPY TAX
+In traditional networking, the NIC writes an incoming packet into a buffer by DMA (Direct Memory Access). Then the CPU copies those bytes into another buffer for processing, and may copy them again before transmission. Every one of those copies consumes CPU cycles, memory bandwidth and cache.
+
+ZERO COPY
+High-performance networking takes a different approach: instead of copying the packet, it passes a reference to it.
+
+THE MBUF
+What gets passed is an mbuf: a small metadata structure that describes the packet. It holds information like the packet length, protocol details and, most importantly, buf_addr, the exact memory address where the packet's bytes live. The mbuf is metadata, not the packet bytes.
+
+THE MEMPOOL
+Before any packet arrives, DPDK sets up a mempool: a collection of fixed-size elements, each an mbuf paired with a packet buffer. The film follows one element as an example.
+
+DMA INTO THE BUFFER
+When a packet arrives, the NIC uses DMA to write the bytes from the wire straight into a buffer from the mempool. No CPU involvement, no dynamic memory allocation, no copy.
+
+ONE BUFFER, EVERY STAGE
+From that moment on, every stage works on the same buffer. The parser, the classifier, the firewall and the routing logic each receive the same mbuf: a handle that points to the original buffer. The buffer never moves. Even when a header needs to change, it is edited in place, right where the NIC wrote it.
+
+WHY IT IS CHEAP
+Passing a pointer costs about 8 bytes on a 64-bit system, compared with copying hundreds or thousands of bytes for every packet. At millions of packets a second, eliminating those copies reduces CPU overhead, lowers memory bandwidth usage and improves cache efficiency.
+
+TRANSMIT
+When processing is complete, the NIC transmits the packet from that same buffer, by DMA.
+
+THE IDEA
+The packet bytes are written once and never copied. Only the handle travels from stage to stage.
+
+The bytes stay in the buffer. Only the pointer moves.
+
+CHAPTERS
+0:00 The copy tax
+0:46 Zero copy: pass a reference
+0:55 The mbuf: metadata, not bytes
+1:13 The mempool: mbuf + buffer elements
+1:32 DMA into the buffer
+1:44 One buffer through every stage
+2:12 Edited in place
+2:22 Only the pointer moves
+3:07 Transmit from the same buffer
+
+
+HASHTAGS:
+
+#ZeroCopy #DPDK #Networking #SystemsProgramming #PacketProcessing #HighPerformanceNetworking #ComputerSystems

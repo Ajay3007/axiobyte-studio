@@ -15,6 +15,23 @@ acts:
         concept: copy_based
         refutes: CB-M1
         intent: "the word 'copied' lands on the first red translation"
+      # Sentences 5-7: the traditional path as three separate actions. The first is the NIC's
+      # own write (DMA, not a copy, never red); the next two are the CPU copying (red).
+      - id: traditional.receive
+        cue: "receives@5"
+        concept: dma
+        objective: DMA-1
+        intent: "the NIC writes the packet into the first buffer by DMA — drawn in the packet's colour, labelled DMA, never as a red copy"
+      - id: traditional.copy
+        cue: "copied@6"
+        concept: copy_based
+        objective: CB-1
+        intent: "the CPU copies the bytes from the first buffer into a second: the first red copy"
+      - id: traditional.copy_again
+        cue: "copied@7"
+        concept: copy_based
+        objective: CB-1
+        intent: "the CPU copies them again, towards the application and transmission: the second red copy"
 
   - id: zerocopy
     keyword: "ZERO COPY"
@@ -36,3 +53,128 @@ acts:
         concept: zero_copy
         refutes: ZC-M3
         intent: "zoom the mbuf: metadata, and buf_addr in the pointer's colour"
+      # Sentences 14-46: the zero-copy story, on the narration's own words. One representative
+      # pool element carries it — illustrative, chosen when drawn, never named. Its BUFFER half
+      # holds the packet bytes; its MBUF half is metadata whose buf_addr names that buffer. Only
+      # the handle travels. Narration words like "free", "ready" or "returned" stay narration:
+      # no beat declares a state.
+      - id: zerocopy.metadata
+        cue: "metadata@14"
+        concept: zero_copy
+        refutes: ZC-M3
+        intent: "the mbuf is metadata attached to the packet's buffer, not the packet: its MBUF half sits beside the BUFFER half that holds the bytes"
+      - id: zerocopy.buf_addr
+        cue: "address@15"
+        concept: mbuf
+        objective: MBUF-1
+        intent: "buf_addr, in the pointer's colour: the address where the payload begins, in the buffer — the mbuf holds the address, never the bytes"
+      - id: zerocopy.bytes_live
+        cue: "live@16"
+        concept: memory_buffer
+        objective: BUF-1
+        intent: "the bytes live in a buffer: a fixed region at a fixed address"
+      - id: zerocopy.pool
+        cue: "allocates@17"
+        concept: mempool
+        objective: POOL-1
+        intent: "the pool, prepared before any packet: identical elements, each an mbuf with its buffer, all empty — the element model, not an allocation state"
+      - id: zerocopy.mempool
+        cue: "mempool@18"
+        concept: mempool
+        objective: POOL-1
+        intent: "the pool is named: the set of mbuf + buffer elements, never one buffer and never one mbuf"
+      - id: zerocopy.warehouse
+        cue: "warehouse@19"
+        intent: "(sentences 19-20) the analogy: every element's buffer is empty; nothing is allocated when a packet arrives"
+      - id: zerocopy.dma
+        cue: "DMA@21"
+        concept: dma
+        objective: DMA-1
+        intent: "the NIC writes the bytes by DMA into the BUFFER half of one representative element (illustrative); the target is the buffer — never the pool, never the mbuf"
+      - id: zerocopy.no_cpu
+        cue: "involvement@22"
+        concept: dma
+        refutes: DMA-M1
+        intent: "no CPU involvement, no allocation, no copy: the core stays idle and nothing red appears"
+      - id: zerocopy.same_buffer
+        cue: "moment@23"
+        concept: zero_copy
+        objective: ZC-1
+        intent: "from here every stage works on the same buffer: the bytes stay where DMA wrote them"
+      - id: zerocopy.parser
+        cue: "receives@24"
+        concept: zero_copy
+        objective: ZC-2
+        intent: "the handle reaches the parser; the buffer and its bytes do not move"
+      - id: zerocopy.classifier
+        cue: "classifier@25"
+        concept: zero_copy
+        objective: ZC-2
+        intent: "the same handle reaches the classifier; only the handle moves"
+      - id: zerocopy.firewall
+        cue: "firewall@26"
+        concept: zero_copy
+        objective: ZC-2
+        intent: "the same handle reaches the firewall; only the handle moves"
+      - id: zerocopy.routing
+        cue: "routing@27"
+        concept: zero_copy
+        objective: ZC-2
+        intent: "the same handle reaches the routing logic; only the handle moves"
+      - id: zerocopy.handle
+        cue: "handle@28"
+        concept: pointer
+        objective: PTR-1
+        intent: "each stage holds a handle that points at the original buffer: an address, not the bytes"
+      - id: zerocopy.never_moves
+        cue: "never@29"
+        concept: zero_copy
+        objective: ZC-1
+        intent: "the buffer never moves"
+      - id: zerocopy.in_place
+        cue: "place@30"
+        concept: zero_copy
+        objective: ZC-1
+        intent: "(sentences 30-31) a header byte changes in place, inside the buffer — an edit, not a copy, and not red"
+      - id: zerocopy.key_idea
+        cue: "key@32"
+        intent: "(sentences 32-33) the key idea, stated: the packet is not travelling"
+      - id: zerocopy.only_pointer
+        cue: "pointer@34"
+        concept: zero_copy
+        refutes: ZC-M2
+        intent: "only the pointer travels; the bytes stay still"
+      - id: zerocopy.cheap
+        cue: "cheap@35"
+        concept: pointer
+        objective: PTR-1
+        intent: "(sentences 35-36) a pointer is about 8 bytes against hundreds or thousands of payload bytes"
+      - id: zerocopy.scale
+        cue: "millions@37"
+        intent: "(sentences 37-38) at millions of packets a second, copies would leave the CPU moving bytes instead of deciding"
+      - id: zerocopy.benefits
+        cue: "eliminating@39"
+        intent: "what removing the copies buys: CPU, memory bandwidth, cache, throughput"
+      - id: zerocopy.transmit
+        cue: "transmits@40"
+        concept: zero_copy
+        objective: ZC-1
+        intent: "the NIC transmits from the same buffer by a DMA read: the bytes DMA wrote are the bytes sent"
+      - id: zerocopy.reuse
+        cue: "reused@41"
+        intent: "the narration returns the buffer to the pool for the next packet; no state is drawn — the emphasis on the representative (illustrative) element simply clears"
+      - id: zerocopy.once
+        cue: "once@42"
+        concept: zero_copy
+        objective: ZC-1
+        intent: "(sentences 42-43) the buffer was set up once and never copied"
+      - id: zerocopy.handle_passed
+        cue: "handle@44"
+        concept: zero_copy
+        objective: ZC-2
+        intent: "only the mbuf, the handle, passed between components"
+      - id: zerocopy.payoff
+        cue: "pointer@45"
+        concept: zero_copy
+        objective: ZC-2
+        intent: "(sentences 45-46) the payoff frame: still bytes in one buffer, the stages, one yellow handle, no red"

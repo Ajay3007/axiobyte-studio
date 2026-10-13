@@ -198,7 +198,7 @@ assets:
         fidelity: iso
 
     experience: experiences/computing/cpu
-    episodes: [s01e01-kernel-slow]      # through its Manim actor; no episode uses the Three.js model yet
+    episodes: [s01e01-kernel-slow, s01e02-zero-copy]   # s01e01 through its Manim actor; s01e02's Three.js film
 
     known_limitations:
       - One generic package with one die. Core count, cache size, the region layout and the land
@@ -350,7 +350,7 @@ assets:
       The metadata a packet is handled by: bookkeeping fields and buf_addr, the reference to the
       buffer that holds the packet's bytes. Never the bytes themselves.
     version: 1.0.0
-    status: prototype         # a Manim actor, no page yet; production needs its page (README §8)
+    status: prototype         # a Manim actor and a Three.js model, no page yet; production needs its page (README §8)
     quality: micro
     concept: mbuf
 
@@ -360,31 +360,96 @@ assets:
     parts:
       - fields
 
-    # Nothing attaches to an mbuf. Its buffer is a host-memory part (packet-buffer-region), so the
-    # mbuf may refer to host memory. It resides in its mempool (resides_in: [mempool]), not directly
+    # Nothing attaches to an mbuf. Its buf_addr holds the address of a packet buffer — the object the
+    # bytes are in — so the mbuf may refer to packet_buffer; host memory is only where that buffer
+    # lives, not what buf_addr names. It resides in its mempool (resides_in: [mempool]), not directly
     # in host memory; where the pool lies in host memory is chosen by the composition that places it.
     ports: []
     resides_in: [mempool]
-    refers_to: [host_memory]
+    refers_to: [packet_buffer]
 
     implementations:
+      three:
+        path: renderers/three/src/domains/memory/mbuf
+        entry: Mbuf.js                  # createMbuf() → { root, components, … }
+        metadata: metadata.js           # MBUF_METADATA, keyed by part id
+        presets: [overview, buf_addr]
+        fidelity: live
       manim:
         path: src/axiobyte_studio/actors/library.py
         actor: mbuf                     # drawn flat (draw_mbuf): one card of fields, buf_addr in the pointer's colour
         fidelity: flat
 
-    episodes: [s01e02-zero-copy]        # through its Manim actor
+    episodes: [s01e02-zero-copy]        # through its Manim actor, and the episode's Three.js film
 
     known_limitations:
-      - A Manim actor only, with no Three.js model and no page, so it stays a prototype.
+      - A Manim actor and a Three.js model, but no page of its own, so it stays a prototype.
+      - The Three.js model is one raised record with a strip per field it shows (data_len, refcount,
+        buf_addr) and no values; buf_addr is drawn in the pointer's colour with a socket at the
+        record's edge, its anchor. The reference to the buffer is drawn by a composition, never by
+        the asset.
       - The Manim drawing shows data_len, refcount and buf_addr. next is an anchor of the concept and
         the actor but is not drawn, and mbuf chaining is not modelled.
       - The mbuf resides in its mempool (its resides_in is [mempool]) and declares no residence in
         host memory; the pool's host-memory part is chosen by the composition that places it.
-      - refers_to names host_memory as a whole asset; the buffer it refers to is in host memory's
-        packet-buffer-region, which a composition names as the reference's target.
+      - refers_to names packet_buffer, the asset buf_addr points at; a composition names one of its
+        parts as the reference's target (header, where the buffer's first byte is). Where that buffer
+        lives (host memory, a mempool element) is the buffer's residence, not the mbuf's reference.
       - Ownership, allocation and the pooled, attached and freed states are runtime, not modelled;
         the actor's release ends in freed rather than returning the mbuf to its pool.
+
+  - id: packet_buffer
+    title: Packet Buffer
+    summary: >
+      The memory buffer that holds one packet's bytes — its header first, then its payload. The
+      bytes live here; an mbuf's buf_addr, a pointer or a handle holds this buffer's address, never
+      a copy of its bytes.
+    version: 1.0.0
+    status: prototype         # a Three.js model, no page yet; production needs its page (README §8)
+    quality: micro
+    # A qualified asset id (README §2): this is the packet-oriented 3D depiction of the existing
+    # memory_buffer concept — the Studio's one concept for the buffer that holds a packet's bytes,
+    # whose display name is already "packet buffer" (docs/architecture/buffer-family-decision.md).
+    # There is no packet_buffer concept.
+    concept: memory_buffer
+
+    # Two semantic parts: the two regions the packet's bytes are in, in byte order. The frame that
+    # holds them is the buffer itself, not a part. The concept's address (its start) is
+    # pointer_target, the buffer's first byte, beside center, dma_target and read.
+    parts:
+      - header
+      - payload
+
+    # Nothing attaches to a buffer, and it refers to nothing: it holds bytes, not references. DMA
+    # (written into, read from) and buf_addr (pointed at) are interactions and references a
+    # composition draws, not ports. It may reside in host memory (its packet-buffer-region) or be the
+    # storage of a mempool element; which, is chosen by the composition that places one.
+    ports: []
+    resides_in: [host_memory, mempool]
+
+    implementations:
+      three:
+        path: renderers/three/src/domains/memory/packet-buffer
+        entry: PacketBuffer.js          # createPacketBuffer() → { root, components, header, … }
+        metadata: metadata.js           # PACKET_BUFFER_METADATA, keyed by part id
+        presets: [overview, header]
+        fidelity: live
+
+    episodes: [s01e02-zero-copy]        # the episode's Three.js film (buffers A and B)
+
+    known_limitations:
+      - A Three.js model only, with no page of its own, so it stays a prototype. Its concept's flat
+        Manim form is the existing memory_buffer actor (titled "packet buffer"), which episodes cast
+        directly; it is not registered as this asset's implementation, so no episode renders this
+        asset yet.
+      - Six header bytes and twenty payload bytes, an illustrative count; the cells are abstract
+        bytes — occupancy, not values — and no protocol, field or length is modelled.
+      - Address-neutral and stateless — no concrete address, no free, filled or in-use. The header’s
+        bytes are separate meshes with their own materials so a film can edit them in place; the
+        asset itself never animates.
+      - The existing Mempool still draws each element's buffer as the BUFFER half of its tile; it
+        does not compose this asset. Host memory's packet-buffer-region still draws its own
+        illustrative buffers.
 
   - id: mempool
     title: Mempool
@@ -426,8 +491,9 @@ assets:
       - A Manim actor and a Three.js model, but no page of its own, so it stays a prototype. It
         appears inside the released nic_host composition, disclosed there as a prototype
         (docs/asset-library/README.md §8); that does not release it.
-      - The Manim drawing shows identical slots, not each element's mbuf and buffer apart, and its
-        description still calls them buffers.
+      - The Manim actor draws every element as its mbuf half and its buffer half, named by a legend
+        ("mbuf · buf_addr", "buffer · packet bytes"); each half carries its own label only where
+        the element is large enough. Its element count is illustrative (4–12).
       - Allocation, free and in-use state, and ownership of what the pool has handed out, are runtime
         and not modelled.
       - Elements have no individual identity, so which mbuf goes with which buffer is not named.

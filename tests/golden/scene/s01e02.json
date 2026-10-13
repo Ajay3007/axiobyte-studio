@@ -41,7 +41,7 @@
         "address": "0x7f3a4c00",
         "by": "mbuf#1",
         "bytes": 1500,
-        "into": "mempool#1",
+        "into": "memory_buffer#1",
         "proto": "tcp",
         "to": "parser"
       },
@@ -85,37 +85,37 @@
     {
       "action": "dma_write",
       "actor": "packet#trad",
-      "at": 20.0,
+      "at": 29.721,
       "state": "on_wire->in_buffer"
     },
     {
       "action": "copy",
       "actor": "packet#trad",
-      "at": 25.4,
+      "at": 32.807,
       "state": "in_buffer->in_buffer"
     },
     {
       "action": "copy",
       "actor": "packet#trad",
-      "at": 26.3,
+      "at": 35.953,
       "state": "in_buffer->in_buffer"
     },
     {
       "action": "dma_write",
       "actor": "packet#1",
-      "at": 68.4,
+      "at": 92.09,
       "state": "on_wire->in_buffer"
     },
     {
       "action": "reference",
       "actor": "packet#1",
-      "at": 96.2,
+      "at": 104.431,
       "state": "in_buffer->referenced"
     },
     {
       "action": "forward",
       "actor": "packet#1",
-      "at": 104.0,
+      "at": 110.062,
       "state": "referenced->referenced"
     }
   ]
