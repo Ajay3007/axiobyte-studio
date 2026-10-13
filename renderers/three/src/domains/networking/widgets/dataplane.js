@@ -349,8 +349,9 @@ export function descriptorRing({ start, end, at = [1400, 520], radius = 188, slo
  * `delays`) lets each part arrive on the word that names it rather than all at once:
  *   { nodes: [t0, t1, t2, t3], poll, mbufs, mempool }
  * Any field left out keeps its default; without `timing` the diagram builds exactly as before.
+ * `pool: false` leaves out the mempool panel, for a film that shows the mempool itself.
  */
-export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, width = 810, timing = null }) {
+export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, width = 810, timing = null, pool = true }) {
   const nodes = [
     { title: 'NIC · DMA', sub: 'writes the buffer, marks it done' },
     { title: 'DESCRIPTOR RING', sub: 'host memory' },
@@ -411,6 +412,7 @@ export function dpdkDiagram({ start, end, at = [980, 210], color = C.accent, wid
 
       // Mempool feeding mbufs into the worker. The mbufs and the pool they come from can
       // arrive separately (timing.mbufs, timing.mempool); by default they arrive together.
+      if (!pool) return;
       ctx.save();
       const base = ctx.globalAlpha;
       const mempoolAt = timing?.mempool ?? 3.0;

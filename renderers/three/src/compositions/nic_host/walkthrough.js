@@ -97,18 +97,15 @@ function frame(r, y) {
   return merged;
 }
 
-/**
- * The walkthrough over a built nic_host system. `camera` and `highlighter` are the world's (any
- * object with `solve`/`animateTo` and `setSelected` will do); both are only driven, never extended.
- */
-export function createReceiveWalkthrough(system, { camera = null, highlighter = null, reducedMotion = false } = {}) {
-  let group = null;
-  let material = null;
-  let index = -1;
-  let time = 0;
-  const dmaGroup = system.root.getObjectByName('interaction.dma');
-  let dmaBefore = true;
+/** The outline names: the picked slot, the picked element and its two halves, and the region. */
+export const OUTLINES = Object.freeze(['slot', 'buffer', 'element', 'mbuf', 'region']);
 
+/**
+ * One transient outline over a built nic_host system — the frame the walkthrough draws, and the
+ * film draws too (compositions/nic_host/video.js). The mesh lies in the composition root's frame,
+ * cannot be picked and is not added anywhere: the caller owns it, and its geometry.
+ */
+export function createOutline(system, name, material) {
   const assetRoot = (inst) => system.instances[inst].asset.root;
   /** A transform from an asset's own frame to the composition root's. */
   const toRoot = (inst) => {
@@ -135,6 +132,32 @@ export function createReceiveWalkthrough(system, { camera = null, highlighter = 
     },
   };
 
+  const { inst, rect, y } = TARGETS[name]();
+  const mesh = new THREE.Mesh(frame(rect, y), material);
+  mesh.renderOrder = 9;
+  mesh.raycast = () => {}; // never picked: presentation, not a part
+  if (inst) {
+    mesh.matrixAutoUpdate = false;
+    mesh.matrix.copy(toRoot(inst));
+  }
+  return mesh;
+}
+
+/**
+ * The walkthrough over a built nic_host system. `camera` and `highlighter` are the world's (any
+ * object with `solve`/`animateTo` and `setSelected` will do); both are only driven, never extended.
+ */
+export function createReceiveWalkthrough(system, { camera = null, highlighter = null, reducedMotion = false } = {}) {
+  let group = null;
+  let material = null;
+  let index = -1;
+  let time = 0;
+  const dmaGroup = system.root.getObjectByName('interaction.dma');
+  let dmaBefore = true;
+
+  const assetRoot = (inst) => system.instances[inst].asset.root;
+  const elementTop = TRAY.h + ELEMENT.h;
+
   function clearOutlines() {
     if (!group) return;
     group.children.forEach((m) => m.geometry.dispose());
@@ -142,15 +165,8 @@ export function createReceiveWalkthrough(system, { camera = null, highlighter = 
   }
 
   function outline(name) {
-    const { inst, rect, y } = TARGETS[name]();
-    const mesh = new THREE.Mesh(frame(rect, y), material);
+    const mesh = createOutline(system, name, material);
     mesh.name = `walkthrough-outline:${name}`;
-    mesh.renderOrder = 9;
-    mesh.raycast = () => {}; // never picked: presentation, not a part
-    if (inst) {
-      mesh.matrixAutoUpdate = false;
-      mesh.matrix.copy(toRoot(inst));
-    }
     group.add(mesh);
   }
 
