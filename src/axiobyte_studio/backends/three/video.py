@@ -14,6 +14,9 @@ import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 from axiobyte_studio.core.errors import StudioError
 from axiobyte_studio.storyboard.windows import ShotWindow
@@ -154,6 +157,12 @@ class ThreeShotJob:
         root = three_root()
         for tree in (root / "src", root / "tools", self.episode_root / "three"):
             _digest_tree(tree, digest)
-        digest.update((self.episode_root / "timeline" / "words.json").read_bytes())
+        digest.update(self._timeline().read_bytes())
         digest.update(json.dumps([self.window.frames(self.fps), self.fps, self.headless]).encode())
         return digest.hexdigest()
+
+    def _timeline(self) -> Path:
+        """The voiceover timeline ``episode.yaml`` declares, resolved as ``Episode.load`` does."""
+        manifest = self.episode_root / "episode.yaml"
+        raw: dict[str, Any] = yaml.safe_load(manifest.read_text(encoding="utf-8")) or {}
+        return self.episode_root / str(raw.get("voiceover", "timeline/words.json"))
