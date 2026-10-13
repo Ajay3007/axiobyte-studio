@@ -51,3 +51,10 @@ node_modules/
 # committed timeline/words.json, and episode.yaml pins the audio's sha256 so a
 # missing or re-recorded file fails loudly at compose time.
 episodes/*/audio/
+# ...and the same recording kept beside episode.yaml instead of in audio/ (s01e02 does).
+# The extensions are exactly those the tooling accepts (renderers/three/tools/lib/episode.mjs).
+episodes/*/voiceover.mpeg
+episodes/*/voiceover.mp3
+episodes/*/voiceover.wav
+episodes/*/voiceover.m4a
+episodes/*/voiceover.flac
