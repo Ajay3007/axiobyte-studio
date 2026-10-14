@@ -81,24 +81,31 @@ const CANONICAL_HANDLES = new Set(PLATFORMS.map(platformHandle));
  *
  * `target` (one of END_CARD_TARGETS; default '16x9') picks the frame format: '16x9' is the approved
  * landscape card below, '9x16' the portrait card (endCardLayout.js). It is independent of the platform.
+ *
+ * `handle: false` is the platform-neutral card: the logo and the call, no handle, for one master published
+ * to platforms whose handles differ (there is no shared handle). It names no platform, so it takes neither
+ * `platform` nor `brand`. The layout is unchanged; the handle's line is simply not drawn.
  */
-export function brandEndCard({ start, end, platform, brand, color = BRAND_COLOR, target = DEFAULT_END_CARD_TARGET }) {
+export function brandEndCard({ start, end, platform, brand, color = BRAND_COLOR, target = DEFAULT_END_CARD_TARGET, handle: showHandle = true }) {
   if (!END_CARD_TARGETS.includes(target)) {
     throw new Error(`AxioByte end card: unknown target "${String(target)}". Expected one of: ${END_CARD_TARGETS.join(', ')}`);
   }
   if (platform !== undefined && brand !== undefined) {
     throw new Error('AxioByte end card: pass a platform or a brand record, not both');
   }
+  if (!showHandle && (platform !== undefined || brand !== undefined)) {
+    throw new Error('AxioByte end card: a neutral card (handle: false) names no platform — pass neither platform nor brand');
+  }
   if (brand !== undefined && !CANONICAL_HANDLES.has(brand.handle)) {
     throw new Error(`AxioByte end card: "${String(brand.handle)}" is not a platform handle. Expected one of: ${[...CANONICAL_HANDLES].join(', ')}`);
   }
-  const resolved = brand === undefined ? (platform ?? DEFAULT_PLATFORM) : null;
-  const handle = resolved === null ? brand.handle : platformHandle(resolved);
+  const resolved = showHandle && brand === undefined ? (platform ?? DEFAULT_PLATFORM) : null;
+  const handle = !showHandle ? null : resolved === null ? brand.handle : platformHandle(resolved);
   brand ??= BRAND;
   const lines = [
     { key: 'call', text: brand.cta, style: CTA_TYPE.call, ink: color.textPrimary, y: END_CARD_LAYOUT.callY },
     { key: 'handle', text: handle, style: CTA_TYPE.handle, ink: color.textPrimary, y: END_CARD_LAYOUT.handleY },
-  ];
+  ].filter((line) => line.text !== null);
   return {
     id: 'brand:end-card',
     role: 'endcard',
@@ -112,7 +119,7 @@ export function brandEndCard({ start, end, platform, brand, color = BRAND_COLOR,
     target,
     logo: LOGO_ASSET,
     // The logo carries the brand name and the tagline; the card's own text is the call and the handle.
-    text: { logo: [LOGO.name, brand.tagline], call: [brand.cta], handle: [handle] },
+    text: { logo: [LOGO.name, brand.tagline], call: [brand.cta], handle: handle === null ? [] : [handle] },
     draw(ctx, k) {
       if (target === '9x16') {
         drawPortrait(ctx, k.local, { cta: brand.cta, handle, color });
@@ -254,7 +261,7 @@ function drawPortrait(ctx, t, { cta, handle, color }) {
     portraitCallLines(cta).forEach((line, i) => ctx.fillText(line, L.centreX, L.call.baselines[i] + (1 - call) * 12 * unit));
     ctx.restore();
   }
-  const h = at(END_CARD_TIMING.handle);
+  const h = handle === null ? 0 : at(END_CARD_TIMING.handle);
   if (h > 0.001) {
     ctx.save();
     ctx.globalAlpha = h;

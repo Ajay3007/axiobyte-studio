@@ -123,3 +123,45 @@ describe('nothing else moves', () => {
     expect({ copy: hue('copy'), packet: hue('packet'), pointer: hue('pointer') }).toEqual({ copy: '#FF5C55', packet: '#4AA8FF', pointer: '#F5D14F' });
   });
 });
+
+describe('the platform-neutral card (handle: false)', () => {
+  /** drawnText for a given frame size: the portrait card lays itself out from the canvas. */
+  const drawnAt = (cue, width, height) => {
+    const texts = [];
+    const ctx = new Proxy(
+      {},
+      {
+        get: (_, k) => {
+          if (k === 'canvas') return { width, height };
+          if (k === 'fillText') return (s) => texts.push(String(s));
+          if (k === 'measureText') return (s) => ({ width: String(s).length * 30 });
+          if (k === 'createRadialGradient') return () => ({ addColorStop() {} });
+          return () => {};
+        },
+        set: () => true,
+      },
+    );
+    cue.draw(ctx, { local: 3.0 });
+    return texts;
+  };
+
+  it('draws the logo and the call, and no handle, in both formats', () => {
+    for (const [target, w, h] of [['16x9', 1920, 1080], ['9x16', 1080, 1920]]) {
+      const cue = brandEndCard({ start: 0, end: 3.5, target, handle: false });
+      const texts = drawnAt(cue, w, h);
+      expect(texts.join(' ')).not.toMatch(/@/);
+      expect(cue.text.handle).toEqual([]);
+      expect(cue.platform).toBeNull();
+      expect(texts.join(' ').replace(/\s+/g, ' ')).toContain(BRAND.cta.split(' ')[0]);
+    }
+  });
+
+  it('names no platform: it refuses a platform or a brand record', () => {
+    expect(() => brandEndCard({ start: 0, end: 3.5, handle: false, platform: 'youtube' })).toThrow(/names no platform/);
+    expect(() => brandEndCard({ start: 0, end: 3.5, handle: false, brand: BRAND })).toThrow(/names no platform/);
+  });
+
+  it('leaves the default card exactly as it was: a handle, from the platform', () => {
+    expect(drawnHandle(brandEndCard({ start: 0, end: 3.5 }))).toBe(platformHandle(DEFAULT_PLATFORM));
+  });
+});

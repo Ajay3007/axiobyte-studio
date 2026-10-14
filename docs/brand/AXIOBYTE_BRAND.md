@@ -39,6 +39,7 @@ The handle depends on the platform. There is no single handle for every platform
 - The E02 caption already follows the policy: `@axiobyte` heads its Instagram section and `@theaxiobytes` its YouTube section.
 - The current Three.js brand layer holds **one** handle, `BRAND.handle = '@theaxiobytes'`. That is the YouTube handle, and it is correct for the 16:9 YouTube end card (E02).
 - The Three.js end card chooses the handle by platform (`brandEndCard({ …, platform })`, default `youtube`). See *End card → Call to action and handle*.
+- One master published to platforms with different handles (a 9:16 master for Reels **and** Shorts) uses the **platform-neutral** card, `brandEndCard({ …, handle: false })`: the logo and the call, no handle. It accepts no platform, so it can never show the wrong one.
 
 ## Logo — canonical source
 
