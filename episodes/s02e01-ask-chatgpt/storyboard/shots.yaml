@@ -1,0 +1,11 @@
+# One continuous Three.js world, cut into shots only so a movement can be re-rendered
+# on its own. Each shot's window runs from the silence before its first beat's
+# sentence, so the joins land between words; the picture is continuous across them.
+shots:
+  - { id: shot_0010_question,   act: question,   covers: [question.hook, question.typed, question.answer] }
+  - { id: shot_0020_tokens,     act: tokens,     covers: [tokens.stop, tokens.split, tokens.ids] }
+  - { id: shot_0030_numbers,    act: numbers,    covers: [numbers.unlock, numbers.similar] }
+  - { id: shot_0040_layers,     act: layers,     covers: [layers.flow, layers.attend, layers.blue, layers.why, layers.context] }
+  - { id: shot_0050_prediction, act: prediction, covers: [prediction.scores, prediction.probabilities, prediction.banana, prediction.chosen] }
+  - { id: shot_0060_generation, act: generation, covers: [generation.joins, generation.answer, generation.stop] }
+  - { id: shot_0070_ending,     act: ending,     covers: [ending.whole, ending.learned, ending.wrong, ending.predicted] }

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="data:," />
+    <title>What Happens When You Ask ChatGPT · AxioByte</title>
+    <!-- A 1080x1920 composition. The shared video.css lays out a 16:9 stage for
+         the preview; these rules size it for portrait. Only the composite
+         canvas (#out) is ever captured, so none of this reaches a frame. -->
+    <style>
+      #stage { width: 1080px; height: 1920px; }
+      #render-host canvas, #out-host, #out { width: 1080px !important; height: 1920px !important; }
+    </style>
+  </head>
+  <body class="video-body">
+    <div id="viewport-wrap">
+      <div id="stage">
+        <div id="render-host"></div>
+        <div id="out-host"></div>
+      </div>
+    </div>
+    <!-- audio/voiceover.mpeg is an MP3 stream; tools/prepare-audio.mjs copies it to
+         out/ for the preview. The renderer muxes the original. -->
+    <audio id="voiceover" data-src="../out/voiceover.mp3" preload="auto"></audio>
+    <div id="hud-root"></div>
+    <div id="video-fallback" hidden>
+      <h2>WebGL 2 required</h2>
+      <p>Enable hardware acceleration and reload.</p>
+    </div>
+    <script type="module" src="./video-main.js"></script>
+  </body>
+</html>

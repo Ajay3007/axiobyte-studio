@@ -1,0 +1,18 @@
+# Frame hashes of s02e01 (sha256 prefix of the PNG), recorded on 2026-10-14 after the final-review
+# pass (mobile-safe framing, illustrative labels, platform-neutral end card): one frame in each
+# movement, the end card last. macOS, Chrome headless shell, SwiftShader. Like the s01e03 baseline it
+# belongs to the Mac: other GPUs or Chrome builds may hash differently. Use it to prove a change
+# moved no pixel:
+#   node renderers/three/tools/check-determinism.mjs --episode episodes/s02e01-ask-chatgpt \
+#     --frames 75,300,1000,1560,2050,2300,2600,2850,3200,3420 \
+#     --expect episodes/s02e01-ask-chatgpt/three/determinism.baseline
+frame 75 8139159cfa5a4721
+frame 300 0a3481d05a998169
+frame 1000 d5cbcac702ab532b
+frame 1560 d00fce2309a2e740
+frame 2050 e824aec90b292cd0
+frame 2300 9f7a15d4780d8c0c
+frame 2600 1f3fb8aafba9feae
+frame 2850 f263613e21678790
+frame 3200 292e17d7350ceaa6
+frame 3420 137e018d8cd7cd65

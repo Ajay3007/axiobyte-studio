@@ -1,0 +1,31 @@
+id: s02e01-ask-chatgpt
+title: "What Actually Happens When You Ask ChatGPT a Question?"
+pillar: p02-ai-made-visual
+
+# Under three minutes: one native 9:16 master for Reels and Shorts. The Reels
+# interface zone contains Shorts', so `reels` clears both (docs/pillars/p02-ai-made-visual.md).
+targets: [9x16]
+platforms: { 9x16: reels }
+theme: systems
+
+# One continuous Three.js world, composed at 1080x1920 (three/video-main.js).
+renderer: three
+
+# A general audience: nothing is assumed.
+assumed: []
+
+# THE ONE RULE: every beat is a word start in this transcript — the creator's
+# timeline, kept byte-for-byte as delivered
+# (sha256 1deb6d91919bf79e95df499263c9fc9c1bf1e742f961da5c47e424cc0e589209).
+voiceover: "timeline/timeline.json"
+
+# The creator's ElevenLabs recording: local only (gitignored), refused by
+# `abs compose` if its hash differs.
+audio:
+  path: "audio/voiceover.mpeg"
+  sha256: 17e1229c33a73d9feac7f64e320e00c0b750fff819aa9462a46067560a102916
+  duration: 109.71
+
+# 1.5 s of picture after the last word, then the 3.5 s portrait end card
+# (three/storyboard.js END_CARD).
+tail: 5.0

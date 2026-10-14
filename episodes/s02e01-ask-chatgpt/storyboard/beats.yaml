@@ -1,0 +1,56 @@
+# Beats: one idea, landing on one spoken word of timeline/timeline.json. Acts are
+# the film's movements (three/storyboard.js sections). Cues use the transcript's
+# spelling ("ID", "Y"). No beat names a concept: the AI concepts are not in the
+# concept SDK yet; each beat's intent says what the picture explains.
+acts:
+  - id: question
+    keyword: "THE QUESTION"
+    beats:
+      - { id: question.hook, cue: "ChatGPT@0", intent: "the prompt bar: where every answer seems to come from" }
+      - { id: question.typed, cue: "Why@2", intent: "the question is typed on the words that speak it" }
+      - { id: question.answer, cue: "appears@3", intent: "an answer streams — the counter-picture" }
+
+  - id: tokens
+    keyword: "TOKENS"
+    beats:
+      - { id: tokens.stop, cue: "stop@4", intent: "the question stops being words: seams appear" }
+      - { id: tokens.split, cue: "tokens@5", intent: "small chunks of text; the question mark is its own" }
+      - { id: tokens.ids, cue: "ID@7", intent: "each token becomes a number — a label, nothing more" }
+
+  - id: numbers
+    keyword: "LEARNED NUMBERS"
+    beats:
+      - { id: numbers.unlock, cue: "unlocks@10", intent: "the ID unlocks a column of learned numbers" }
+      - { id: numbers.similar, cue: "similar@12", intent: "sky and cloud: similar use, similar numbers" }
+
+  - id: layers
+    keyword: "THE LAYERS"
+    beats:
+      - { id: layers.flow, cue: "flow@13", intent: "the columns stream up into the first layer, then the lanes climb" }
+      - { id: layers.attend, cue: "every@14", intent: "each position links to itself and earlier positions only" }
+      - { id: layers.blue, cue: "Blue@15", intent: "blue draws on sky" }
+      - { id: layers.why, cue: "Y@16", intent: "later positions draw on Why" }
+      - { id: layers.context, cue: "context@17", intent: "layer by layer, the last position carries the question" }
+
+  - id: prediction
+    keyword: "NEXT TOKEN"
+    beats:
+      - { id: prediction.scores, cue: "scores@19", intent: "a score for every token it knows" }
+      - { id: prediction.probabilities, cue: "probabilities@19", intent: "scores become a distribution" }
+      - { id: prediction.banana, cue: "Banana@21", intent: "almost no chance — a hairline" }
+      - { id: prediction.chosen, cue: "chosen@23", intent: "a weighted pick lands on The, not the likeliest" }
+
+  - id: generation
+    keyword: "ONE TOKEN AT A TIME"
+    beats:
+      - { id: generation.joins, cue: "joins@25", intent: "the new token joins the sequence; its links reach back" }
+      - { id: generation.answer, cue: "sky@26", intent: "the answer grows on the words that speak it" }
+      - { id: generation.stop, cue: "done@27", intent: "END, or the length limit" }
+
+  - id: ending
+    keyword: "ENDING"
+    beats:
+      - { id: ending.whole, cue: "own@28", intent: "the whole machine, alone: nothing is looked up" }
+      - { id: ending.learned, cue: "patterns@29", intent: "the layers hold what was learned" }
+      - { id: ending.wrong, cue: "confident@30", intent: "every word was a pick; fluent is not correct" }
+      - { id: ending.predicted, cue: "predicted@32", intent: "the answer streams again over its probabilities" }

@@ -1,0 +1,20 @@
+What actually happens when you ask ChatGPT a question?
+Let's follow one. Why is the sky blue?
+
+You press enter, and an answer appears, word by word. But first, your question has to stop being words.
+
+It's split into tokens: small chunks of text. Often a whole word. Sometimes part of a word, or a single mark, like that question mark.
+
+Each token becomes a number: its I D. But an I D is just a label, like a locker number. It says nothing about what "sky" means.
+
+So the I D unlocks a long list of numbers, learned in training. They capture how a token tends to be used, so "sky" and "cloud" end up with similar numbers.
+
+These numbers flow through layer after layer. In each layer, every token looks back over the tokens so far, and pulls in what matters. "Blue" draws on "sky". "Why" signals that a reason is wanted. Layer by layer, each token takes on context, until the last one carries a picture of the whole question.
+
+From that last token, the model predicts the next token. It scores every token it knows, and turns those scores into probabilities. "The" and "Sunlight" score high. "Banana"? Almost no chance. One is chosen, usually a likely one, but not always the likeliest.
+
+Then it does it all again. The new token joins the sequence, and the model predicts the next one. "The sky looks blue because sunlight..." Token by token, until it predicts the answer is done, or hits a limit.
+
+On its own, the model isn't looking the answer up. It's predicting it, from patterns learned from enormous amounts of text. That's why an answer can sound confident, and still be wrong.
+
+So next time an answer appears word by word, you're not watching it being typed. You're watching it being predicted.
