@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { CameraDirector } from './CameraDirector.js';
 import { Overlay } from './overlay/Overlay.js';
-import { W as OW, H as OH } from './overlay/theme.js';
+import { W, H } from './overlay/theme.js';
 
 const _v = new THREE.Vector3();
 
@@ -26,6 +26,9 @@ export class VideoDirector {
     // (e.g. the NIC's highlights, heatsink, packet flights, queue zones).
     this.animation = animation;
 
+    // The overlay is the film's frame: the engine's fixed size (1920x1080 for a
+    // 16:9 film, 1080x1920 for a portrait one), so labels and the 3D layer agree.
+    const { width: OW, height: OH } = world.engine.fixedSize ?? { width: W, height: H };
     this.overlay = new Overlay({ width: OW, height: OH });
     this.overlay.setCues(story.cues);
 
