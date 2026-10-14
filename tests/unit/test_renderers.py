@@ -29,6 +29,7 @@ from axiobyte_studio.storyboard.windows import shot_windows
 REPO = Path(__file__).resolve().parents[2]
 NIC = REPO / "episodes" / "s01e03-what-is-a-nic"
 ZERO_COPY = REPO / "episodes" / "s01e02-zero-copy"
+ASK = REPO / "episodes" / "s02e01-ask-chatgpt"
 
 
 @pytest.fixture
@@ -194,6 +195,22 @@ class TestRenderDispatch:
     def test_three_refuses_a_format_it_cannot_lay_out(self, nic: Episode):
         with pytest.raises(StudioError, match="cannot render 9x16"):
             render_episode(nic, targets=["9x16"], dry_run=True)
+
+    def test_a_portrait_three_episode_renders_its_own_frame(self):
+        ask = Episode.load(ASK)
+        result = render_episode(ask, dry_run=True)
+        assert ask.targets == ("9x16",)
+        assert len(result.shot_jobs) == 7
+        assert result.shot_jobs[-1].window.end == pytest.approx(ask.film_duration)
+
+    def test_a_portrait_three_episode_refuses_landscape(self):
+        with pytest.raises(StudioError, match="composed for 9x16 and cannot render 16x9"):
+            render_episode(Episode.load(ASK), targets=["16x9"], dry_run=True)
+
+    def test_three_renders_one_frame_per_episode(self, nic: Episode):
+        both = replace(nic, targets=("16x9", "9x16"))
+        with pytest.raises(StudioError, match="composed for a single frame"):
+            render_episode(both, dry_run=True)
 
     def test_a_mixed_episode_asks_each_backend_for_its_own_shots(self, scratch_nic: Path):
         shots = scratch_nic / "storyboard" / "shots.yaml"

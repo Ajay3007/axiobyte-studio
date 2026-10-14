@@ -35,9 +35,10 @@ from axiobyte_studio.storyboard.episode import Episode
 from axiobyte_studio.storyboard.plan import Plan, plan, require_ok
 from axiobyte_studio.storyboard.windows import shot_windows
 
-#: Formats the Three.js backend can render today: its overlay is laid out in
-#: absolute 1920x1080 pixels.
-THREE_TARGETS = frozenset({"16x9"})
+#: Frames the Three.js backend can lay out. An episode's Three.js page is
+#: composed for one of them (its video-main.js sets the frame), so a Three.js
+#: episode renders the one target it declares and no other.
+THREE_TARGETS = frozenset({"16x9", "9x16"})
 
 #: Draft first. A quality flag is the one place guessing is cheap.
 QUALITY = {"draft": "-ql", "medium": "-qm", "high": "-qh", "production": "-qk"}
@@ -445,13 +446,8 @@ def _render_shots(
     assert episode.shotlist is not None and checked.cues is not None  # the plan passed
     wanted = targets or list(episode.targets)
     three = episode.shotlist.by_renderer("three")
-    unsupported = sorted(set(wanted) - THREE_TARGETS) if three else []
-    if unsupported:
-        raise StudioError(
-            f"{episode.id}: the Three.js backend cannot render {', '.join(unsupported)} yet",
-            context={"three.js shots": str(len(three))},
-            fix="Render --target 16x9, or re-stage those shots in Manim (it lays out per target).",
-        )
+    if three:
+        _check_three_targets(episode, wanted, len(three))
 
     out = media_dir or episode.root / "out"
     result = RenderResult(plan=checked)
@@ -496,6 +492,30 @@ def _render_shots(
     for shot_job in result.shot_jobs:
         _run_three(shot_job, result, use_cache=use_cache)
     return result
+
+
+def _check_three_targets(episode: Episode, wanted: list[str], shots: int) -> None:
+    """Refuse a Three.js render its page cannot produce.
+
+    The page is laid out for one frame, and every shot's clip is written to the
+    same path whatever the target, so a Three.js episode renders exactly the one
+    format it declares.
+
+    Raises:
+        StudioError: A wanted target is not one the page is composed for.
+    """
+    declared = [t for t in episode.targets if t in THREE_TARGETS]
+    composed = declared[0] if len(declared) == 1 else None
+    refused = sorted({t for t in wanted if t != composed})
+    if refused:
+        page = composed or "a single frame"
+        raise StudioError(
+            f"{episode.id}: its Three.js page is composed for {page} and cannot render "
+            f"{', '.join(refused)}",
+            context={"three.js shots": str(shots), "declared targets": ", ".join(episode.targets)},
+            fix="Render the target episode.yaml declares, or re-stage those shots in Manim "
+            "(it lays out per target).",
+        )
 
 
 def _run_three(job: ThreeShotJob, result: RenderResult, *, use_cache: bool) -> None:
