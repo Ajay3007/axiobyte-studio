@@ -214,7 +214,9 @@ class TestPlanCascade:
     def test_inputs_reads_a_converted_line_ending_as_the_same_timeline(self, scratch: Path):
         timeline = scratch / "timeline" / "words.json"
         self._pin(scratch, f"\nvoiceover_sha256: {timeline_digest(timeline)}\n")
-        timeline.write_bytes(timeline.read_bytes().replace(b"\n", b"\r\n"))
+        # Every line ending CRLF, whichever the checkout started with (Windows' is already CRLF).
+        lf = timeline.read_bytes().replace(b"\r\n", b"\n")
+        timeline.write_bytes(lf.replace(b"\n", b"\r\n"))
         assert plan(Episode.load(scratch)).ok
 
     def test_inputs_catches_a_different_recording(self, scratch: Path):
