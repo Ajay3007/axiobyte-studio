@@ -10,8 +10,10 @@ review comment.**
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass, field
 from enum import StrEnum
+from pathlib import Path
 
 from axiobyte_studio.concepts.base import ConceptKind, InteractionConcept
 from axiobyte_studio.concepts.registry import ConceptRegistry, registry
@@ -109,6 +111,7 @@ def plan(episode: Episode, concepts: ConceptRegistry | None = None) -> Plan:
     sdk = concepts or registry()
     result = Plan(episode=episode)
 
+    _step_inputs(result)
     _step_cues(result)
     _step_closure(result, sdk)
     _step_focus(result, sdk)
@@ -124,6 +127,87 @@ def _record(result: Plan, name: str, before: int) -> None:
     """Mark a step passed or failed by whether it added errors."""
     added = [f for f in result.findings[before:] if f.severity is Severity.ERROR]
     result.steps.append((name, not added))
+
+
+# ---------------------------------------------------------------------------
+# 0. INPUTS — the voiceover and its timeline are the approved ones.
+# ---------------------------------------------------------------------------
+
+#: How far a pinned recording's length may differ from its timeline's (seconds).
+DURATION_TOLERANCE = 0.05
+
+
+def timeline_digest(path: Path) -> str:
+    """The sha256 a timeline is pinned by in ``episode.yaml`` (``voiceover_sha256``).
+
+    Line endings are read as LF, so a Windows checkout that converted them still
+    verifies; any other change to the file, however small, changes the digest.
+
+    Args:
+        path: The timeline file.
+
+    Returns:
+        The hex digest.
+    """
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def _step_inputs(result: Plan) -> None:
+    """The supplied inputs are byte-for-byte the approved ones.
+
+    Each check applies only to what the episode pins: ``voiceover_sha256`` (the
+    timeline), and ``audio.sha256`` / ``audio.duration`` (the recording). The
+    recording is a local, gitignored input, so a checkout without it is not an
+    error here; ``abs compose`` refuses to mix without it.
+    """
+    before = len(result.findings)
+    episode = result.episode
+    fail = "Restore the approved file. Supplied inputs are never edited to pass a check."
+
+    if episode.voiceover_sha256 and episode.voiceover and episode.voiceover.exists():
+        actual = timeline_digest(episode.voiceover)
+        if actual != episode.voiceover_sha256:
+            result.findings.append(
+                Finding(
+                    "inputs",
+                    Severity.ERROR,
+                    episode.voiceover.name,
+                    f"is not the approved timeline (pinned {episode.voiceover_sha256[:12]}…, "
+                    f"found {actual[:12]}…)",
+                    fail,
+                )
+            )
+
+    audio = episode.audio_path
+    pinned = str(episode.audio.get("sha256", ""))
+    if pinned and audio and audio.exists():
+        actual = hashlib.sha256(audio.read_bytes()).hexdigest()
+        if actual != pinned:
+            result.findings.append(
+                Finding(
+                    "inputs",
+                    Severity.ERROR,
+                    audio.name,
+                    f"is not the approved recording (pinned {pinned[:12]}…, found {actual[:12]}…)",
+                    fail,
+                )
+            )
+
+    length = episode.audio.get("duration")
+    if length is not None and episode.timeline:
+        gap = abs(float(length) - episode.timeline.duration)
+        if gap > DURATION_TOLERANCE:
+            result.findings.append(
+                Finding(
+                    "inputs",
+                    Severity.ERROR,
+                    episode.id,
+                    f"the recording is {float(length):.2f}s but the timeline is "
+                    f"{episode.timeline.duration:.2f}s: they do not belong together",
+                    "Use the timeline transcribed from this recording.",
+                )
+            )
+    _record(result, "inputs      voiceover and timeline are the approved ones", before)
 
 
 # ---------------------------------------------------------------------------

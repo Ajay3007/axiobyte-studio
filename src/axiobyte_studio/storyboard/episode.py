@@ -39,6 +39,9 @@ class Episode:
         beatmap: Its acts and beats.
         shotlist: Which staging covers which beats.
         timeline: Its voiceover.
+        voiceover: Where the timeline was loaded from.
+        voiceover_sha256: The approved timeline's digest, when pinned
+            (``timeline_digest``); ``abs plan`` refuses a timeline that differs.
         renderer: The default renderer for shots that do not name one.
         audio: The recorded voiceover, when declared: ``path`` (relative to the
             episode), ``sha256`` and ``duration``. Timing never comes from it —
@@ -58,6 +61,8 @@ class Episode:
     beatmap: BeatMap | None = None
     shotlist: ShotList | None = None
     timeline: Timeline | None = None
+    voiceover: Path | None = None
+    voiceover_sha256: str = ""
     renderer: str = DEFAULT_RENDERER
     audio: dict[str, Any] = field(default_factory=dict)
     tail: float = 0.0
@@ -106,6 +111,8 @@ class Episode:
             beatmap=beatmap,
             shotlist=ShotList.load(root / "storyboard" / "shots.yaml", beatmap, renderer),
             timeline=Timeline.load(timeline_path),
+            voiceover=timeline_path,
+            voiceover_sha256=str(raw.get("voiceover_sha256", "")),
             renderer=renderer,
             audio=dict(raw.get("audio") or {}),
             tail=float(raw.get("tail", 0.0)),

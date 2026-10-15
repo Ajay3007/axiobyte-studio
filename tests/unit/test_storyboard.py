@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import shutil
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from axiobyte_studio.storyboard import (
     require_ok,
     summarise_concepts,
 )
+from axiobyte_studio.storyboard.plan import timeline_digest
 
 REPO = Path(__file__).resolve().parents[2]
 EPISODE = REPO / "episodes" / "s01e02-zero-copy"
@@ -168,6 +170,7 @@ class TestPlanCascade:
     def test_steps_run_in_the_documented_order(self, episode: Episode):
         names = [name.split()[0] for name, _ in plan(episode).steps]
         assert names == [
+            "inputs",
             "cues",
             "closure",
             "focus",
@@ -180,6 +183,58 @@ class TestPlanCascade:
 
     def test_require_ok_is_a_no_op_when_sound(self, episode: Episode):
         require_ok(plan(episode))
+
+    @staticmethod
+    def _pin(scratch: Path, extra: str) -> None:
+        manifest = scratch / "episode.yaml"
+        manifest.write_text(manifest.read_text(encoding="utf-8") + extra, encoding="utf-8")
+
+    def test_inputs_accepts_the_pinned_timeline_and_recording(self, scratch: Path):
+        timeline = scratch / "timeline" / "words.json"
+        (scratch / "audio").mkdir(exist_ok=True)
+        (scratch / "audio" / "take.mp3").write_bytes(b"approved take")
+        length = Episode.load(scratch).duration
+        digest = hashlib.sha256(b"approved take").hexdigest()
+        self._pin(
+            scratch,
+            f"\nvoiceover_sha256: {timeline_digest(timeline)}\n"
+            f"audio: {{path: audio/take.mp3, sha256: {digest}, duration: {length:.2f}}}\n",
+        )
+        result = plan(Episode.load(scratch))
+        assert dict(result.steps)["inputs      voiceover and timeline are the approved ones"]
+
+    def test_inputs_catches_an_edited_timeline(self, scratch: Path):
+        timeline = scratch / "timeline" / "words.json"
+        self._pin(scratch, f"\nvoiceover_sha256: {timeline_digest(timeline)}\n")
+        timeline.write_text(timeline.read_text(encoding="utf-8") + " ", encoding="utf-8")
+        result = plan(Episode.load(scratch))
+        assert [f.step for f in result.errors] == ["inputs"]
+        assert "is not the approved timeline" in result.errors[0].message
+
+    def test_inputs_reads_a_converted_line_ending_as_the_same_timeline(self, scratch: Path):
+        timeline = scratch / "timeline" / "words.json"
+        self._pin(scratch, f"\nvoiceover_sha256: {timeline_digest(timeline)}\n")
+        timeline.write_bytes(timeline.read_bytes().replace(b"\n", b"\r\n"))
+        assert plan(Episode.load(scratch)).ok
+
+    def test_inputs_catches_a_different_recording(self, scratch: Path):
+        (scratch / "audio").mkdir(exist_ok=True)
+        (scratch / "audio" / "take.mp3").write_bytes(b"a re-recorded take")
+        pinned = hashlib.sha256(b"approved take").hexdigest()
+        self._pin(scratch, f"\naudio: {{path: audio/take.mp3, sha256: {pinned}}}\n")
+        result = plan(Episode.load(scratch))
+        assert [f.step for f in result.errors] == ["inputs"]
+        assert "is not the approved recording" in result.errors[0].message
+
+    def test_inputs_lets_a_checkout_without_the_local_recording_plan(self, scratch: Path):
+        self._pin(scratch, f"\naudio: {{path: audio/absent.mp3, sha256: {'0' * 64}}}\n")
+        assert plan(Episode.load(scratch)).ok
+
+    def test_inputs_catches_a_recording_and_timeline_of_different_lengths(self, scratch: Path):
+        length = Episode.load(scratch).duration
+        self._pin(scratch, f"\naudio: {{path: audio/absent.mp3, duration: {length + 0.5:.2f}}}\n")
+        result = plan(Episode.load(scratch))
+        assert [f.step for f in result.errors] == ["inputs"]
 
     def test_cues_catches_a_word_that_is_not_spoken(self, scratch: Path):
         beats = scratch / "storyboard" / "beats.yaml"
