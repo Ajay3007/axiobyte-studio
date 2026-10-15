@@ -1,0 +1,36 @@
+Ask an AI the same question twice.
+Why is the sky blue?
+
+You might get two different answers. One begins, "The sky looks blue because..." The other begins, "Sunlight is made of every color..." Neither one is a mistake.
+
+Same question. Same model. So what changed?
+
+Look at the first word.
+
+As we saw last time, the model scores every token it knows, and turns those scores into probabilities. In this example, "Sunlight" gets thirty percent. "The", twenty-six.
+
+Then one token is drawn, by chance. Think of a wheel where every token gets a slice, as wide as its probability. Wide slices win more often. But not every time.
+
+This spin lands on "The".
+
+Now rewind, and hold everything fixed. Same question. Same probabilities. Spin again.
+
+This time, "Sunlight" wins.
+
+One different word changes everything after it. The chosen token joins the sequence, and the next prediction starts from there. After "The", "sky" is likely. After "Sunlight", "is". Each new word brings new probabilities, and another spin.
+
+The two answers drift further apart with every step.
+
+Zoom out: one question becomes a tree of possible answers. Likely paths glow bright. Unlikely ones are faint, but still there. Each time you ask, it walks one path.
+
+How far it strays is shaped by a setting called temperature.
+
+Before the scores become probabilities, they're divided by the temperature. A low temperature stretches the gaps between them, so the top choices dominate. Answers become far more repeatable, though not always identical.
+
+A high temperature shrinks the gaps between the scores. The probabilities flatten. Unlikely tokens get a real chance, and answers vary more, sometimes wandering somewhere strange.
+
+Chance isn't the only reason answers differ. The conversation so far and the model version can matter too. But much of the variety starts right here.
+
+So when an answer comes out differently, nothing broke. It just took another path.
+
+Which raises a bigger question. How can an answer sound completely sure, and still be wrong? That's next.

@@ -1,0 +1,24 @@
+# Frame hashes of s02e02 (sha256 prefix of the PNG), recorded on 2026-10-15 from the approved
+# master (out/s02e02-review-candidate.mp4, sha256 bf979ca9…a1d2): one frame in each movement — the
+# two answers, scores to probabilities, the sample spins, the replay, the branches, the tree, low and
+# high temperature, the inputs, the next question — the end card last (the platform-neutral card,
+# so it hashes as s02e01's does). macOS, Chrome headless shell, SwiftShader. Like the s01e03 and
+# s02e01 baselines it belongs to the Mac: other GPUs or Chrome builds may hash differently. Use it
+# to prove a change moved no pixel.
+# Frames 540 and 3825 re-recorded on 2026-10-15 for the branding correction — the opening and closing
+# kickers now read ONE QUESTION, TWO ANSWERS and NEXT QUESTION (master out/s02e02-master-branding.mp4,
+# sha256 d2fdedc6…da79); the other nine frames are unchanged. To check:
+#   node renderers/three/tools/check-determinism.mjs --episode episodes/s02e02-different-answers \
+#     --frames 540,795,1248,1497,2061,2349,2922,3240,3513,3825,4035 \
+#     --expect episodes/s02e02-different-answers/three/determinism.baseline
+frame 540 d1750e0cd2dd4b93
+frame 795 ce5c8537d59b9d09
+frame 1248 95523aa3364dad6a
+frame 1497 430c43be9a94121c
+frame 2061 24fb17f24c667721
+frame 2349 3413165c99716551
+frame 2922 7b325e9f43bf73a2
+frame 3240 70aa9624b3ae2a46
+frame 3513 001975c4d56879ee
+frame 3825 c1c7f3ddbbadead6
+frame 4035 137e018d8cd7cd65

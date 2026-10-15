@@ -1,0 +1,4300 @@
+{
+  "meta": {
+    "audio_file": "s02ep02.mpeg",
+    "engine": "whisperx",
+    "model": "large-v3",
+    "language": "en",
+    "duration": 131.004
+  },
+  "words": [
+    {
+      "word": "Ask",
+      "start": 0.031,
+      "end": 0.412,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.822,
+      "sentence_index": 0,
+      "loudness_db": -37.4,
+      "pitch_hz": 159.4
+    },
+    {
+      "word": "an",
+      "start": 0.452,
+      "end": 0.512,
+      "duration": 0.06,
+      "importance": "medium",
+      "confidence": 0.977,
+      "sentence_index": 0,
+      "loudness_db": -24.4,
+      "pitch_hz": 279.3
+    },
+    {
+      "word": "AI",
+      "start": 0.732,
+      "end": 1.033,
+      "duration": 0.301,
+      "importance": "high",
+      "confidence": 0.728,
+      "sentence_index": 0,
+      "loudness_db": -19.9,
+      "pitch_hz": 122.6
+    },
+    {
+      "word": "the",
+      "start": 1.073,
+      "end": 1.213,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.752,
+      "sentence_index": 0,
+      "loudness_db": -26.8,
+      "pitch_hz": 98.9
+    },
+    {
+      "word": "same",
+      "start": 1.293,
+      "end": 1.514,
+      "duration": 0.221,
+      "importance": "low",
+      "confidence": 0.788,
+      "sentence_index": 0,
+      "loudness_db": -25.3,
+      "pitch_hz": 131.3
+    },
+    {
+      "word": "question",
+      "start": 1.634,
+      "end": 2.035,
+      "duration": 0.401,
+      "importance": "low",
+      "confidence": 0.85,
+      "sentence_index": 0,
+      "loudness_db": -28.4,
+      "pitch_hz": 105.1
+    },
+    {
+      "word": "twice.",
+      "start": 2.115,
+      "end": 2.556,
+      "duration": 0.441,
+      "importance": "medium",
+      "confidence": 0.714,
+      "sentence_index": 0,
+      "loudness_db": -34.8,
+      "pitch_hz": 107.4
+    },
+    {
+      "word": "Why",
+      "start": 3.457,
+      "end": 3.597,
+      "duration": 0.14,
+      "importance": "medium",
+      "confidence": 0.996,
+      "sentence_index": 1,
+      "loudness_db": -21.8,
+      "pitch_hz": 187.4
+    },
+    {
+      "word": "is",
+      "start": 3.658,
+      "end": 3.738,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.73,
+      "sentence_index": 1,
+      "loudness_db": -34.3,
+      "pitch_hz": 257.0
+    },
+    {
+      "word": "the",
+      "start": 3.758,
+      "end": 3.858,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.768,
+      "sentence_index": 1,
+      "loudness_db": -25.5,
+      "pitch_hz": 247.1
+    },
+    {
+      "word": "sky",
+      "start": 3.878,
+      "end": 4.118,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.888,
+      "sentence_index": 1,
+      "loudness_db": -24.8,
+      "pitch_hz": 167.3
+    },
+    {
+      "word": "blue?",
+      "start": 4.179,
+      "end": 4.399,
+      "duration": 0.22,
+      "importance": "high",
+      "confidence": 0.908,
+      "sentence_index": 1,
+      "loudness_db": -24.7,
+      "pitch_hz": 185.6
+    },
+    {
+      "word": "You",
+      "start": 5.321,
+      "end": 5.421,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.998,
+      "sentence_index": 2,
+      "loudness_db": -23.4,
+      "pitch_hz": 122.1
+    },
+    {
+      "word": "might",
+      "start": 5.481,
+      "end": 5.661,
+      "duration": 0.18,
+      "importance": "low",
+      "confidence": 0.666,
+      "sentence_index": 2,
+      "loudness_db": -27.7,
+      "pitch_hz": 218.9
+    },
+    {
+      "word": "get",
+      "start": 5.701,
+      "end": 5.842,
+      "duration": 0.141,
+      "importance": "low",
+      "confidence": 0.998,
+      "sentence_index": 2,
+      "loudness_db": -25.3,
+      "pitch_hz": 235.6
+    },
+    {
+      "word": "two",
+      "start": 5.862,
+      "end": 6.082,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.84,
+      "sentence_index": 2,
+      "loudness_db": -27.3,
+      "pitch_hz": 179.8
+    },
+    {
+      "word": "different",
+      "start": 6.142,
+      "end": 6.403,
+      "duration": 0.261,
+      "importance": "low",
+      "confidence": 0.895,
+      "sentence_index": 2,
+      "loudness_db": -23.8,
+      "pitch_hz": 121.7
+    },
+    {
+      "word": "answers.",
+      "start": 6.463,
+      "end": 6.803,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.859,
+      "sentence_index": 2,
+      "loudness_db": -33.0,
+      "pitch_hz": 105.5
+    },
+    {
+      "word": "One",
+      "start": 7.485,
+      "end": 7.585,
+      "duration": 0.1,
+      "importance": "medium",
+      "confidence": 0.818,
+      "sentence_index": 3,
+      "loudness_db": -22.6,
+      "pitch_hz": 207.1
+    },
+    {
+      "word": "begins,",
+      "start": 7.645,
+      "end": 8.026,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.932,
+      "sentence_index": 3,
+      "loudness_db": -26.2,
+      "pitch_hz": 97.6
+    },
+    {
+      "word": "the",
+      "start": 8.446,
+      "end": 8.526,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.833,
+      "sentence_index": 3,
+      "loudness_db": -24.9,
+      "pitch_hz": 123.2
+    },
+    {
+      "word": "sky",
+      "start": 8.566,
+      "end": 8.827,
+      "duration": 0.261,
+      "importance": "medium",
+      "confidence": 0.876,
+      "sentence_index": 3,
+      "loudness_db": -25.6,
+      "pitch_hz": 207.3
+    },
+    {
+      "word": "looks",
+      "start": 8.847,
+      "end": 9.047,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.777,
+      "sentence_index": 3,
+      "loudness_db": -28.0,
+      "pitch_hz": 223.0
+    },
+    {
+      "word": "blue",
+      "start": 9.128,
+      "end": 9.388,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.631,
+      "sentence_index": 3,
+      "loudness_db": -22.8,
+      "pitch_hz": 137.4
+    },
+    {
+      "word": "because…",
+      "start": 9.488,
+      "end": 9.889,
+      "duration": 0.401,
+      "importance": "low",
+      "confidence": 0.937,
+      "sentence_index": 3,
+      "loudness_db": -26.4,
+      "pitch_hz": 99.0
+    },
+    {
+      "word": "The",
+      "start": 10.57,
+      "end": 10.67,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.669,
+      "sentence_index": 4,
+      "loudness_db": -18.9,
+      "pitch_hz": 108.0
+    },
+    {
+      "word": "other",
+      "start": 10.73,
+      "end": 10.871,
+      "duration": 0.141,
+      "importance": "low",
+      "confidence": 0.802,
+      "sentence_index": 4,
+      "loudness_db": -21.8,
+      "pitch_hz": 195.2
+    },
+    {
+      "word": "begins,",
+      "start": 10.911,
+      "end": 11.271,
+      "duration": 0.36,
+      "importance": "low",
+      "confidence": 0.933,
+      "sentence_index": 4,
+      "loudness_db": -28.6,
+      "pitch_hz": 86.8
+    },
+    {
+      "word": "sunlight",
+      "start": 11.893,
+      "end": 12.273,
+      "duration": 0.38,
+      "importance": "medium",
+      "confidence": 0.839,
+      "sentence_index": 4,
+      "loudness_db": -25.1,
+      "pitch_hz": 213.8
+    },
+    {
+      "word": "is",
+      "start": 12.353,
+      "end": 12.413,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.767,
+      "sentence_index": 4,
+      "loudness_db": -24.5,
+      "pitch_hz": 133.0
+    },
+    {
+      "word": "made",
+      "start": 12.454,
+      "end": 12.614,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.858,
+      "sentence_index": 4,
+      "loudness_db": -20.1,
+      "pitch_hz": 128.7
+    },
+    {
+      "word": "of",
+      "start": 12.654,
+      "end": 12.694,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 1.0,
+      "sentence_index": 4,
+      "loudness_db": -31.3,
+      "pitch_hz": 102.4
+    },
+    {
+      "word": "every",
+      "start": 12.734,
+      "end": 13.235,
+      "duration": 0.501,
+      "importance": "low",
+      "confidence": 0.678,
+      "sentence_index": 4,
+      "loudness_db": -37.2,
+      "pitch_hz": 120.5
+    },
+    {
+      "word": "color.",
+      "start": 13.295,
+      "end": 13.596,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.865,
+      "sentence_index": 4,
+      "loudness_db": -29.2,
+      "pitch_hz": 102.2
+    },
+    {
+      "word": "Neither",
+      "start": 13.636,
+      "end": 15.199,
+      "duration": 1.563,
+      "importance": "medium",
+      "confidence": 0.925,
+      "sentence_index": 5,
+      "loudness_db": -49.3,
+      "pitch_hz": 126.6
+    },
+    {
+      "word": "one",
+      "start": 15.319,
+      "end": 15.399,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.894,
+      "sentence_index": 5,
+      "loudness_db": -22.2,
+      "pitch_hz": 155.2
+    },
+    {
+      "word": "is",
+      "start": 15.459,
+      "end": 15.519,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.781,
+      "sentence_index": 5,
+      "loudness_db": -21.2,
+      "pitch_hz": 129.6
+    },
+    {
+      "word": "a",
+      "start": 15.539,
+      "end": 15.579,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.499,
+      "sentence_index": 5,
+      "loudness_db": -23.4,
+      "pitch_hz": 120.6
+    },
+    {
+      "word": "mistake.",
+      "start": 15.619,
+      "end": 16.06,
+      "duration": 0.441,
+      "importance": "low",
+      "confidence": 0.764,
+      "sentence_index": 5,
+      "loudness_db": -30.3,
+      "pitch_hz": 143.1
+    },
+    {
+      "word": "Same",
+      "start": 16.541,
+      "end": 16.741,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.788,
+      "sentence_index": 6,
+      "loudness_db": -22.5,
+      "pitch_hz": 156.3
+    },
+    {
+      "word": "question,",
+      "start": 16.801,
+      "end": 17.182,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.709,
+      "sentence_index": 6,
+      "loudness_db": -26.4,
+      "pitch_hz": 150.5
+    },
+    {
+      "word": "same",
+      "start": 17.563,
+      "end": 17.783,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.87,
+      "sentence_index": 6,
+      "loudness_db": -22.1,
+      "pitch_hz": 112.9
+    },
+    {
+      "word": "model.",
+      "start": 17.863,
+      "end": 18.164,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.991,
+      "sentence_index": 6,
+      "loudness_db": -32.0,
+      "pitch_hz": 104.4
+    },
+    {
+      "word": "So",
+      "start": 18.685,
+      "end": 18.785,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.964,
+      "sentence_index": 7,
+      "loudness_db": -23.6,
+      "pitch_hz": 139.3
+    },
+    {
+      "word": "what",
+      "start": 18.845,
+      "end": 18.965,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.873,
+      "sentence_index": 7,
+      "loudness_db": -30.9,
+      "pitch_hz": 215.3
+    },
+    {
+      "word": "changed?",
+      "start": 19.025,
+      "end": 19.406,
+      "duration": 0.381,
+      "importance": "medium",
+      "confidence": 0.939,
+      "sentence_index": 7,
+      "loudness_db": -33.8,
+      "pitch_hz": 197.8
+    },
+    {
+      "word": "Look",
+      "start": 20.107,
+      "end": 20.268,
+      "duration": 0.161,
+      "importance": "medium",
+      "confidence": 0.844,
+      "sentence_index": 8,
+      "loudness_db": -22.9,
+      "pitch_hz": 219.6
+    },
+    {
+      "word": "at",
+      "start": 20.288,
+      "end": 20.328,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.946,
+      "sentence_index": 8,
+      "loudness_db": -25.9,
+      "pitch_hz": 261.7
+    },
+    {
+      "word": "the",
+      "start": 20.348,
+      "end": 20.448,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.666,
+      "sentence_index": 8,
+      "loudness_db": -31.0,
+      "pitch_hz": 243.5
+    },
+    {
+      "word": "first",
+      "start": 20.508,
+      "end": 20.749,
+      "duration": 0.241,
+      "importance": "low",
+      "confidence": 0.749,
+      "sentence_index": 8,
+      "loudness_db": -27.2,
+      "pitch_hz": 130.5
+    },
+    {
+      "word": "word.",
+      "start": 20.809,
+      "end": 21.55,
+      "duration": 0.741,
+      "importance": "low",
+      "confidence": 0.909,
+      "sentence_index": 8,
+      "loudness_db": -70.3,
+      "pitch_hz": 258.2
+    },
+    {
+      "word": "As",
+      "start": 21.55,
+      "end": 21.73,
+      "duration": 0.18,
+      "importance": "low",
+      "confidence": 0.728,
+      "sentence_index": 9,
+      "loudness_db": -28.7,
+      "pitch_hz": 163.4
+    },
+    {
+      "word": "we",
+      "start": 21.79,
+      "end": 21.87,
+      "duration": 0.08,
+      "importance": "medium",
+      "confidence": 0.992,
+      "sentence_index": 9,
+      "loudness_db": -24.8,
+      "pitch_hz": 261.5
+    },
+    {
+      "word": "saw",
+      "start": 21.91,
+      "end": 22.031,
+      "duration": 0.121,
+      "importance": "medium",
+      "confidence": 0.743,
+      "sentence_index": 9,
+      "loudness_db": -22.5,
+      "pitch_hz": 241.9
+    },
+    {
+      "word": "last",
+      "start": 22.071,
+      "end": 22.371,
+      "duration": 0.3,
+      "importance": "low",
+      "confidence": 0.623,
+      "sentence_index": 9,
+      "loudness_db": -22.6,
+      "pitch_hz": 120.9
+    },
+    {
+      "word": "time,",
+      "start": 22.431,
+      "end": 22.651,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.81,
+      "sentence_index": 9,
+      "loudness_db": -28.2,
+      "pitch_hz": 81.3
+    },
+    {
+      "word": "the",
+      "start": 22.691,
+      "end": 22.952,
+      "duration": 0.261,
+      "importance": "low",
+      "confidence": 0.932,
+      "sentence_index": 9,
+      "loudness_db": -33.8,
+      "pitch_hz": 109.8
+    },
+    {
+      "word": "model",
+      "start": 23.012,
+      "end": 23.292,
+      "duration": 0.28,
+      "importance": "medium",
+      "confidence": 0.943,
+      "sentence_index": 9,
+      "loudness_db": -25.2,
+      "pitch_hz": 233.0
+    },
+    {
+      "word": "scores",
+      "start": 23.332,
+      "end": 23.612,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.87,
+      "sentence_index": 9,
+      "loudness_db": -25.2,
+      "pitch_hz": 139.5
+    },
+    {
+      "word": "every",
+      "start": 23.632,
+      "end": 24.113,
+      "duration": 0.481,
+      "importance": "low",
+      "confidence": 0.65,
+      "sentence_index": 9,
+      "loudness_db": -37.0,
+      "pitch_hz": 136.8
+    },
+    {
+      "word": "token",
+      "start": 24.173,
+      "end": 24.493,
+      "duration": 0.32,
+      "importance": "low",
+      "confidence": 0.758,
+      "sentence_index": 9,
+      "loudness_db": -24.3,
+      "pitch_hz": 119.4
+    },
+    {
+      "word": "it",
+      "start": 24.533,
+      "end": 24.573,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.998,
+      "sentence_index": 9,
+      "loudness_db": -34.5,
+      "pitch_hz": 101.9
+    },
+    {
+      "word": "knows",
+      "start": 24.634,
+      "end": 24.934,
+      "duration": 0.3,
+      "importance": "low",
+      "confidence": 0.738,
+      "sentence_index": 9,
+      "loudness_db": -29.0,
+      "pitch_hz": 93.9
+    },
+    {
+      "word": "and",
+      "start": 25.134,
+      "end": 25.214,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.996,
+      "sentence_index": 9,
+      "loudness_db": -22.8,
+      "pitch_hz": 108.0
+    },
+    {
+      "word": "turns",
+      "start": 25.274,
+      "end": 25.515,
+      "duration": 0.241,
+      "importance": "low",
+      "confidence": 0.822,
+      "sentence_index": 9,
+      "loudness_db": -28.0,
+      "pitch_hz": 184.4
+    },
+    {
+      "word": "those",
+      "start": 25.575,
+      "end": 25.715,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.99,
+      "sentence_index": 9,
+      "loudness_db": -25.2,
+      "pitch_hz": 104.5
+    },
+    {
+      "word": "scores",
+      "start": 25.755,
+      "end": 26.055,
+      "duration": 0.3,
+      "importance": "low",
+      "confidence": 0.684,
+      "sentence_index": 9,
+      "loudness_db": -30.2,
+      "pitch_hz": 85.2
+    },
+    {
+      "word": "into",
+      "start": 26.095,
+      "end": 26.235,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.732,
+      "sentence_index": 9,
+      "loudness_db": -27.0,
+      "pitch_hz": 105.0
+    },
+    {
+      "word": "probabilities.",
+      "start": 26.315,
+      "end": 26.956,
+      "duration": 0.641,
+      "importance": "low",
+      "confidence": 0.83,
+      "sentence_index": 9,
+      "loudness_db": -28.7,
+      "pitch_hz": 138.9
+    },
+    {
+      "word": "In",
+      "start": 27.577,
+      "end": 27.637,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.994,
+      "sentence_index": 10,
+      "loudness_db": -22.0,
+      "pitch_hz": 110.9
+    },
+    {
+      "word": "this",
+      "start": 27.677,
+      "end": 27.797,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.845,
+      "sentence_index": 10,
+      "loudness_db": -21.9,
+      "pitch_hz": 207.7
+    },
+    {
+      "word": "example,",
+      "start": 27.877,
+      "end": 28.258,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.929,
+      "sentence_index": 10,
+      "loudness_db": -26.8,
+      "pitch_hz": 102.5
+    },
+    {
+      "word": "sunlight",
+      "start": 28.738,
+      "end": 29.179,
+      "duration": 0.441,
+      "importance": "low",
+      "confidence": 0.889,
+      "sentence_index": 10,
+      "loudness_db": -25.0,
+      "pitch_hz": 106.1
+    },
+    {
+      "word": "gets",
+      "start": 29.259,
+      "end": 29.399,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.664,
+      "sentence_index": 10,
+      "loudness_db": -28.0,
+      "pitch_hz": 111.2
+    },
+    {
+      "word": "30%.",
+      "start": 29.419,
+      "end": 29.739,
+      "duration": 0.32,
+      "importance": "medium",
+      "confidence": 0.844,
+      "sentence_index": 10,
+      "loudness_db": -29.8,
+      "pitch_hz": 142.2
+    },
+    {
+      "word": "The",
+      "start": 29.92,
+      "end": 30.861,
+      "duration": 0.941,
+      "importance": "high",
+      "confidence": 0.939,
+      "sentence_index": 11,
+      "loudness_db": -50.6,
+      "pitch_hz": 111.6
+    },
+    {
+      "word": "26.",
+      "start": 30.881,
+      "end": 31.421,
+      "duration": 0.54,
+      "importance": "high",
+      "confidence": 0.744,
+      "sentence_index": 11,
+      "loudness_db": -51.0,
+      "pitch_hz": 105.3
+    },
+    {
+      "word": "Then",
+      "start": 32.463,
+      "end": 32.643,
+      "duration": 0.18,
+      "importance": "medium",
+      "confidence": 0.95,
+      "sentence_index": 12,
+      "loudness_db": -22.3,
+      "pitch_hz": 217.2
+    },
+    {
+      "word": "one",
+      "start": 32.663,
+      "end": 33.123,
+      "duration": 0.46,
+      "importance": "medium",
+      "confidence": 0.564,
+      "sentence_index": 12,
+      "loudness_db": -25.4,
+      "pitch_hz": 143.5
+    },
+    {
+      "word": "token",
+      "start": 33.203,
+      "end": 33.484,
+      "duration": 0.281,
+      "importance": "low",
+      "confidence": 0.741,
+      "sentence_index": 12,
+      "loudness_db": -23.6,
+      "pitch_hz": 133.2
+    },
+    {
+      "word": "is",
+      "start": 33.564,
+      "end": 33.604,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.8,
+      "sentence_index": 12,
+      "loudness_db": -31.4,
+      "pitch_hz": 106.8
+    },
+    {
+      "word": "drawn,",
+      "start": 33.664,
+      "end": 33.984,
+      "duration": 0.32,
+      "importance": "low",
+      "confidence": 0.951,
+      "sentence_index": 12,
+      "loudness_db": -32.4,
+      "pitch_hz": 100.9
+    },
+    {
+      "word": "by",
+      "start": 34.245,
+      "end": 34.345,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.994,
+      "sentence_index": 12,
+      "loudness_db": -23.9,
+      "pitch_hz": 112.8
+    },
+    {
+      "word": "chance.",
+      "start": 34.405,
+      "end": 34.725,
+      "duration": 0.32,
+      "importance": "low",
+      "confidence": 0.859,
+      "sentence_index": 12,
+      "loudness_db": -31.9,
+      "pitch_hz": 117.5
+    },
+    {
+      "word": "Think",
+      "start": 35.326,
+      "end": 35.466,
+      "duration": 0.14,
+      "importance": "medium",
+      "confidence": 0.854,
+      "sentence_index": 13,
+      "loudness_db": -23.9,
+      "pitch_hz": 227.9
+    },
+    {
+      "word": "of",
+      "start": 35.526,
+      "end": 35.566,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 1.0,
+      "sentence_index": 13,
+      "loudness_db": -23.7,
+      "pitch_hz": 263.3
+    },
+    {
+      "word": "a",
+      "start": 35.626,
+      "end": 35.646,
+      "duration": 0.02,
+      "importance": "low",
+      "confidence": 0.996,
+      "sentence_index": 13,
+      "pitch_hz": 125.8
+    },
+    {
+      "word": "wheel",
+      "start": 35.726,
+      "end": 36.027,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.684,
+      "sentence_index": 13,
+      "loudness_db": -22.9,
+      "pitch_hz": 122.7
+    },
+    {
+      "word": "where",
+      "start": 36.107,
+      "end": 36.247,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.853,
+      "sentence_index": 13,
+      "loudness_db": -33.7,
+      "pitch_hz": 105.5
+    },
+    {
+      "word": "every",
+      "start": 36.407,
+      "end": 36.607,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.813,
+      "sentence_index": 13,
+      "loudness_db": -26.8,
+      "pitch_hz": 208.4
+    },
+    {
+      "word": "token",
+      "start": 36.667,
+      "end": 36.968,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.666,
+      "sentence_index": 13,
+      "loudness_db": -24.4,
+      "pitch_hz": 130.3
+    },
+    {
+      "word": "gets",
+      "start": 37.008,
+      "end": 37.148,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.791,
+      "sentence_index": 13,
+      "loudness_db": -29.4,
+      "pitch_hz": 107.1
+    },
+    {
+      "word": "a",
+      "start": 37.228,
+      "end": 37.248,
+      "duration": 0.02,
+      "importance": "low",
+      "confidence": 1.0,
+      "sentence_index": 13,
+      "pitch_hz": 85.1
+    },
+    {
+      "word": "slice",
+      "start": 37.328,
+      "end": 37.689,
+      "duration": 0.361,
+      "importance": "low",
+      "confidence": 0.941,
+      "sentence_index": 13,
+      "loudness_db": -30.7,
+      "pitch_hz": 108.0
+    },
+    {
+      "word": "as",
+      "start": 37.969,
+      "end": 38.029,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.76,
+      "sentence_index": 13,
+      "loudness_db": -29.1,
+      "pitch_hz": 101.0
+    },
+    {
+      "word": "wide",
+      "start": 38.169,
+      "end": 38.429,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.95,
+      "sentence_index": 13,
+      "loudness_db": -21.9,
+      "pitch_hz": 119.6
+    },
+    {
+      "word": "as",
+      "start": 38.469,
+      "end": 38.53,
+      "duration": 0.061,
+      "importance": "low",
+      "confidence": 0.958,
+      "sentence_index": 13,
+      "loudness_db": -29.1,
+      "pitch_hz": 116.4
+    },
+    {
+      "word": "its",
+      "start": 38.59,
+      "end": 38.67,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.8,
+      "sentence_index": 13,
+      "loudness_db": -40.0,
+      "pitch_hz": 69.9
+    },
+    {
+      "word": "probability.",
+      "start": 38.73,
+      "end": 39.29,
+      "duration": 0.56,
+      "importance": "low",
+      "confidence": 0.917,
+      "sentence_index": 13,
+      "loudness_db": -30.6,
+      "pitch_hz": 101.7
+    },
+    {
+      "word": "Wide",
+      "start": 39.891,
+      "end": 40.151,
+      "duration": 0.26,
+      "importance": "medium",
+      "confidence": 0.929,
+      "sentence_index": 14,
+      "loudness_db": -21.5,
+      "pitch_hz": 173.0
+    },
+    {
+      "word": "slices",
+      "start": 40.171,
+      "end": 40.552,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.86,
+      "sentence_index": 14,
+      "loudness_db": -26.6,
+      "pitch_hz": 100.5
+    },
+    {
+      "word": "win",
+      "start": 40.632,
+      "end": 40.792,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.88,
+      "sentence_index": 14,
+      "loudness_db": -23.2,
+      "pitch_hz": 107.1
+    },
+    {
+      "word": "more",
+      "start": 40.812,
+      "end": 40.972,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.666,
+      "sentence_index": 14,
+      "loudness_db": -22.7,
+      "pitch_hz": 112.9
+    },
+    {
+      "word": "often.",
+      "start": 41.072,
+      "end": 41.313,
+      "duration": 0.241,
+      "importance": "low",
+      "confidence": 0.996,
+      "sentence_index": 14,
+      "loudness_db": -40.6,
+      "pitch_hz": 152.9
+    },
+    {
+      "word": "But",
+      "start": 41.893,
+      "end": 41.993,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.835,
+      "sentence_index": 15,
+      "loudness_db": -26.8,
+      "pitch_hz": 112.8
+    },
+    {
+      "word": "not",
+      "start": 42.054,
+      "end": 42.234,
+      "duration": 0.18,
+      "importance": "medium",
+      "confidence": 0.859,
+      "sentence_index": 15,
+      "loudness_db": -29.1,
+      "pitch_hz": 253.0
+    },
+    {
+      "word": "every",
+      "start": 42.414,
+      "end": 42.634,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.959,
+      "sentence_index": 15,
+      "loudness_db": -27.8,
+      "pitch_hz": 118.4
+    },
+    {
+      "word": "time.",
+      "start": 42.694,
+      "end": 43.335,
+      "duration": 0.641,
+      "importance": "low",
+      "confidence": 0.955,
+      "sentence_index": 15,
+      "loudness_db": -64.7,
+      "pitch_hz": 228.2
+    },
+    {
+      "word": "This",
+      "start": 43.335,
+      "end": 43.595,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.757,
+      "sentence_index": 16,
+      "loudness_db": -31.3,
+      "pitch_hz": 187.8
+    },
+    {
+      "word": "spin",
+      "start": 43.655,
+      "end": 43.916,
+      "duration": 0.261,
+      "importance": "medium",
+      "confidence": 0.925,
+      "sentence_index": 16,
+      "loudness_db": -26.0,
+      "pitch_hz": 231.3
+    },
+    {
+      "word": "lands",
+      "start": 43.976,
+      "end": 44.236,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.883,
+      "sentence_index": 16,
+      "loudness_db": -23.9,
+      "pitch_hz": 140.4
+    },
+    {
+      "word": "on",
+      "start": 44.336,
+      "end": 44.416,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.98,
+      "sentence_index": 16,
+      "loudness_db": -23.4,
+      "pitch_hz": 118.2
+    },
+    {
+      "word": "the.",
+      "start": 44.456,
+      "end": 44.997,
+      "duration": 0.541,
+      "importance": "high",
+      "confidence": 0.937,
+      "sentence_index": 16,
+      "loudness_db": -37.2,
+      "pitch_hz": 103.1
+    },
+    {
+      "word": "Now,",
+      "start": 45.677,
+      "end": 45.838,
+      "duration": 0.161,
+      "importance": "medium",
+      "confidence": 0.947,
+      "sentence_index": 17,
+      "loudness_db": -20.8,
+      "pitch_hz": 122.4
+    },
+    {
+      "word": "rewind",
+      "start": 46.118,
+      "end": 46.638,
+      "duration": 0.52,
+      "importance": "medium",
+      "confidence": 0.839,
+      "sentence_index": 17,
+      "loudness_db": -22.3,
+      "pitch_hz": 141.2
+    },
+    {
+      "word": "and",
+      "start": 46.658,
+      "end": 46.819,
+      "duration": 0.161,
+      "importance": "low",
+      "confidence": 0.851,
+      "sentence_index": 17,
+      "loudness_db": -29.7,
+      "pitch_hz": 103.6
+    },
+    {
+      "word": "hold",
+      "start": 46.879,
+      "end": 47.039,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.585,
+      "sentence_index": 17,
+      "loudness_db": -23.6,
+      "pitch_hz": 109.7
+    },
+    {
+      "word": "everything",
+      "start": 47.079,
+      "end": 47.619,
+      "duration": 0.54,
+      "importance": "low",
+      "confidence": 0.831,
+      "sentence_index": 17,
+      "loudness_db": -33.5,
+      "pitch_hz": 113.2
+    },
+    {
+      "word": "fixed.",
+      "start": 47.699,
+      "end": 48.02,
+      "duration": 0.321,
+      "importance": "low",
+      "confidence": 0.885,
+      "sentence_index": 17,
+      "loudness_db": -35.5,
+      "pitch_hz": 86.0
+    },
+    {
+      "word": "Same",
+      "start": 48.5,
+      "end": 48.7,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.791,
+      "sentence_index": 18,
+      "loudness_db": -21.1,
+      "pitch_hz": 125.0
+    },
+    {
+      "word": "question,",
+      "start": 48.76,
+      "end": 49.161,
+      "duration": 0.401,
+      "importance": "low",
+      "confidence": 0.782,
+      "sentence_index": 18,
+      "loudness_db": -25.5,
+      "pitch_hz": 157.0
+    },
+    {
+      "word": "same",
+      "start": 49.501,
+      "end": 49.721,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.877,
+      "sentence_index": 18,
+      "loudness_db": -23.3,
+      "pitch_hz": 115.5
+    },
+    {
+      "word": "probabilities.",
+      "start": 49.782,
+      "end": 50.402,
+      "duration": 0.62,
+      "importance": "low",
+      "confidence": 0.892,
+      "sentence_index": 18,
+      "loudness_db": -28.9,
+      "pitch_hz": 114.2
+    },
+    {
+      "word": "Spin",
+      "start": 50.943,
+      "end": 51.143,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.902,
+      "sentence_index": 19,
+      "loudness_db": -26.1,
+      "pitch_hz": 102.6
+    },
+    {
+      "word": "again.",
+      "start": 51.183,
+      "end": 51.403,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.983,
+      "sentence_index": 19,
+      "loudness_db": -23.5,
+      "pitch_hz": 179.3
+    },
+    {
+      "word": "This",
+      "start": 51.463,
+      "end": 52.144,
+      "duration": 0.681,
+      "importance": "low",
+      "confidence": 0.897,
+      "sentence_index": 20,
+      "loudness_db": -64.2,
+      "pitch_hz": 201.0
+    },
+    {
+      "word": "time,",
+      "start": 52.204,
+      "end": 52.444,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.868,
+      "sentence_index": 20,
+      "loudness_db": -23.1,
+      "pitch_hz": 107.6
+    },
+    {
+      "word": "sunlight",
+      "start": 52.765,
+      "end": 53.165,
+      "duration": 0.4,
+      "importance": "medium",
+      "confidence": 0.802,
+      "sentence_index": 20,
+      "loudness_db": -26.6,
+      "pitch_hz": 213.8
+    },
+    {
+      "word": "wins.",
+      "start": 53.225,
+      "end": 53.485,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.914,
+      "sentence_index": 20,
+      "loudness_db": -36.3,
+      "pitch_hz": 121.0
+    },
+    {
+      "word": "One",
+      "start": 54.146,
+      "end": 54.266,
+      "duration": 0.12,
+      "importance": "medium",
+      "confidence": 0.502,
+      "sentence_index": 21,
+      "loudness_db": -23.3,
+      "pitch_hz": 214.3
+    },
+    {
+      "word": "different",
+      "start": 54.346,
+      "end": 54.626,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.896,
+      "sentence_index": 21,
+      "loudness_db": -27.8,
+      "pitch_hz": 231.2
+    },
+    {
+      "word": "word",
+      "start": 54.666,
+      "end": 54.907,
+      "duration": 0.241,
+      "importance": "low",
+      "confidence": 0.849,
+      "sentence_index": 21,
+      "loudness_db": -22.5,
+      "pitch_hz": 125.2
+    },
+    {
+      "word": "changes",
+      "start": 54.967,
+      "end": 55.287,
+      "duration": 0.32,
+      "importance": "low",
+      "confidence": 0.727,
+      "sentence_index": 21,
+      "loudness_db": -26.6,
+      "pitch_hz": 113.5
+    },
+    {
+      "word": "everything",
+      "start": 55.587,
+      "end": 55.968,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.86,
+      "sentence_index": 21,
+      "loudness_db": -27.5,
+      "pitch_hz": 106.0
+    },
+    {
+      "word": "after",
+      "start": 56.088,
+      "end": 56.308,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.88,
+      "sentence_index": 21,
+      "loudness_db": -36.2,
+      "pitch_hz": 116.1
+    },
+    {
+      "word": "it.",
+      "start": 56.388,
+      "end": 56.448,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.999,
+      "sentence_index": 21,
+      "loudness_db": -49.4,
+      "pitch_hz": 119.7
+    },
+    {
+      "word": "The",
+      "start": 56.909,
+      "end": 56.989,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.694,
+      "sentence_index": 22,
+      "loudness_db": -25.8,
+      "pitch_hz": 120.2
+    },
+    {
+      "word": "chosen",
+      "start": 57.049,
+      "end": 57.389,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.912,
+      "sentence_index": 22,
+      "loudness_db": -23.7,
+      "pitch_hz": 206.1
+    },
+    {
+      "word": "token",
+      "start": 57.429,
+      "end": 57.75,
+      "duration": 0.321,
+      "importance": "low",
+      "confidence": 0.644,
+      "sentence_index": 22,
+      "loudness_db": -24.1,
+      "pitch_hz": 132.0
+    },
+    {
+      "word": "joins",
+      "start": 57.83,
+      "end": 58.11,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.925,
+      "sentence_index": 22,
+      "loudness_db": -25.2,
+      "pitch_hz": 128.2
+    },
+    {
+      "word": "the",
+      "start": 58.15,
+      "end": 58.25,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.343,
+      "sentence_index": 22,
+      "loudness_db": -26.7,
+      "pitch_hz": 199.8
+    },
+    {
+      "word": "sequence",
+      "start": 58.29,
+      "end": 58.69,
+      "duration": 0.4,
+      "importance": "low",
+      "confidence": 0.778,
+      "sentence_index": 22,
+      "loudness_db": -31.0,
+      "pitch_hz": 96.7
+    },
+    {
+      "word": "and",
+      "start": 58.871,
+      "end": 58.951,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.844,
+      "sentence_index": 22,
+      "loudness_db": -23.2,
+      "pitch_hz": 109.1
+    },
+    {
+      "word": "the",
+      "start": 58.971,
+      "end": 59.031,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.667,
+      "sentence_index": 22,
+      "loudness_db": -23.3,
+      "pitch_hz": 109.5
+    },
+    {
+      "word": "next",
+      "start": 59.131,
+      "end": 59.331,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.943,
+      "sentence_index": 22,
+      "loudness_db": -31.5,
+      "pitch_hz": 138.7
+    },
+    {
+      "word": "prediction",
+      "start": 59.371,
+      "end": 59.752,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.729,
+      "sentence_index": 22,
+      "loudness_db": -26.9,
+      "pitch_hz": 113.3
+    },
+    {
+      "word": "starts",
+      "start": 59.812,
+      "end": 60.052,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.711,
+      "sentence_index": 22,
+      "loudness_db": -30.1,
+      "pitch_hz": 90.6
+    },
+    {
+      "word": "from",
+      "start": 60.092,
+      "end": 60.212,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.847,
+      "sentence_index": 22,
+      "loudness_db": -24.2,
+      "pitch_hz": 115.4
+    },
+    {
+      "word": "there.",
+      "start": 60.232,
+      "end": 60.472,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.841,
+      "sentence_index": 22,
+      "loudness_db": -29.6,
+      "pitch_hz": 162.8
+    },
+    {
+      "word": "After",
+      "start": 61.053,
+      "end": 61.273,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.795,
+      "sentence_index": 23,
+      "loudness_db": -29.5,
+      "pitch_hz": 108.4
+    },
+    {
+      "word": "the,",
+      "start": 61.313,
+      "end": 61.694,
+      "duration": 0.381,
+      "importance": "high",
+      "confidence": 0.92,
+      "sentence_index": 23,
+      "loudness_db": -22.0,
+      "pitch_hz": 159.8
+    },
+    {
+      "word": "sky",
+      "start": 62.054,
+      "end": 62.374,
+      "duration": 0.32,
+      "importance": "medium",
+      "confidence": 0.951,
+      "sentence_index": 23,
+      "loudness_db": -24.0,
+      "pitch_hz": 179.3
+    },
+    {
+      "word": "is",
+      "start": 62.454,
+      "end": 62.514,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.903,
+      "sentence_index": 23,
+      "loudness_db": -30.6,
+      "pitch_hz": 85.4
+    },
+    {
+      "word": "likely.",
+      "start": 62.574,
+      "end": 62.915,
+      "duration": 0.341,
+      "importance": "low",
+      "confidence": 0.826,
+      "sentence_index": 23,
+      "loudness_db": -38.6,
+      "pitch_hz": 206.7
+    },
+    {
+      "word": "After",
+      "start": 63.395,
+      "end": 63.575,
+      "duration": 0.18,
+      "importance": "low",
+      "confidence": 0.897,
+      "sentence_index": 24,
+      "loudness_db": -32.6,
+      "pitch_hz": 98.2
+    },
+    {
+      "word": "sunlight,",
+      "start": 63.676,
+      "end": 64.096,
+      "duration": 0.42,
+      "importance": "low",
+      "confidence": 0.932,
+      "sentence_index": 24,
+      "loudness_db": -24.8,
+      "pitch_hz": 123.9
+    },
+    {
+      "word": "is.",
+      "start": 64.536,
+      "end": 64.697,
+      "duration": 0.161,
+      "importance": "medium",
+      "confidence": 0.93,
+      "sentence_index": 24,
+      "loudness_db": -33.4,
+      "pitch_hz": 176.3
+    },
+    {
+      "word": "Each",
+      "start": 65.317,
+      "end": 65.477,
+      "duration": 0.16,
+      "importance": "medium",
+      "confidence": 0.757,
+      "sentence_index": 25,
+      "loudness_db": -29.3,
+      "pitch_hz": 208.1
+    },
+    {
+      "word": "new",
+      "start": 65.577,
+      "end": 65.698,
+      "duration": 0.121,
+      "importance": "low",
+      "confidence": 0.91,
+      "sentence_index": 25,
+      "loudness_db": -23.9,
+      "pitch_hz": 219.4
+    },
+    {
+      "word": "word",
+      "start": 65.758,
+      "end": 65.978,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.928,
+      "sentence_index": 25,
+      "loudness_db": -21.8,
+      "pitch_hz": 129.0
+    },
+    {
+      "word": "brings",
+      "start": 66.038,
+      "end": 66.258,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.81,
+      "sentence_index": 25,
+      "loudness_db": -26.7,
+      "pitch_hz": 106.7
+    },
+    {
+      "word": "new",
+      "start": 66.278,
+      "end": 66.538,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.92,
+      "sentence_index": 25,
+      "loudness_db": -24.9,
+      "pitch_hz": 118.3
+    },
+    {
+      "word": "probabilities",
+      "start": 66.618,
+      "end": 67.239,
+      "duration": 0.621,
+      "importance": "low",
+      "confidence": 0.733,
+      "sentence_index": 25,
+      "loudness_db": -27.1,
+      "pitch_hz": 98.8
+    },
+    {
+      "word": "and",
+      "start": 67.619,
+      "end": 67.72,
+      "duration": 0.101,
+      "importance": "low",
+      "confidence": 0.666,
+      "sentence_index": 25,
+      "loudness_db": -24.6,
+      "pitch_hz": 122.7
+    },
+    {
+      "word": "another",
+      "start": 67.8,
+      "end": 68.04,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.838,
+      "sentence_index": 25,
+      "loudness_db": -25.9,
+      "pitch_hz": 117.3
+    },
+    {
+      "word": "spin.",
+      "start": 68.08,
+      "end": 68.36,
+      "duration": 0.28,
+      "importance": "medium",
+      "confidence": 0.994,
+      "sentence_index": 25,
+      "loudness_db": -31.8,
+      "pitch_hz": 165.6
+    },
+    {
+      "word": "The",
+      "start": 68.941,
+      "end": 69.021,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.994,
+      "sentence_index": 26,
+      "loudness_db": -30.1,
+      "pitch_hz": 115.1
+    },
+    {
+      "word": "two",
+      "start": 69.081,
+      "end": 69.221,
+      "duration": 0.14,
+      "importance": "medium",
+      "confidence": 0.905,
+      "sentence_index": 26,
+      "loudness_db": -23.8,
+      "pitch_hz": 234.3
+    },
+    {
+      "word": "answers",
+      "start": 69.341,
+      "end": 69.642,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.792,
+      "sentence_index": 26,
+      "loudness_db": -27.9,
+      "pitch_hz": 172.4
+    },
+    {
+      "word": "drift",
+      "start": 69.682,
+      "end": 69.922,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.796,
+      "sentence_index": 26,
+      "loudness_db": -32.7,
+      "pitch_hz": 121.3
+    },
+    {
+      "word": "further",
+      "start": 70.062,
+      "end": 70.402,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.733,
+      "sentence_index": 26,
+      "loudness_db": -24.1,
+      "pitch_hz": 136.0
+    },
+    {
+      "word": "apart",
+      "start": 70.462,
+      "end": 70.763,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.796,
+      "sentence_index": 26,
+      "loudness_db": -31.8,
+      "pitch_hz": 116.8
+    },
+    {
+      "word": "with",
+      "start": 70.803,
+      "end": 70.903,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.997,
+      "sentence_index": 26,
+      "loudness_db": -43.1,
+      "pitch_hz": 101.1
+    },
+    {
+      "word": "every",
+      "start": 71.103,
+      "end": 71.323,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.629,
+      "sentence_index": 26,
+      "loudness_db": -28.2,
+      "pitch_hz": 103.0
+    },
+    {
+      "word": "step.",
+      "start": 71.363,
+      "end": 72.124,
+      "duration": 0.761,
+      "importance": "low",
+      "confidence": 0.922,
+      "sentence_index": 26,
+      "loudness_db": -66.9,
+      "pitch_hz": 181.6
+    },
+    {
+      "word": "Zoom",
+      "start": 72.124,
+      "end": 72.524,
+      "duration": 0.4,
+      "importance": "low",
+      "confidence": 0.737,
+      "sentence_index": 27,
+      "loudness_db": -28.8,
+      "pitch_hz": 157.4
+    },
+    {
+      "word": "out.",
+      "start": 72.544,
+      "end": 72.705,
+      "duration": 0.161,
+      "importance": "low",
+      "confidence": 0.946,
+      "sentence_index": 27,
+      "loudness_db": -41.2,
+      "pitch_hz": 87.7
+    },
+    {
+      "word": "One",
+      "start": 73.245,
+      "end": 73.365,
+      "duration": 0.12,
+      "importance": "medium",
+      "confidence": 0.829,
+      "sentence_index": 28,
+      "loudness_db": -22.6,
+      "pitch_hz": 206.7
+    },
+    {
+      "word": "question",
+      "start": 73.445,
+      "end": 73.806,
+      "duration": 0.361,
+      "importance": "low",
+      "confidence": 0.67,
+      "sentence_index": 28,
+      "loudness_db": -25.3,
+      "pitch_hz": 172.3
+    },
+    {
+      "word": "becomes",
+      "start": 73.866,
+      "end": 74.166,
+      "duration": 0.3,
+      "importance": "low",
+      "confidence": 0.855,
+      "sentence_index": 28,
+      "loudness_db": -26.9,
+      "pitch_hz": 125.2
+    },
+    {
+      "word": "a",
+      "start": 74.246,
+      "end": 74.266,
+      "duration": 0.02,
+      "importance": "low",
+      "confidence": 0.999,
+      "sentence_index": 28,
+      "pitch_hz": 109.8
+    },
+    {
+      "word": "tree",
+      "start": 74.366,
+      "end": 74.747,
+      "duration": 0.381,
+      "importance": "low",
+      "confidence": 0.814,
+      "sentence_index": 28,
+      "loudness_db": -28.7,
+      "pitch_hz": 138.6
+    },
+    {
+      "word": "of",
+      "start": 74.807,
+      "end": 74.847,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.959,
+      "sentence_index": 28,
+      "loudness_db": -35.7,
+      "pitch_hz": 85.5
+    },
+    {
+      "word": "possible",
+      "start": 74.927,
+      "end": 75.327,
+      "duration": 0.4,
+      "importance": "low",
+      "confidence": 0.832,
+      "sentence_index": 28,
+      "loudness_db": -26.3,
+      "pitch_hz": 101.7
+    },
+    {
+      "word": "answers.",
+      "start": 75.428,
+      "end": 75.768,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.763,
+      "sentence_index": 28,
+      "loudness_db": -34.3,
+      "pitch_hz": 99.3
+    },
+    {
+      "word": "Likely",
+      "start": 76.369,
+      "end": 76.669,
+      "duration": 0.3,
+      "importance": "medium",
+      "confidence": 0.824,
+      "sentence_index": 29,
+      "loudness_db": -24.3,
+      "pitch_hz": 177.4
+    },
+    {
+      "word": "paths",
+      "start": 76.729,
+      "end": 77.069,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.736,
+      "sentence_index": 29,
+      "loudness_db": -27.0,
+      "pitch_hz": 141.5
+    },
+    {
+      "word": "glow",
+      "start": 77.189,
+      "end": 77.45,
+      "duration": 0.261,
+      "importance": "low",
+      "confidence": 0.906,
+      "sentence_index": 29,
+      "loudness_db": -25.2,
+      "pitch_hz": 103.8
+    },
+    {
+      "word": "bright.",
+      "start": 77.49,
+      "end": 77.77,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.685,
+      "sentence_index": 29,
+      "loudness_db": -31.3,
+      "pitch_hz": 88.1
+    },
+    {
+      "word": "Unlikely",
+      "start": 78.271,
+      "end": 78.651,
+      "duration": 0.38,
+      "importance": "low",
+      "confidence": 0.867,
+      "sentence_index": 30,
+      "loudness_db": -26.2,
+      "pitch_hz": 125.0
+    },
+    {
+      "word": "ones",
+      "start": 78.751,
+      "end": 78.871,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.904,
+      "sentence_index": 30,
+      "loudness_db": -27.7,
+      "pitch_hz": 100.8
+    },
+    {
+      "word": "are",
+      "start": 78.931,
+      "end": 79.011,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.876,
+      "sentence_index": 30,
+      "loudness_db": -34.5,
+      "pitch_hz": 101.0
+    },
+    {
+      "word": "faint,",
+      "start": 79.091,
+      "end": 79.392,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.841,
+      "sentence_index": 30,
+      "loudness_db": -30.5,
+      "pitch_hz": 137.5
+    },
+    {
+      "word": "but",
+      "start": 79.572,
+      "end": 79.672,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.997,
+      "sentence_index": 30,
+      "loudness_db": -29.6,
+      "pitch_hz": 131.4
+    },
+    {
+      "word": "still",
+      "start": 79.732,
+      "end": 79.932,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.759,
+      "sentence_index": 30,
+      "loudness_db": -27.9,
+      "pitch_hz": 217.4
+    },
+    {
+      "word": "there.",
+      "start": 79.992,
+      "end": 80.213,
+      "duration": 0.221,
+      "importance": "medium",
+      "confidence": 0.864,
+      "sentence_index": 30,
+      "loudness_db": -26.1,
+      "pitch_hz": 174.4
+    },
+    {
+      "word": "Each",
+      "start": 80.813,
+      "end": 80.973,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.614,
+      "sentence_index": 31,
+      "loudness_db": -28.0,
+      "pitch_hz": 185.0
+    },
+    {
+      "word": "time",
+      "start": 81.014,
+      "end": 81.194,
+      "duration": 0.18,
+      "importance": "low",
+      "confidence": 0.988,
+      "sentence_index": 31,
+      "loudness_db": -23.7,
+      "pitch_hz": 225.5
+    },
+    {
+      "word": "you",
+      "start": 81.234,
+      "end": 81.334,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.999,
+      "sentence_index": 31,
+      "loudness_db": -20.6,
+      "pitch_hz": 125.0
+    },
+    {
+      "word": "ask,",
+      "start": 81.474,
+      "end": 81.654,
+      "duration": 0.18,
+      "importance": "low",
+      "confidence": 0.917,
+      "sentence_index": 31,
+      "loudness_db": -32.2,
+      "pitch_hz": 118.4
+    },
+    {
+      "word": "it",
+      "start": 81.874,
+      "end": 81.914,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.928,
+      "sentence_index": 31,
+      "loudness_db": -42.7,
+      "pitch_hz": 113.5
+    },
+    {
+      "word": "walks",
+      "start": 81.975,
+      "end": 82.235,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.948,
+      "sentence_index": 31,
+      "loudness_db": -27.2,
+      "pitch_hz": 99.8
+    },
+    {
+      "word": "one",
+      "start": 82.475,
+      "end": 82.595,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.763,
+      "sentence_index": 31,
+      "loudness_db": -27.4,
+      "pitch_hz": 100.0
+    },
+    {
+      "word": "path.",
+      "start": 82.655,
+      "end": 83.556,
+      "duration": 0.901,
+      "importance": "low",
+      "confidence": 0.872,
+      "sentence_index": 31,
+      "loudness_db": -64.5,
+      "pitch_hz": 162.9
+    },
+    {
+      "word": "How",
+      "start": 83.576,
+      "end": 83.716,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.829,
+      "sentence_index": 32,
+      "loudness_db": -22.9,
+      "pitch_hz": 219.0
+    },
+    {
+      "word": "far",
+      "start": 83.796,
+      "end": 83.977,
+      "duration": 0.181,
+      "importance": "medium",
+      "confidence": 0.837,
+      "sentence_index": 32,
+      "loudness_db": -22.3,
+      "pitch_hz": 254.8
+    },
+    {
+      "word": "it",
+      "start": 84.037,
+      "end": 84.117,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.855,
+      "sentence_index": 32,
+      "loudness_db": -30.5,
+      "pitch_hz": 127.8
+    },
+    {
+      "word": "strays",
+      "start": 84.157,
+      "end": 84.577,
+      "duration": 0.42,
+      "importance": "low",
+      "confidence": 0.909,
+      "sentence_index": 32,
+      "loudness_db": -25.5,
+      "pitch_hz": 128.6
+    },
+    {
+      "word": "is",
+      "start": 84.597,
+      "end": 84.737,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.73,
+      "sentence_index": 32,
+      "loudness_db": -27.0,
+      "pitch_hz": 111.5
+    },
+    {
+      "word": "shaped",
+      "start": 84.778,
+      "end": 85.038,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.787,
+      "sentence_index": 32,
+      "loudness_db": -29.9,
+      "pitch_hz": 151.5
+    },
+    {
+      "word": "by",
+      "start": 85.078,
+      "end": 85.198,
+      "duration": 0.12,
+      "importance": "medium",
+      "confidence": 0.88,
+      "sentence_index": 32,
+      "loudness_db": -23.0,
+      "pitch_hz": 213.7
+    },
+    {
+      "word": "a",
+      "start": 85.238,
+      "end": 85.278,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.5,
+      "sentence_index": 32,
+      "loudness_db": -27.4,
+      "pitch_hz": 178.3
+    },
+    {
+      "word": "setting",
+      "start": 85.338,
+      "end": 85.598,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.98,
+      "sentence_index": 32,
+      "loudness_db": -24.5,
+      "pitch_hz": 118.7
+    },
+    {
+      "word": "called",
+      "start": 85.658,
+      "end": 85.879,
+      "duration": 0.221,
+      "importance": "low",
+      "confidence": 0.915,
+      "sentence_index": 32,
+      "loudness_db": -29.3,
+      "pitch_hz": 102.0
+    },
+    {
+      "word": "temperature.",
+      "start": 85.979,
+      "end": 86.499,
+      "duration": 0.52,
+      "importance": "low",
+      "confidence": 0.771,
+      "sentence_index": 32,
+      "loudness_db": -35.4,
+      "pitch_hz": 141.9
+    },
+    {
+      "word": "Before",
+      "start": 87.02,
+      "end": 87.3,
+      "duration": 0.28,
+      "importance": "medium",
+      "confidence": 0.841,
+      "sentence_index": 33,
+      "loudness_db": -25.8,
+      "pitch_hz": 190.3
+    },
+    {
+      "word": "the",
+      "start": 87.34,
+      "end": 87.42,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.841,
+      "sentence_index": 33,
+      "loudness_db": -26.1,
+      "pitch_hz": 250.0
+    },
+    {
+      "word": "scores",
+      "start": 87.44,
+      "end": 87.721,
+      "duration": 0.281,
+      "importance": "low",
+      "confidence": 0.833,
+      "sentence_index": 33,
+      "loudness_db": -26.5,
+      "pitch_hz": 157.7
+    },
+    {
+      "word": "become",
+      "start": 87.781,
+      "end": 88.061,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.807,
+      "sentence_index": 33,
+      "loudness_db": -26.7,
+      "pitch_hz": 126.1
+    },
+    {
+      "word": "probabilities,",
+      "start": 88.121,
+      "end": 88.802,
+      "duration": 0.681,
+      "importance": "low",
+      "confidence": 0.796,
+      "sentence_index": 33,
+      "loudness_db": -26.1,
+      "pitch_hz": 110.4
+    },
+    {
+      "word": "they're",
+      "start": 89.002,
+      "end": 89.162,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.753,
+      "sentence_index": 33,
+      "loudness_db": -23.2,
+      "pitch_hz": 120.8
+    },
+    {
+      "word": "divided",
+      "start": 89.182,
+      "end": 89.623,
+      "duration": 0.441,
+      "importance": "low",
+      "confidence": 0.889,
+      "sentence_index": 33,
+      "loudness_db": -24.1,
+      "pitch_hz": 121.3
+    },
+    {
+      "word": "by",
+      "start": 89.683,
+      "end": 89.803,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.779,
+      "sentence_index": 33,
+      "loudness_db": -28.8,
+      "pitch_hz": 76.3
+    },
+    {
+      "word": "the",
+      "start": 89.823,
+      "end": 89.903,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.807,
+      "sentence_index": 33,
+      "loudness_db": -34.6,
+      "pitch_hz": 70.8
+    },
+    {
+      "word": "temperature.",
+      "start": 89.943,
+      "end": 90.363,
+      "duration": 0.42,
+      "importance": "low",
+      "confidence": 0.909,
+      "sentence_index": 33,
+      "loudness_db": -37.1,
+      "pitch_hz": 115.8
+    },
+    {
+      "word": "A",
+      "start": 90.924,
+      "end": 90.964,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.993,
+      "sentence_index": 34,
+      "loudness_db": -24.6,
+      "pitch_hz": 108.2
+    },
+    {
+      "word": "low",
+      "start": 91.044,
+      "end": 91.224,
+      "duration": 0.18,
+      "importance": "medium",
+      "confidence": 0.792,
+      "sentence_index": 34,
+      "loudness_db": -21.9,
+      "pitch_hz": 197.3
+    },
+    {
+      "word": "temperature",
+      "start": 91.284,
+      "end": 91.705,
+      "duration": 0.421,
+      "importance": "low",
+      "confidence": 0.865,
+      "sentence_index": 34,
+      "loudness_db": -27.3,
+      "pitch_hz": 108.3
+    },
+    {
+      "word": "stretches",
+      "start": 91.725,
+      "end": 92.266,
+      "duration": 0.541,
+      "importance": "low",
+      "confidence": 0.744,
+      "sentence_index": 34,
+      "loudness_db": -30.3,
+      "pitch_hz": 138.0
+    },
+    {
+      "word": "the",
+      "start": 92.306,
+      "end": 92.386,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.824,
+      "sentence_index": 34,
+      "loudness_db": -29.6,
+      "pitch_hz": 145.5
+    },
+    {
+      "word": "gaps",
+      "start": 92.446,
+      "end": 92.706,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.804,
+      "sentence_index": 34,
+      "loudness_db": -29.8,
+      "pitch_hz": 111.8
+    },
+    {
+      "word": "between",
+      "start": 92.766,
+      "end": 93.086,
+      "duration": 0.32,
+      "importance": "low",
+      "confidence": 0.843,
+      "sentence_index": 34,
+      "loudness_db": -29.3,
+      "pitch_hz": 115.1
+    },
+    {
+      "word": "them,",
+      "start": 93.126,
+      "end": 93.267,
+      "duration": 0.141,
+      "importance": "low",
+      "confidence": 0.889,
+      "sentence_index": 34,
+      "loudness_db": -39.8,
+      "pitch_hz": 196.9
+    },
+    {
+      "word": "so",
+      "start": 93.547,
+      "end": 93.627,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.998,
+      "sentence_index": 34,
+      "loudness_db": -27.5,
+      "pitch_hz": 129.1
+    },
+    {
+      "word": "the",
+      "start": 93.667,
+      "end": 93.747,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.994,
+      "sentence_index": 34,
+      "loudness_db": -35.5,
+      "pitch_hz": 125.0
+    },
+    {
+      "word": "top",
+      "start": 93.787,
+      "end": 94.027,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.994,
+      "sentence_index": 34,
+      "loudness_db": -33.5,
+      "pitch_hz": 201.1
+    },
+    {
+      "word": "choices",
+      "start": 94.067,
+      "end": 94.408,
+      "duration": 0.341,
+      "importance": "low",
+      "confidence": 0.861,
+      "sentence_index": 34,
+      "loudness_db": -27.8,
+      "pitch_hz": 101.8
+    },
+    {
+      "word": "dominate.",
+      "start": 94.488,
+      "end": 94.908,
+      "duration": 0.42,
+      "importance": "low",
+      "confidence": 0.983,
+      "sentence_index": 34,
+      "loudness_db": -31.8,
+      "pitch_hz": 122.3
+    },
+    {
+      "word": "Answers",
+      "start": 95.449,
+      "end": 95.709,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.863,
+      "sentence_index": 35,
+      "loudness_db": -28.6,
+      "pitch_hz": 222.0
+    },
+    {
+      "word": "become",
+      "start": 95.749,
+      "end": 96.01,
+      "duration": 0.261,
+      "importance": "low",
+      "confidence": 0.724,
+      "sentence_index": 35,
+      "loudness_db": -26.9,
+      "pitch_hz": 139.1
+    },
+    {
+      "word": "far",
+      "start": 96.05,
+      "end": 96.39,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.859,
+      "sentence_index": 35,
+      "loudness_db": -30.0,
+      "pitch_hz": 122.8
+    },
+    {
+      "word": "more",
+      "start": 96.45,
+      "end": 96.59,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.75,
+      "sentence_index": 35,
+      "loudness_db": -23.6,
+      "pitch_hz": 117.2
+    },
+    {
+      "word": "repeatable,",
+      "start": 96.63,
+      "end": 97.131,
+      "duration": 0.501,
+      "importance": "low",
+      "confidence": 0.85,
+      "sentence_index": 35,
+      "loudness_db": -32.4,
+      "pitch_hz": 112.8
+    },
+    {
+      "word": "though",
+      "start": 97.371,
+      "end": 97.571,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.954,
+      "sentence_index": 35,
+      "loudness_db": -24.5,
+      "pitch_hz": 136.5
+    },
+    {
+      "word": "not",
+      "start": 97.591,
+      "end": 97.851,
+      "duration": 0.26,
+      "importance": "medium",
+      "confidence": 0.906,
+      "sentence_index": 35,
+      "loudness_db": -30.2,
+      "pitch_hz": 214.4
+    },
+    {
+      "word": "always",
+      "start": 97.992,
+      "end": 98.292,
+      "duration": 0.3,
+      "importance": "low",
+      "confidence": 0.745,
+      "sentence_index": 35,
+      "loudness_db": -23.8,
+      "pitch_hz": 124.3
+    },
+    {
+      "word": "identical.",
+      "start": 98.352,
+      "end": 99.293,
+      "duration": 0.941,
+      "importance": "low",
+      "confidence": 0.804,
+      "sentence_index": 35,
+      "loudness_db": -58.8,
+      "pitch_hz": 167.8
+    },
+    {
+      "word": "A",
+      "start": 99.293,
+      "end": 99.433,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.748,
+      "sentence_index": 36,
+      "loudness_db": -38.0,
+      "pitch_hz": 109.6
+    },
+    {
+      "word": "high",
+      "start": 99.493,
+      "end": 99.694,
+      "duration": 0.201,
+      "importance": "medium",
+      "confidence": 0.891,
+      "sentence_index": 36,
+      "loudness_db": -21.4,
+      "pitch_hz": 242.7
+    },
+    {
+      "word": "temperature",
+      "start": 99.754,
+      "end": 100.154,
+      "duration": 0.4,
+      "importance": "low",
+      "confidence": 0.75,
+      "sentence_index": 36,
+      "loudness_db": -26.1,
+      "pitch_hz": 110.0
+    },
+    {
+      "word": "shrinks",
+      "start": 100.274,
+      "end": 100.615,
+      "duration": 0.341,
+      "importance": "low",
+      "confidence": 0.614,
+      "sentence_index": 36,
+      "loudness_db": -28.3,
+      "pitch_hz": 155.4
+    },
+    {
+      "word": "the",
+      "start": 100.655,
+      "end": 100.735,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.578,
+      "sentence_index": 36,
+      "loudness_db": -25.0,
+      "pitch_hz": 112.1
+    },
+    {
+      "word": "gaps",
+      "start": 100.795,
+      "end": 101.035,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.838,
+      "sentence_index": 36,
+      "loudness_db": -28.6,
+      "pitch_hz": 92.1
+    },
+    {
+      "word": "between",
+      "start": 101.075,
+      "end": 101.356,
+      "duration": 0.281,
+      "importance": "low",
+      "confidence": 0.931,
+      "sentence_index": 36,
+      "loudness_db": -31.6,
+      "pitch_hz": 97.2
+    },
+    {
+      "word": "the",
+      "start": 101.396,
+      "end": 101.456,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.997,
+      "sentence_index": 36,
+      "loudness_db": -30.9,
+      "pitch_hz": 86.4
+    },
+    {
+      "word": "scores.",
+      "start": 101.496,
+      "end": 101.836,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.822,
+      "sentence_index": 36,
+      "loudness_db": -35.2,
+      "pitch_hz": 92.0
+    },
+    {
+      "word": "The",
+      "start": 102.297,
+      "end": 102.377,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.982,
+      "sentence_index": 37,
+      "loudness_db": -35.5,
+      "pitch_hz": 103.9
+    },
+    {
+      "word": "probabilities",
+      "start": 102.417,
+      "end": 102.998,
+      "duration": 0.581,
+      "importance": "low",
+      "confidence": 0.857,
+      "sentence_index": 37,
+      "loudness_db": -24.0,
+      "pitch_hz": 138.4
+    },
+    {
+      "word": "flatten.",
+      "start": 103.018,
+      "end": 103.498,
+      "duration": 0.48,
+      "importance": "low",
+      "confidence": 0.854,
+      "sentence_index": 37,
+      "loudness_db": -34.3,
+      "pitch_hz": 106.1
+    },
+    {
+      "word": "Unlikely",
+      "start": 104.039,
+      "end": 104.439,
+      "duration": 0.4,
+      "importance": "low",
+      "confidence": 0.942,
+      "sentence_index": 38,
+      "loudness_db": -25.4,
+      "pitch_hz": 114.6
+    },
+    {
+      "word": "tokens",
+      "start": 104.479,
+      "end": 104.8,
+      "duration": 0.321,
+      "importance": "low",
+      "confidence": 0.941,
+      "sentence_index": 38,
+      "loudness_db": -26.0,
+      "pitch_hz": 105.2
+    },
+    {
+      "word": "get",
+      "start": 104.84,
+      "end": 104.94,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 1.0,
+      "sentence_index": 38,
+      "loudness_db": -23.7,
+      "pitch_hz": 114.2
+    },
+    {
+      "word": "a",
+      "start": 104.98,
+      "end": 105.0,
+      "duration": 0.02,
+      "importance": "low",
+      "confidence": 0.424,
+      "sentence_index": 38,
+      "loudness_db": -25.4,
+      "pitch_hz": 104.8
+    },
+    {
+      "word": "real",
+      "start": 105.16,
+      "end": 105.42,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.815,
+      "sentence_index": 38,
+      "loudness_db": -24.0,
+      "pitch_hz": 117.7
+    },
+    {
+      "word": "chance,",
+      "start": 105.481,
+      "end": 106.061,
+      "duration": 0.58,
+      "importance": "low",
+      "confidence": 0.863,
+      "sentence_index": 38,
+      "loudness_db": -36.9,
+      "pitch_hz": 128.5
+    },
+    {
+      "word": "and",
+      "start": 106.081,
+      "end": 106.161,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.976,
+      "sentence_index": 38,
+      "loudness_db": -29.5,
+      "pitch_hz": 112.7
+    },
+    {
+      "word": "answers",
+      "start": 106.281,
+      "end": 106.562,
+      "duration": 0.281,
+      "importance": "low",
+      "confidence": 0.638,
+      "sentence_index": 38,
+      "loudness_db": -27.0,
+      "pitch_hz": 185.5
+    },
+    {
+      "word": "vary",
+      "start": 106.642,
+      "end": 106.922,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.879,
+      "sentence_index": 38,
+      "loudness_db": -22.6,
+      "pitch_hz": 155.6
+    },
+    {
+      "word": "more,",
+      "start": 106.962,
+      "end": 107.163,
+      "duration": 0.201,
+      "importance": "low",
+      "confidence": 0.826,
+      "sentence_index": 38,
+      "loudness_db": -35.9,
+      "pitch_hz": 169.2
+    },
+    {
+      "word": "sometimes",
+      "start": 107.543,
+      "end": 107.923,
+      "duration": 0.38,
+      "importance": "low",
+      "confidence": 0.863,
+      "sentence_index": 38,
+      "loudness_db": -28.0,
+      "pitch_hz": 215.3
+    },
+    {
+      "word": "wandering",
+      "start": 107.964,
+      "end": 108.404,
+      "duration": 0.44,
+      "importance": "low",
+      "confidence": 0.875,
+      "sentence_index": 38,
+      "loudness_db": -25.7,
+      "pitch_hz": 146.1
+    },
+    {
+      "word": "somewhere",
+      "start": 108.444,
+      "end": 108.744,
+      "duration": 0.3,
+      "importance": "low",
+      "confidence": 0.782,
+      "sentence_index": 38,
+      "loudness_db": -26.6,
+      "pitch_hz": 134.8
+    },
+    {
+      "word": "strange.",
+      "start": 108.805,
+      "end": 109.245,
+      "duration": 0.44,
+      "importance": "low",
+      "confidence": 0.829,
+      "sentence_index": 38,
+      "loudness_db": -33.6,
+      "pitch_hz": 132.2
+    },
+    {
+      "word": "Chance",
+      "start": 109.826,
+      "end": 110.126,
+      "duration": 0.3,
+      "importance": "medium",
+      "confidence": 0.913,
+      "sentence_index": 39,
+      "loudness_db": -25.4,
+      "pitch_hz": 224.8
+    },
+    {
+      "word": "isn't",
+      "start": 110.146,
+      "end": 110.447,
+      "duration": 0.301,
+      "importance": "low",
+      "confidence": 0.556,
+      "sentence_index": 39,
+      "loudness_db": -24.9,
+      "pitch_hz": 173.6
+    },
+    {
+      "word": "the",
+      "start": 110.467,
+      "end": 110.587,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.647,
+      "sentence_index": 39,
+      "loudness_db": -28.1,
+      "pitch_hz": 139.3
+    },
+    {
+      "word": "only",
+      "start": 110.767,
+      "end": 110.987,
+      "duration": 0.22,
+      "importance": "low",
+      "confidence": 0.688,
+      "sentence_index": 39,
+      "loudness_db": -24.6,
+      "pitch_hz": 114.9
+    },
+    {
+      "word": "reason",
+      "start": 111.047,
+      "end": 111.328,
+      "duration": 0.281,
+      "importance": "low",
+      "confidence": 0.817,
+      "sentence_index": 39,
+      "loudness_db": -29.3,
+      "pitch_hz": 88.7
+    },
+    {
+      "word": "answers",
+      "start": 111.428,
+      "end": 111.688,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.782,
+      "sentence_index": 39,
+      "loudness_db": -33.9,
+      "pitch_hz": 84.5
+    },
+    {
+      "word": "differ.",
+      "start": 111.748,
+      "end": 112.048,
+      "duration": 0.3,
+      "importance": "low",
+      "confidence": 0.88,
+      "sentence_index": 39,
+      "loudness_db": -35.5,
+      "pitch_hz": 96.2
+    },
+    {
+      "word": "The",
+      "start": 112.549,
+      "end": 112.629,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.962,
+      "sentence_index": 40,
+      "loudness_db": -28.9,
+      "pitch_hz": 116.7
+    },
+    {
+      "word": "conversation",
+      "start": 112.669,
+      "end": 113.27,
+      "duration": 0.601,
+      "importance": "low",
+      "confidence": 0.772,
+      "sentence_index": 40,
+      "loudness_db": -24.8,
+      "pitch_hz": 166.7
+    },
+    {
+      "word": "so",
+      "start": 113.33,
+      "end": 113.49,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.988,
+      "sentence_index": 40,
+      "loudness_db": -24.4,
+      "pitch_hz": 108.4
+    },
+    {
+      "word": "far",
+      "start": 113.57,
+      "end": 113.851,
+      "duration": 0.281,
+      "importance": "medium",
+      "confidence": 0.83,
+      "sentence_index": 40,
+      "loudness_db": -21.2,
+      "pitch_hz": 100.5
+    },
+    {
+      "word": "and",
+      "start": 114.031,
+      "end": 114.131,
+      "duration": 0.1,
+      "importance": "low",
+      "confidence": 0.812,
+      "sentence_index": 40,
+      "loudness_db": -23.5,
+      "pitch_hz": 187.1
+    },
+    {
+      "word": "the",
+      "start": 114.171,
+      "end": 114.231,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.616,
+      "sentence_index": 40,
+      "loudness_db": -22.4,
+      "pitch_hz": 115.0
+    },
+    {
+      "word": "model",
+      "start": 114.311,
+      "end": 114.552,
+      "duration": 0.241,
+      "importance": "low",
+      "confidence": 0.924,
+      "sentence_index": 40,
+      "loudness_db": -23.8,
+      "pitch_hz": 175.7
+    },
+    {
+      "word": "version",
+      "start": 114.592,
+      "end": 114.872,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.757,
+      "sentence_index": 40,
+      "loudness_db": -28.8,
+      "pitch_hz": 100.2
+    },
+    {
+      "word": "can",
+      "start": 114.932,
+      "end": 115.052,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.945,
+      "sentence_index": 40,
+      "loudness_db": -24.6,
+      "pitch_hz": 106.3
+    },
+    {
+      "word": "matter",
+      "start": 115.092,
+      "end": 115.332,
+      "duration": 0.24,
+      "importance": "low",
+      "confidence": 0.929,
+      "sentence_index": 40,
+      "loudness_db": -26.3,
+      "pitch_hz": 109.8
+    },
+    {
+      "word": "too.",
+      "start": 115.373,
+      "end": 115.573,
+      "duration": 0.2,
+      "importance": "medium",
+      "confidence": 0.994,
+      "sentence_index": 40,
+      "loudness_db": -26.1,
+      "pitch_hz": 170.2
+    },
+    {
+      "word": "But",
+      "start": 116.093,
+      "end": 116.194,
+      "duration": 0.101,
+      "importance": "low",
+      "confidence": 0.956,
+      "sentence_index": 41,
+      "loudness_db": -26.5,
+      "pitch_hz": 119.5
+    },
+    {
+      "word": "much",
+      "start": 116.374,
+      "end": 116.554,
+      "duration": 0.18,
+      "importance": "low",
+      "confidence": 0.852,
+      "sentence_index": 41,
+      "loudness_db": -27.0,
+      "pitch_hz": 159.3
+    },
+    {
+      "word": "of",
+      "start": 116.594,
+      "end": 116.634,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.998,
+      "sentence_index": 41,
+      "loudness_db": -27.8,
+      "pitch_hz": 207.9
+    },
+    {
+      "word": "the",
+      "start": 116.674,
+      "end": 116.754,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.831,
+      "sentence_index": 41,
+      "loudness_db": -25.2,
+      "pitch_hz": 202.7
+    },
+    {
+      "word": "variety",
+      "start": 116.794,
+      "end": 117.235,
+      "duration": 0.441,
+      "importance": "low",
+      "confidence": 0.927,
+      "sentence_index": 41,
+      "loudness_db": -22.9,
+      "pitch_hz": 121.2
+    },
+    {
+      "word": "starts",
+      "start": 117.295,
+      "end": 117.555,
+      "duration": 0.26,
+      "importance": "low",
+      "confidence": 0.815,
+      "sentence_index": 41,
+      "loudness_db": -29.8,
+      "pitch_hz": 95.7
+    },
+    {
+      "word": "right",
+      "start": 117.735,
+      "end": 117.956,
+      "duration": 0.221,
+      "importance": "low",
+      "confidence": 0.691,
+      "sentence_index": 41,
+      "loudness_db": -30.6,
+      "pitch_hz": 93.3
+    },
+    {
+      "word": "here.",
+      "start": 117.996,
+      "end": 118.196,
+      "duration": 0.2,
+      "importance": "low",
+      "confidence": 0.855,
+      "sentence_index": 41,
+      "loudness_db": -36.0,
+      "pitch_hz": 99.4
+    },
+    {
+      "word": "So",
+      "start": 118.857,
+      "end": 118.997,
+      "duration": 0.14,
+      "importance": "medium",
+      "confidence": 0.992,
+      "sentence_index": 42,
+      "loudness_db": -18.7,
+      "pitch_hz": 164.8
+    },
+    {
+      "word": "when",
+      "start": 119.137,
+      "end": 119.257,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.702,
+      "sentence_index": 42,
+      "loudness_db": -20.8,
+      "pitch_hz": 150.7
+    },
+    {
+      "word": "an",
+      "start": 119.297,
+      "end": 119.337,
+      "duration": 0.04,
+      "importance": "low",
+      "confidence": 0.998,
+      "sentence_index": 42,
+      "loudness_db": -32.6,
+      "pitch_hz": 161.4
+    },
+    {
+      "word": "answer",
+      "start": 119.477,
+      "end": 119.698,
+      "duration": 0.221,
+      "importance": "low",
+      "confidence": 0.771,
+      "sentence_index": 42,
+      "loudness_db": -29.4,
+      "pitch_hz": 268.7
+    },
+    {
+      "word": "comes",
+      "start": 119.758,
+      "end": 119.918,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.874,
+      "sentence_index": 42,
+      "loudness_db": -24.4,
+      "pitch_hz": 208.4
+    },
+    {
+      "word": "out",
+      "start": 119.998,
+      "end": 120.078,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.988,
+      "sentence_index": 42,
+      "loudness_db": -26.1,
+      "pitch_hz": 113.7
+    },
+    {
+      "word": "differently,",
+      "start": 120.158,
+      "end": 120.599,
+      "duration": 0.441,
+      "importance": "low",
+      "confidence": 0.935,
+      "sentence_index": 42,
+      "loudness_db": -26.4,
+      "pitch_hz": 164.1
+    },
+    {
+      "word": "nothing",
+      "start": 120.639,
+      "end": 121.26,
+      "duration": 0.621,
+      "importance": "low",
+      "confidence": 0.84,
+      "sentence_index": 42,
+      "loudness_db": -39.4,
+      "pitch_hz": 179.4
+    },
+    {
+      "word": "broke.",
+      "start": 121.34,
+      "end": 121.68,
+      "duration": 0.34,
+      "importance": "low",
+      "confidence": 0.824,
+      "sentence_index": 42,
+      "loudness_db": -30.6,
+      "pitch_hz": 152.7
+    },
+    {
+      "word": "It",
+      "start": 122.061,
+      "end": 122.121,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.994,
+      "sentence_index": 43,
+      "loudness_db": -30.3,
+      "pitch_hz": 150.6
+    },
+    {
+      "word": "just",
+      "start": 122.161,
+      "end": 122.301,
+      "duration": 0.14,
+      "importance": "low",
+      "confidence": 0.748,
+      "sentence_index": 43,
+      "loudness_db": -34.7,
+      "pitch_hz": 188.2
+    },
+    {
+      "word": "took",
+      "start": 122.361,
+      "end": 122.521,
+      "duration": 0.16,
+      "importance": "low",
+      "confidence": 0.888,
+      "sentence_index": 43,
+      "loudness_db": -26.1,
+      "pitch_hz": 175.8
+    },
+    {
+      "word": "another",
+      "start": 122.561,
+      "end": 122.782,
+      "duration": 0.221,
+      "importance": "low",
+      "confidence": 0.923,
+      "sentence_index": 43,
+      "loudness_db": -27.0,
+      "pitch_hz": 164.7
+    },
+    {
+      "word": "path.",
+      "start": 122.842,
+      "end": 123.162,
+      "duration": 0.32,
+      "importance": "low",
+      "confidence": 0.846,
+      "sentence_index": 43,
+      "loudness_db": -35.2,
+      "pitch_hz": 145.4
+    },
+    {
+      "word": "Which",
+      "start": 123.723,
+      "end": 123.843,
+      "duration": 0.12,
+      "importance": "low",
+      "confidence": 0.933,
+      "sentence_index": 44,
+      "loudness_db": -30.5,
+      "pitch_hz": 140.9
+    },
+    {
+      "word": "raises",
+      "start": 123.923,
+      "end": 124.223,
+      "duration": 0.3,
+      "importance": "medium",
+      "confidence": 0.838,
+      "sentence_index": 44,
+      "loudness_db": -25.3,
+      "pitch_hz": 242.9
+    },
+    {
+      "word": "a",
+      "start": 124.243,
+      "end": 124.303,
+      "duration": 0.06,
+      "importance": "medium",
+      "confidence": 0.305,
+      "sentence_index": 44,
+      "loudness_db": -26.3,
+      "pitch_hz": 219.8
+    },
+    {
+      "word": "bigger",
+      "start": 124.444,
+      "end": 124.724,
+      "duration": 0.28,
+      "importance": "low",
+      "confidence": 0.89,
+      "sentence_index": 44,
+      "loudness_db": -26.8,
+      "pitch_hz": 104.5
+    },
+    {
+      "word": "question.",
+      "start": 124.784,
+      "end": 125.685,
+      "duration": 0.901,
+      "importance": "low",
+      "confidence": 0.778,
+      "sentence_index": 44,
+      "loudness_db": -62.1,
+      "pitch_hz": 181.6
+    },
+    {
+      "word": "How",
+      "start": 125.685,
+      "end": 125.946,
+      "duration": 0.261,
+      "importance": "low",
+      "confidence": 0.963,
+      "sentence_index": 45,
+      "loudness_db": -42.0,
+      "pitch_hz": 175.1
+    },
+    {
+      "word": "can",
+      "start": 125.987,
+      "end": 126.127,
+      "duration": 0.14,
+      "importance": "medium",
+      "confidence": 0.904,
+      "sentence_index": 45,
+      "loudness_db": -24.5,
+      "pitch_hz": 277.3
+    },
+    {
+      "word": "an",
+      "start": 126.148,
+      "end": 126.208,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.266,
+      "sentence_index": 45,
+      "loudness_db": -27.5,
+      "pitch_hz": 244.6
+    },
+    {
+      "word": "answer",
+      "start": 126.349,
+      "end": 126.59,
+      "duration": 0.241,
+      "importance": "low",
+      "confidence": 0.825,
+      "sentence_index": 45,
+      "loudness_db": -27.4,
+      "pitch_hz": 149.2
+    },
+    {
+      "word": "sound",
+      "start": 126.67,
+      "end": 126.871,
+      "duration": 0.201,
+      "importance": "low",
+      "confidence": 0.82,
+      "sentence_index": 45,
+      "loudness_db": -24.8,
+      "pitch_hz": 122.7
+    },
+    {
+      "word": "completely",
+      "start": 126.952,
+      "end": 127.676,
+      "duration": 0.724,
+      "importance": "low",
+      "confidence": 0.846,
+      "sentence_index": 45,
+      "loudness_db": -33.2,
+      "pitch_hz": 158.9
+    },
+    {
+      "word": "sure",
+      "start": 127.796,
+      "end": 128.078,
+      "duration": 0.282,
+      "importance": "low",
+      "confidence": 0.791,
+      "sentence_index": 45,
+      "loudness_db": -27.9,
+      "pitch_hz": 149.4
+    },
+    {
+      "word": "and",
+      "start": 128.098,
+      "end": 128.158,
+      "duration": 0.06,
+      "importance": "low",
+      "confidence": 0.333,
+      "sentence_index": 45,
+      "loudness_db": -36.0,
+      "pitch_hz": 95.9
+    },
+    {
+      "word": "still",
+      "start": 128.721,
+      "end": 128.982,
+      "duration": 0.261,
+      "importance": "low",
+      "confidence": 0.975,
+      "sentence_index": 45,
+      "loudness_db": -31.2,
+      "pitch_hz": 129.0
+    },
+    {
+      "word": "be",
+      "start": 129.043,
+      "end": 129.123,
+      "duration": 0.08,
+      "importance": "low",
+      "confidence": 0.965,
+      "sentence_index": 45,
+      "loudness_db": -26.1,
+      "pitch_hz": 144.1
+    },
+    {
+      "word": "wrong?",
+      "start": 129.204,
+      "end": 129.525,
+      "duration": 0.321,
+      "importance": "medium",
+      "confidence": 0.852,
+      "sentence_index": 45,
+      "loudness_db": -31.5,
+      "pitch_hz": 164.6
+    },
+    {
+      "word": "That's",
+      "start": 130.209,
+      "end": 130.43,
+      "duration": 0.221,
+      "importance": "low",
+      "confidence": 0.98,
+      "sentence_index": 46,
+      "loudness_db": -27.1,
+      "pitch_hz": 116.0
+    },
+    {
+      "word": "next.",
+      "start": 130.51,
+      "end": 130.832,
+      "duration": 0.322,
+      "importance": "low",
+      "confidence": 0.917,
+      "sentence_index": 46,
+      "loudness_db": -37.0,
+      "pitch_hz": 93.5
+    }
+  ],
+  "sentences": [
+    {
+      "text": "Ask an AI the same question twice.",
+      "start": 0.031,
+      "end": 2.556,
+      "duration": 2.525,
+      "word_count": 7
+    },
+    {
+      "text": "Why is the sky blue?",
+      "start": 3.457,
+      "end": 4.399,
+      "duration": 0.942,
+      "word_count": 5
+    },
+    {
+      "text": "You might get two different answers.",
+      "start": 5.321,
+      "end": 6.803,
+      "duration": 1.482,
+      "word_count": 6
+    },
+    {
+      "text": "One begins, the sky looks blue because…",
+      "start": 7.485,
+      "end": 9.889,
+      "duration": 2.404,
+      "word_count": 7
+    },
+    {
+      "text": "The other begins, sunlight is made of every color.",
+      "start": 10.57,
+      "end": 13.596,
+      "duration": 3.026,
+      "word_count": 9
+    },
+    {
+      "text": "Neither one is a mistake.",
+      "start": 13.636,
+      "end": 16.06,
+      "duration": 2.424,
+      "word_count": 5
+    },
+    {
+      "text": "Same question, same model.",
+      "start": 16.541,
+      "end": 18.164,
+      "duration": 1.623,
+      "word_count": 4
+    },
+    {
+      "text": "So what changed?",
+      "start": 18.685,
+      "end": 19.406,
+      "duration": 0.721,
+      "word_count": 3
+    },
+    {
+      "text": "Look at the first word.",
+      "start": 20.107,
+      "end": 21.55,
+      "duration": 1.443,
+      "word_count": 5
+    },
+    {
+      "text": "As we saw last time, the model scores every token it knows and turns those scores into probabilities.",
+      "start": 21.55,
+      "end": 26.956,
+      "duration": 5.406,
+      "word_count": 18
+    },
+    {
+      "text": "In this example, sunlight gets 30%.",
+      "start": 27.577,
+      "end": 29.739,
+      "duration": 2.162,
+      "word_count": 6
+    },
+    {
+      "text": "The 26.",
+      "start": 29.92,
+      "end": 31.421,
+      "duration": 1.501,
+      "word_count": 2
+    },
+    {
+      "text": "Then one token is drawn, by chance.",
+      "start": 32.463,
+      "end": 34.725,
+      "duration": 2.262,
+      "word_count": 7
+    },
+    {
+      "text": "Think of a wheel where every token gets a slice as wide as its probability.",
+      "start": 35.326,
+      "end": 39.29,
+      "duration": 3.964,
+      "word_count": 15
+    },
+    {
+      "text": "Wide slices win more often.",
+      "start": 39.891,
+      "end": 41.313,
+      "duration": 1.422,
+      "word_count": 5
+    },
+    {
+      "text": "But not every time.",
+      "start": 41.893,
+      "end": 43.335,
+      "duration": 1.442,
+      "word_count": 4
+    },
+    {
+      "text": "This spin lands on the.",
+      "start": 43.335,
+      "end": 44.997,
+      "duration": 1.662,
+      "word_count": 5
+    },
+    {
+      "text": "Now, rewind and hold everything fixed.",
+      "start": 45.677,
+      "end": 48.02,
+      "duration": 2.343,
+      "word_count": 6
+    },
+    {
+      "text": "Same question, same probabilities.",
+      "start": 48.5,
+      "end": 50.402,
+      "duration": 1.902,
+      "word_count": 4
+    },
+    {
+      "text": "Spin again.",
+      "start": 50.943,
+      "end": 51.403,
+      "duration": 0.46,
+      "word_count": 2
+    },
+    {
+      "text": "This time, sunlight wins.",
+      "start": 51.463,
+      "end": 53.485,
+      "duration": 2.022,
+      "word_count": 4
+    },
+    {
+      "text": "One different word changes everything after it.",
+      "start": 54.146,
+      "end": 56.448,
+      "duration": 2.302,
+      "word_count": 7
+    },
+    {
+      "text": "The chosen token joins the sequence and the next prediction starts from there.",
+      "start": 56.909,
+      "end": 60.472,
+      "duration": 3.563,
+      "word_count": 13
+    },
+    {
+      "text": "After the, sky is likely.",
+      "start": 61.053,
+      "end": 62.915,
+      "duration": 1.862,
+      "word_count": 5
+    },
+    {
+      "text": "After sunlight, is.",
+      "start": 63.395,
+      "end": 64.697,
+      "duration": 1.302,
+      "word_count": 3
+    },
+    {
+      "text": "Each new word brings new probabilities and another spin.",
+      "start": 65.317,
+      "end": 68.36,
+      "duration": 3.043,
+      "word_count": 9
+    },
+    {
+      "text": "The two answers drift further apart with every step.",
+      "start": 68.941,
+      "end": 72.124,
+      "duration": 3.183,
+      "word_count": 9
+    },
+    {
+      "text": "Zoom out.",
+      "start": 72.124,
+      "end": 72.705,
+      "duration": 0.581,
+      "word_count": 2
+    },
+    {
+      "text": "One question becomes a tree of possible answers.",
+      "start": 73.245,
+      "end": 75.768,
+      "duration": 2.523,
+      "word_count": 8
+    },
+    {
+      "text": "Likely paths glow bright.",
+      "start": 76.369,
+      "end": 77.77,
+      "duration": 1.401,
+      "word_count": 4
+    },
+    {
+      "text": "Unlikely ones are faint, but still there.",
+      "start": 78.271,
+      "end": 80.213,
+      "duration": 1.942,
+      "word_count": 7
+    },
+    {
+      "text": "Each time you ask, it walks one path.",
+      "start": 80.813,
+      "end": 83.556,
+      "duration": 2.743,
+      "word_count": 8
+    },
+    {
+      "text": "How far it strays is shaped by a setting called temperature.",
+      "start": 83.576,
+      "end": 86.499,
+      "duration": 2.923,
+      "word_count": 11
+    },
+    {
+      "text": "Before the scores become probabilities, they're divided by the temperature.",
+      "start": 87.02,
+      "end": 90.363,
+      "duration": 3.343,
+      "word_count": 10
+    },
+    {
+      "text": "A low temperature stretches the gaps between them, so the top choices dominate.",
+      "start": 90.924,
+      "end": 94.908,
+      "duration": 3.984,
+      "word_count": 13
+    },
+    {
+      "text": "Answers become far more repeatable, though not always identical.",
+      "start": 95.449,
+      "end": 99.293,
+      "duration": 3.844,
+      "word_count": 9
+    },
+    {
+      "text": "A high temperature shrinks the gaps between the scores.",
+      "start": 99.293,
+      "end": 101.836,
+      "duration": 2.543,
+      "word_count": 9
+    },
+    {
+      "text": "The probabilities flatten.",
+      "start": 102.297,
+      "end": 103.498,
+      "duration": 1.201,
+      "word_count": 3
+    },
+    {
+      "text": "Unlikely tokens get a real chance, and answers vary more, sometimes wandering somewhere strange.",
+      "start": 104.039,
+      "end": 109.245,
+      "duration": 5.206,
+      "word_count": 14
+    },
+    {
+      "text": "Chance isn't the only reason answers differ.",
+      "start": 109.826,
+      "end": 112.048,
+      "duration": 2.222,
+      "word_count": 7
+    },
+    {
+      "text": "The conversation so far and the model version can matter too.",
+      "start": 112.549,
+      "end": 115.573,
+      "duration": 3.024,
+      "word_count": 11
+    },
+    {
+      "text": "But much of the variety starts right here.",
+      "start": 116.093,
+      "end": 118.196,
+      "duration": 2.103,
+      "word_count": 8
+    },
+    {
+      "text": "So when an answer comes out differently, nothing broke.",
+      "start": 118.857,
+      "end": 121.68,
+      "duration": 2.823,
+      "word_count": 9
+    },
+    {
+      "text": "It just took another path.",
+      "start": 122.061,
+      "end": 123.162,
+      "duration": 1.101,
+      "word_count": 5
+    },
+    {
+      "text": "Which raises a bigger question.",
+      "start": 123.723,
+      "end": 125.685,
+      "duration": 1.962,
+      "word_count": 5
+    },
+    {
+      "text": "How can an answer sound completely sure and still be wrong?",
+      "start": 125.685,
+      "end": 129.525,
+      "duration": 3.84,
+      "word_count": 11
+    },
+    {
+      "text": "That's next.",
+      "start": 130.209,
+      "end": 130.832,
+      "duration": 0.623,
+      "word_count": 2
+    }
+  ],
+  "pauses": [
+    {
+      "start": 2.556,
+      "end": 3.457,
+      "duration": 0.901,
+      "kind": "long"
+    },
+    {
+      "start": 4.399,
+      "end": 5.321,
+      "duration": 0.922,
+      "kind": "long"
+    },
+    {
+      "start": 6.803,
+      "end": 7.485,
+      "duration": 0.682,
+      "kind": "long"
+    },
+    {
+      "start": 8.026,
+      "end": 8.446,
+      "duration": 0.42,
+      "kind": "short"
+    },
+    {
+      "start": 9.889,
+      "end": 10.57,
+      "duration": 0.681,
+      "kind": "long"
+    },
+    {
+      "start": 11.271,
+      "end": 11.893,
+      "duration": 0.622,
+      "kind": "long"
+    },
+    {
+      "start": 16.06,
+      "end": 16.541,
+      "duration": 0.481,
+      "kind": "short"
+    },
+    {
+      "start": 17.182,
+      "end": 17.563,
+      "duration": 0.381,
+      "kind": "short"
+    },
+    {
+      "start": 18.164,
+      "end": 18.685,
+      "duration": 0.521,
+      "kind": "short"
+    },
+    {
+      "start": 19.406,
+      "end": 20.107,
+      "duration": 0.701,
+      "kind": "long"
+    },
+    {
+      "start": 26.956,
+      "end": 27.577,
+      "duration": 0.621,
+      "kind": "long"
+    },
+    {
+      "start": 28.258,
+      "end": 28.738,
+      "duration": 0.48,
+      "kind": "short"
+    },
+    {
+      "start": 31.421,
+      "end": 32.463,
+      "duration": 1.042,
+      "kind": "long"
+    },
+    {
+      "start": 33.984,
+      "end": 34.245,
+      "duration": 0.261,
+      "kind": "short"
+    },
+    {
+      "start": 34.725,
+      "end": 35.326,
+      "duration": 0.601,
+      "kind": "long"
+    },
+    {
+      "start": 37.689,
+      "end": 37.969,
+      "duration": 0.28,
+      "kind": "short"
+    },
+    {
+      "start": 39.29,
+      "end": 39.891,
+      "duration": 0.601,
+      "kind": "long"
+    },
+    {
+      "start": 41.313,
+      "end": 41.893,
+      "duration": 0.58,
+      "kind": "short"
+    },
+    {
+      "start": 44.997,
+      "end": 45.677,
+      "duration": 0.68,
+      "kind": "long"
+    },
+    {
+      "start": 45.838,
+      "end": 46.118,
+      "duration": 0.28,
+      "kind": "short"
+    },
+    {
+      "start": 48.02,
+      "end": 48.5,
+      "duration": 0.48,
+      "kind": "short"
+    },
+    {
+      "start": 49.161,
+      "end": 49.501,
+      "duration": 0.34,
+      "kind": "short"
+    },
+    {
+      "start": 50.402,
+      "end": 50.943,
+      "duration": 0.541,
+      "kind": "short"
+    },
+    {
+      "start": 52.444,
+      "end": 52.765,
+      "duration": 0.321,
+      "kind": "short"
+    },
+    {
+      "start": 53.485,
+      "end": 54.146,
+      "duration": 0.661,
+      "kind": "long"
+    },
+    {
+      "start": 55.287,
+      "end": 55.587,
+      "duration": 0.3,
+      "kind": "short"
+    },
+    {
+      "start": 56.448,
+      "end": 56.909,
+      "duration": 0.461,
+      "kind": "short"
+    },
+    {
+      "start": 60.472,
+      "end": 61.053,
+      "duration": 0.581,
+      "kind": "short"
+    },
+    {
+      "start": 61.694,
+      "end": 62.054,
+      "duration": 0.36,
+      "kind": "short"
+    },
+    {
+      "start": 62.915,
+      "end": 63.395,
+      "duration": 0.48,
+      "kind": "short"
+    },
+    {
+      "start": 64.096,
+      "end": 64.536,
+      "duration": 0.44,
+      "kind": "short"
+    },
+    {
+      "start": 64.697,
+      "end": 65.317,
+      "duration": 0.62,
+      "kind": "long"
+    },
+    {
+      "start": 67.239,
+      "end": 67.619,
+      "duration": 0.38,
+      "kind": "short"
+    },
+    {
+      "start": 68.36,
+      "end": 68.941,
+      "duration": 0.581,
+      "kind": "short"
+    },
+    {
+      "start": 72.705,
+      "end": 73.245,
+      "duration": 0.54,
+      "kind": "short"
+    },
+    {
+      "start": 75.768,
+      "end": 76.369,
+      "duration": 0.601,
+      "kind": "long"
+    },
+    {
+      "start": 77.77,
+      "end": 78.271,
+      "duration": 0.501,
+      "kind": "short"
+    },
+    {
+      "start": 80.213,
+      "end": 80.813,
+      "duration": 0.6,
+      "kind": "long"
+    },
+    {
+      "start": 86.499,
+      "end": 87.02,
+      "duration": 0.521,
+      "kind": "short"
+    },
+    {
+      "start": 90.363,
+      "end": 90.924,
+      "duration": 0.561,
+      "kind": "short"
+    },
+    {
+      "start": 93.267,
+      "end": 93.547,
+      "duration": 0.28,
+      "kind": "short"
+    },
+    {
+      "start": 94.908,
+      "end": 95.449,
+      "duration": 0.541,
+      "kind": "short"
+    },
+    {
+      "start": 101.836,
+      "end": 102.297,
+      "duration": 0.461,
+      "kind": "short"
+    },
+    {
+      "start": 103.498,
+      "end": 104.039,
+      "duration": 0.541,
+      "kind": "short"
+    },
+    {
+      "start": 107.163,
+      "end": 107.543,
+      "duration": 0.38,
+      "kind": "short"
+    },
+    {
+      "start": 109.245,
+      "end": 109.826,
+      "duration": 0.581,
+      "kind": "short"
+    },
+    {
+      "start": 112.048,
+      "end": 112.549,
+      "duration": 0.501,
+      "kind": "short"
+    },
+    {
+      "start": 115.573,
+      "end": 116.093,
+      "duration": 0.52,
+      "kind": "short"
+    },
+    {
+      "start": 118.196,
+      "end": 118.857,
+      "duration": 0.661,
+      "kind": "long"
+    },
+    {
+      "start": 121.68,
+      "end": 122.061,
+      "duration": 0.381,
+      "kind": "short"
+    },
+    {
+      "start": 123.162,
+      "end": 123.723,
+      "duration": 0.561,
+      "kind": "short"
+    },
+    {
+      "start": 128.158,
+      "end": 128.721,
+      "duration": 0.563,
+      "kind": "short"
+    },
+    {
+      "start": 129.525,
+      "end": 130.209,
+      "duration": 0.684,
+      "kind": "long"
+    }
+  ]
+}

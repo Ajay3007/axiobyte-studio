@@ -1,0 +1,66 @@
+# Beats: one idea, landing on one spoken word of timeline/timeline.json. Acts are
+# the film's movements; the beat ids follow notes/visual-plan.md §3 (B01–B30).
+# Cues use the transcript's spelling ("30%", "26"). No beat names a concept: the
+# AI concepts are not in the concept SDK yet; each intent says what the picture explains.
+acts:
+  - id: hook
+    keyword: "THE SAME QUESTION"
+    beats:
+      - { id: hook.twice, cue: "Ask@0", intent: "B01 one question, typed into two identical prompt bars" }
+      - { id: hook.answers, cue: "answers@2", intent: "B02 two different answers stream in" }
+      - { id: hook.neither, cue: "Neither@5", intent: "B03 both held equal and steady: neither is a mistake" }
+      - { id: hook.same, cue: "Same@6", intent: "B04 same question, same model; the first words differ" }
+      - { id: hook.first, cue: "Look@8", intent: "B05 the camera pushes into the first word" }
+
+  - id: choice
+    keyword: "THE NEXT TOKEN"
+    beats:
+      - { id: choice.scores, cue: "scores@9", intent: "B06 s02e01 recalled: scores become probabilities" }
+      - { id: choice.example, cue: "example@10", intent: "B07 two named candidates, labelled illustrative" }
+      - { id: choice.drawn, cue: "drawn@12", intent: "B08 the list becomes the pick strip: a draw by chance" }
+
+  - id: wheel
+    keyword: "A WEIGHTED DRAW"
+    beats:
+      - { id: wheel.curl, cue: "wheel@13", intent: "B09 the strip curls into a wheel; slice width = probability" }
+      - { id: wheel.often, cue: "Wide@14", intent: "B10 seeded draws: wide slices win more often, not always" }
+      - { id: wheel.spin, cue: "spin@16", intent: "B11 a spin lands on The" }
+
+  - id: replay
+    keyword: "THE REPLAY"
+    beats:
+      - { id: replay.rewind, cue: "rewind@17", intent: "B12 rewind and freeze; run 1 stays as a ghost" }
+      - { id: replay.same, cue: "Same@18", intent: "B13 ghosts align: same question, same probabilities" }
+      - { id: replay.again, cue: "Spin@19", intent: "B14 the second spin lands on Sunlight" }
+
+  - id: compound
+    keyword: "ONE WORD CHANGES THE REST"
+    beats:
+      - { id: compound.fork, cue: "different@21", intent: "B15 two outcomes, two branches; each starts the next prediction" }
+      - { id: compound.drift, cue: "Each@25", intent: "B16 step after step the branches drift apart into the two answers" }
+
+  - id: tree
+    keyword: "A TREE OF ANSWERS"
+    beats:
+      - { id: tree.zoom, cue: "Zoom@27", intent: "B17 the camera pulls back: one question, a tree of answers" }
+      - { id: tree.bright, cue: "Likely@29", intent: "B18 brightness follows path probability" }
+      - { id: tree.walk, cue: "walks@31", intent: "B19 each ask walks one path" }
+
+  - id: temperature
+    keyword: "TEMPERATURE"
+    beats:
+      - { id: temperature.named, cue: "temperature@32", intent: "B20 the control appears beside the wheel" }
+      - { id: temperature.divide, cue: "divided@33", intent: "B21 scores divided by T, then probabilities" }
+      - { id: temperature.low, cue: "low@34", intent: "B22 low T stretches the gaps; the top choice dominates" }
+      - { id: temperature.repeatable, cue: "repeatable@35", intent: "B23 seeded spins: far more repeatable, not identical" }
+      - { id: temperature.high, cue: "high@36", intent: "B24 high T shrinks the gaps; the probabilities flatten" }
+      - { id: temperature.strange, cue: "Unlikely@38", intent: "B25 narrow slices win; a path wanders somewhere odd" }
+
+  - id: ending
+    keyword: "ENDING"
+    beats:
+      - { id: ending.reasons, cue: "Chance@39", intent: "B26 other inputs matter too: conversation, model version" }
+      - { id: ending.here, cue: "variety@41", intent: "B27 much of the variety starts at the wheel" }
+      - { id: ending.broke, cue: "broke@42", intent: "B28 the two answers again: nothing broke, another path" }
+      - { id: ending.next, cue: "raises@44", intent: "B29 a confident answer, and a question left open" }
+      - { id: ending.handoff, cue: "next@46", intent: "B30 hand-off and the portrait end card" }

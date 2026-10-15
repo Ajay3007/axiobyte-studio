@@ -1,0 +1,12 @@
+# One continuous Three.js world, cut into shots only so a movement can be re-rendered
+# on its own. Each shot's window runs from the silence before its first beat's
+# sentence, so the joins land between words; the picture is continuous across them.
+shots:
+  - { id: shot_0010_hook,        act: hook,        covers: [hook.twice, hook.answers, hook.neither, hook.same, hook.first] }
+  - { id: shot_0020_choice,      act: choice,      covers: [choice.scores, choice.example, choice.drawn] }
+  - { id: shot_0030_wheel,       act: wheel,       covers: [wheel.curl, wheel.often, wheel.spin] }
+  - { id: shot_0040_replay,      act: replay,      covers: [replay.rewind, replay.same, replay.again] }
+  - { id: shot_0050_compound,    act: compound,    covers: [compound.fork, compound.drift] }
+  - { id: shot_0060_tree,        act: tree,        covers: [tree.zoom, tree.bright, tree.walk] }
+  - { id: shot_0070_temperature, act: temperature, covers: [temperature.named, temperature.divide, temperature.low, temperature.repeatable, temperature.high, temperature.strange] }
+  - { id: shot_0080_ending,      act: ending,      covers: [ending.reasons, ending.here, ending.broke, ending.next, ending.handoff] }

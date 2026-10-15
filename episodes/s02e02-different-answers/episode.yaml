@@ -1,0 +1,32 @@
+id: s02e02-different-answers
+title: "Why Does AI Give a Different Answer Every Time?"
+pillar: p02-ai-made-visual
+
+# One native 9:16 master for Reels and Shorts, as s02e01. The Reels interface
+# zone contains Shorts', so `reels` clears both (docs/pillars/p02-ai-made-visual.md).
+targets: [9x16]
+platforms: { 9x16: reels }
+theme: systems
+
+# One continuous Three.js world, composed at 1080x1920 (three/video-main.js).
+renderer: three
+
+# A general audience; s02e01 introduced tokens and next-token probabilities,
+# and the film recalls them on screen rather than assuming them.
+assumed: []
+
+# THE ONE RULE: every beat is a word start in this transcript — the creator's
+# timeline, kept byte-for-byte as delivered. `abs plan` refuses any other file.
+voiceover: "timeline/timeline.json"
+voiceover_sha256: 57d4b51fb5b1cd697959dddf352c6164453248ab5be89ed7ef90ce71db3a06c7
+
+# The creator's recording: local only (gitignored), checked by `abs plan` when
+# present and refused by `abs compose` if its hash differs. It keeps the name it
+# was delivered with.
+audio:
+  path: "audio/s02ep02.mpeg"
+  sha256: 409b46c6fffed08e7b7460edeb87e30284d6082baa5437c9a54e1d4ae439c38a
+  duration: 131.00
+
+# 1.5 s of picture after the last word, then the 3.5 s portrait end card.
+tail: 5.0
