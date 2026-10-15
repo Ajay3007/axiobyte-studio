@@ -41,6 +41,17 @@ The handle depends on the platform. There is no single handle for every platform
 - The Three.js end card chooses the handle by platform (`brandEndCard({ …, platform })`, default `youtube`). See *End card → Call to action and handle*.
 - One master published to platforms with different handles (a 9:16 master for Reels **and** Shorts) uses the **platform-neutral** card, `brandEndCard({ …, handle: false })`: the logo and the call, no handle. It accepts no platform, so it can never show the wrong one.
 
+### On-screen wording: the subject, never the method
+
+What a video shows on screen teaches its subject. It never says, or suggests, how the video was made.
+
+- **No production claims.** No on-screen label, title, kicker, caption or card states or implies that an AxioByte video was made, generated or produced using AI: never "AI MADE VISUAL", "AI-generated", "Made with AI" or anything equivalent. AI can be the *subject* ("Ask an AI the same question twice"); it is never the credit.
+- **Concept-led labels.** Name what the viewer is learning at that moment: `ONE QUESTION, TWO ANSWERS`, `A WEIGHTED DRAW`, `NEXT QUESTION`. Don't use a series number as a label unless its purpose is established.
+- **The brand stays AxioByte.** The logo, tagline and call to action on the end card are the brand; nothing else on screen promotes how the video was made.
+- **Disclosures stay.** `ILLUSTRATIVE` and `DEMONSTRATION` are not production claims: they tell the viewer which values are examples and which outcomes were staged. Keep them wherever they are needed.
+- **Platform disclosure is separate.** A label a platform requires in its own upload settings (for example Meta's AI label for realistic synthetic audio) is set there when it applies. It is not on-screen wording, and this rule does not remove it.
+- **Forward-looking**, like the handle policy: it governs new and newly produced content. Published episodes are not rewritten to match it (s02e01 keeps its opening kicker). s02e02's test suite enforces it (`renderers/three/test/s02e02-film.test.js`, *branding*); a new episode carries the same check.
+
 ## Logo — canonical source
 
 **The supplied AxioByte logo is the canonical logo:** `assets/axiobyte-logo`, a 1080×1080 JPEG. It contains:

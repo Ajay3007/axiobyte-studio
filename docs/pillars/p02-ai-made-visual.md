@@ -47,7 +47,8 @@ change something on screen every second or two.
 
 Brand faces only (`docs/brand/AXIOBYTE_BRAND.md`). Per frame, at most:
 
-- one **kicker**: small, letter-spaced capitals at the top;
+- one **kicker**: small, letter-spaced capitals at the top, naming the concept on screen — never a
+  production claim (`docs/brand/AXIOBYTE_BRAND.md`, *On-screen wording*);
 - one **caption** of up to two lines, with one keyword in an accent colour;
 - three **labels**, each a thin leader line to the thing it names.
 
