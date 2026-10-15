@@ -113,9 +113,12 @@ shows what that picture leaves out.
 ### Duration and format
 - **One native 9:16 master** for Reels and Shorts (under 3 minutes), combined safe area,
   platform-neutral end card — as s02e01.
-- **Target narration 70–85 s** (about 180–220 words at s02e01's measured 155–159 words a minute), so
-  about **75–90 s** with the hold and end card. Deliberately shorter than s02e01's 1:55, as the strategy
-  proposes, and a single mechanism rather than a survey.
+- **Target narration about 2:00–2:15**, so about **2:05–2:20 in total** with the 1.5 s hold and the
+  3.5 s end card (inside the 2–2.5 minute target set on approval). At s02e01's measured 155–159 words a
+  minute that is at most about 310–355 words; aim lower, around 290–330, so the redraw, the branching and
+  the temperature demonstrations have room to play without narration over every second. The extra
+  time over the earlier 70–85 s target goes to explaining the same single mechanism more clearly, not to
+  new topics. *(Revised on approval; it replaces the earlier 70–85 s target.)*
 - Episode id: **`s02e02-different-answers`** (this folder; `sNNeNN-kebab-slug`).
 
 ### Suggested arc (for the script, not a shot list)
@@ -147,7 +150,7 @@ response suggests everyday-experience questions work best.
 
 ## 4. Approval checklist — before scripting
 
-1. **Approve this brief:** takeaway, mechanism, visual thesis, scope and the 70–85 s target.
+1. **Approve this brief:** takeaway, mechanism, visual thesis, scope and the duration target (revised to about 2:00–2:15 of narration).
 2. **Running example:** continue E01's "Why is the sky blue?" (continuity; the variation is rewording of
    a correct answer) — or use a question where variety is the point (for example a name or a first
    line)? Recommendation: continue E01's.
